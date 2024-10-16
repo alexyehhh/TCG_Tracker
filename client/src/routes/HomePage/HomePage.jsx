@@ -1,40 +1,66 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import charizard from '../../assets/images/charizard.png';
 import './HomePage.css';
+
 export default function HomePage() {
+	const cardRef = useRef(null);
+
+	useEffect(() => {
+		const card = cardRef.current;
+
+		const handleMouseMove = (e) => {
+			const rect = card.getBoundingClientRect();
+			const xAxis = (rect.width / 2 - (e.clientX - rect.left)) / 15;
+			const yAxis = (rect.height / 2 - (e.clientY - rect.top)) / 15;
+			card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg) scale(1.05)`;
+		};
+
+		const handleMouseLeave = () => {
+			card.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
+		};
+
+		card.addEventListener('mousemove', handleMouseMove);
+		card.addEventListener('mouseleave', handleMouseLeave);
+
+		// Cleanup on component unmount
+		return () => {
+			card.removeEventListener('mousemove', handleMouseMove);
+			card.removeEventListener('mouseleave', handleMouseLeave);
+		};
+	}, []);
 	return (
-		<div>
-			{/* Nav Bar */}
-			<header>
-				<nav className='navbar'>
-					<div className='nav-title' />
-					<ul className='nav-links'>
-						<li>
-							<a href='#'>Search</a>
-						</li>
-						<li>
-							<a href='#'>Collection</a>
-						</li>
-						<li>
-							<a href='#'>Upload</a>
-						</li>
-					</ul>
-					<a href='#' className='sign-in-btn'>
-						Sign in &gt;
-					</a>
-				</nav>
-			</header>
-			{/* Main Content */}
-			<main>
-				<div className='container'>
-					{/* Left Side: search bar and the description */}
+		<div className='homepage'>
+			<div className='background-clip'></div>
+			<div className='content-wrapper'>
+				<header>
+					<nav className='navbar'>
+						<div className='navbar-left'></div>
+						<ul className='nav-links'>
+							<li>
+								<a href='#'>Search</a>
+							</li>
+							<li>
+								<a href='#'>Collection</a>
+							</li>
+							<li>
+								<a href='#'>Upload</a>
+							</li>
+						</ul>
+						<div className='navbar-right'>
+							<a href='#' className='sign-in-btn'>
+								Sign in &gt;
+							</a>
+						</div>
+					</nav>
+				</header>
+
+				<main className='content-container'>
 					<div className='left-content'>
-						<h1>
-							Find your <br />
-							Pokémon Collection’s Worth
+						<h1 className='left-content-title'>
+							Find your <br /> Pokémon <br /> Collection's Worth
 						</h1>
-						<p>
+						<p className='left-content-subtitle'>
 							This will change the way you track the prices of your Pokemon
 							cards. Search your card below.
 						</p>
@@ -45,12 +71,18 @@ export default function HomePage() {
 							</button>
 						</div>
 					</div>
-					{/* Right Side: Charizard card (maybe randomize different card img?)*/}
+
 					<div className='right-content'>
-						<img src={charizard} alt='Charizard Card' className='card-image' />
+						<div className='card' ref={cardRef}>
+							<img
+								src={charizard}
+								alt='Charizard Card'
+								className='card-image'
+							/>
+						</div>
 					</div>
-				</div>
-			</main>
+				</main>
+			</div>
 		</div>
 	);
 }
