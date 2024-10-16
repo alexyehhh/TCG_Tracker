@@ -32,10 +32,10 @@ export default function HomePage() {
 
 				<main className='content-container'>
 					<div className='left-content'>
-						<h1>
+						<h1 className='left-content-title'>
 							Find your <br /> Pokémon <br /> Collection's Worth
 						</h1>
-						<p>
+						<p className='left-content-subtitle'>
 							This will change the way you track the prices of your Pokemon
 							cards. Search your card below.
 						</p>
