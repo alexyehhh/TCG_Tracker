@@ -144,6 +144,7 @@ body {
 	margin-bottom: 40px;
 	line-height: 1.4;
 	z-index: -1;
+	mix-blend-mode: luminosity;
 }
 
 .left-content-subtitle {
@@ -151,6 +152,8 @@ body {
 	font-weight: 400;
 	width: 500px;
 	line-height: 34px;
+	color: #425466;
+	mix-blend-mode: luminosity;
 }
 
 h1 {
