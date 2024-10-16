@@ -1,9 +1,34 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import charizard from '../../assets/images/charizard.png';
 import './HomePage.css';
 
 export default function HomePage() {
+	const cardRef = useRef(null);
+
+	useEffect(() => {
+		const card = cardRef.current;
+
+		const handleMouseMove = (e) => {
+			const rect = card.getBoundingClientRect();
+			const xAxis = (rect.width / 2 - (e.clientX - rect.left)) / 15;
+			const yAxis = (rect.height / 2 - (e.clientY - rect.top)) / 15;
+			card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg) scale(1.05)`;
+		};
+
+		const handleMouseLeave = () => {
+			card.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
+		};
+
+		card.addEventListener('mousemove', handleMouseMove);
+		card.addEventListener('mouseleave', handleMouseLeave);
+
+		// Cleanup on component unmount
+		return () => {
+			card.removeEventListener('mousemove', handleMouseMove);
+			card.removeEventListener('mouseleave', handleMouseLeave);
+		};
+	}, []);
 	return (
 		<div className='homepage'>
 			<div className='background-clip'></div>
@@ -48,7 +73,13 @@ export default function HomePage() {
 					</div>
 
 					<div className='right-content'>
-						<img src={charizard} alt='Charizard Card' className='card-image' />
+						<div className='card' ref={cardRef}>
+							<img
+								src={charizard}
+								alt='Charizard Card'
+								className='card-image'
+							/>
+						</div>
 					</div>
 				</main>
 			</div>
