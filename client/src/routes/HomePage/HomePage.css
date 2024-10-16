@@ -1,15 +1,12 @@
 /* Temp landing Page CSS */
-
 * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
 }
-
 body {
 	font-family: Arial, sans-serif;
 }
-
 /* Navigation Bar */
 .navbar {
 	display: flex;
@@ -21,27 +18,22 @@ body {
 	width: 100%; /* Ensure the navbar will spans the entire page */
 	top: 0; /* Keeps the navbar at the top */
 }
-
 .nav-title {
 	color: rgb(247, 110, 110);
 	font-size: 20px;
 }
-
 .nav-links {
 	list-style-type: none;
 	display: flex;
 }
-
 .nav-links li {
 	margin-left: 20px;
 }
-
 .nav-links a {
 	color: white;
 	text-decoration: none;
 	font-size: 16px;
 }
-
 .sign-in-btn {
 	background-color: rgba(255, 255, 255, 0.541); /* transparent-ish background */
 	/* border: 2px solid rgba(255, 255, 255, 0.8);  (border or no?) */
@@ -52,11 +44,9 @@ body {
 	font-size: 16px;
 	transition: background-color 0.3s ease;
 }
-
 .sign-in-btn:hover {
 	background-color: rgba(255, 186, 83, 0.6); /* hover color*/
 }
-
 /* Main Content CSS */
 .container {
 	display: flex;
@@ -72,23 +62,19 @@ body {
 	); /* Diagonal gradient */
 	height: calc(100vh - 60px); /* is adjusted based on header */
 }
-
 .left-content {
 	max-width: 50%;
 }
-
 h1 {
 	font-size: 48px;
 	color: #333;
 	margin-bottom: 20px;
 }
-
 p {
 	font-size: 18px;
 	color: #3f3f3f;
 	margin-bottom: 20px;
 }
-
 .search-bar {
 	display: flex;
 	align-items: center;
@@ -97,29 +83,24 @@ p {
 	overflow: hidden;
 	max-width: 400px;
 }
-
 .search-bar input {
 	width: 100%;
 	padding: 10px;
 	border: none;
 	outline: none;
 }
-
 .search-bar button {
 	background-color: #ffba53;
 	border: none;
 	padding: 10px;
 	cursor: pointer;
 }
-
 .description {
 	color: #323232;
 }
-
 /* Right Side */
 .card-image {
 	max-width: 350px;
 	border-radius: 10px;
 }
-
 /* ...more to come for other pages */
