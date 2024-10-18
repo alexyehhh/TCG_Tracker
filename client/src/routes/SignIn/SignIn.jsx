@@ -1,37 +1,37 @@
-// SignUp.jsx
+// SignIn.jsx
 import React, { useState } from 'react';
 import { auth, googleProvider } from '../../util/firebase';
-import { signInWithPopup, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
-const SignUp = () => {
+const SignIn = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const navigate = useNavigate();
 
-	const handleGoogleSignUp = async () => {
+	const handleGoogleSignIn = async () => {
 		try {
 			await signInWithPopup(auth, googleProvider);
-			console.log('Signed Up with google');
+			console.log('Signed In with google');
 			navigate('/');
 		} catch (error) {
 			console.error('Google Sign-In Error:', error.message);
 		}
 	};
 
-	const handleSignup = async () => {
+	const handleLogin = async () => {
 		try {
-			await createUserWithEmailAndPassword(auth, email, password);
-			console.log('Signed Up with user and pass');
+			await signInWithEmailAndPassword(auth, email, password);
+			console.log('Signed In with user and pass');
 			navigate('/');
 		} catch (error) {
-			console.error('Signup Error:', error.message);
+			console.error('Login Error:', error.message);
 		}
 	};
 
 	return (
 		<div style={{ textAlign: 'center', marginTop: '50px' }}>
-			<h2>Sign Up</h2>
+			<h2>Sign In</h2>
 			<input
 				type='email'
 				placeholder='Email'
@@ -44,13 +44,13 @@ const SignUp = () => {
 				value={password}
 				onChange={(e) => setPassword(e.target.value)}
 			/>
-			<button onClick={handleSignup}>Sign Up</button>
-			<button onClick={handleGoogleSignUp}>Sign Up with Google</button>
+			<button onClick={handleLogin}>Log In</button>
+			<button onClick={handleGoogleSignIn}>Sign In with Google</button>
 			<p>
-				Already have an account? <a href='/signin'>Sign In</a>
+				Don't have an account? <a href='/signup'>Sign Up</a>
 			</p>
 		</div>
 	);
 };
 
-export default SignUp;
+export default SignIn;

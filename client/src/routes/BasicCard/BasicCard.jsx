@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+
+const pokemonKey = import.meta.env.VITE_POKEMON_KEY;
 function BasicCard() {
 	const [card, setCard] = useState(null);
 	const [loading, setLoading] = useState(true);
@@ -10,7 +12,7 @@ function BasicCard() {
 				const response = await axios.get(
 					'https://api.pokemontcg.io/v2/cards/base1-4', // Sample card ID
 					{
-						headers: { 'X-Api-Key': import.meta.env.VITE_POKEMON_KEY }, // Optional: API key if required
+						headers: { 'X-Api-Key': pokemonKey }, // Optional: API key if required
 					}
 				);
 				setCard(response.data.data); // Store card data
