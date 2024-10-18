@@ -48,7 +48,7 @@ export default function HomePage() {
 							</li>
 						</ul>
 						<div className='navbar-right'>
-							<a href='#' className='sign-in-btn'>
+							<a href='/signin' className='sign-in-btn'>
 								Sign in &gt;
 							</a>
 						</div>
