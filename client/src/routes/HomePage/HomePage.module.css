@@ -52,7 +52,7 @@ body {
 		),
 		radial-gradient(34.48% 62.34% at 21.35% 32.43%, #ff6c8b 0%, #ff7d61 100%);
 	background-blend-mode: hard-light, normal, normal, normal, normal, normal;
-	clip-path: polygon(0 0, 100% 0, 100% 50%, 0 85%);
+	clip-path: polygon(0 0, 100% 0, 100% 40%, 0 89%);
 	background-size: 300% 100%; /* More space for smoother flow */
 	z-index: 1;
 
