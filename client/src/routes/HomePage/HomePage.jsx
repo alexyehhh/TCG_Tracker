@@ -1,10 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import charizard from '../../assets/images/charizard.png';
-import './HomePage.css';
+import styles from './HomePage.module.css';
 
 export default function HomePage() {
 	const cardRef = useRef(null);
+	const [searchTerm, setSearchTerm] = useState('');
+	const navigate = useNavigate(); // For navigation
 
 	useEffect(() => {
 		const card = cardRef.current;
@@ -29,14 +32,22 @@ export default function HomePage() {
 			card.removeEventListener('mouseleave', handleMouseLeave);
 		};
 	}, []);
+
+	const handleSearch = () => {
+		if (searchTerm.trim() !== '') {
+			// Navigate to the PokemonCards page with the search term as a query parameter
+			navigate(`/pokemon-cards?name=${encodeURIComponent(searchTerm)}`);
+		}
+	};
+
 	return (
-		<div className='homepage'>
-			<div className='background-clip'></div>
-			<div className='content-wrapper'>
+		<div className={styles.homepage}>
+			<div className={styles.backgroundClip}></div>
+			<div className={styles.contentWrapper}>
 				<header>
-					<nav className='navbar'>
-						<div className='navbar-left'></div>
-						<ul className='nav-links'>
+					<nav className={styles.navbar}>
+						<div className={styles.navbarLeft}></div>
+						<ul className={styles.navLinks}>
 							<li>
 								<a href='#'>Search</a>
 							</li>
@@ -47,37 +58,42 @@ export default function HomePage() {
 								<a href='#'>Upload</a>
 							</li>
 						</ul>
-						<div className='navbar-right'>
-							<a href='#' className='sign-in-btn'>
+						<div className={styles.navbarRight}>
+							<a href='#' className={styles.signInBtn}>
 								Sign in &gt;
 							</a>
 						</div>
 					</nav>
 				</header>
 
-				<main className='content-container'>
-					<div className='left-content'>
-						<h1 className='left-content-title'>
+				<main className={styles.contentContainer}>
+					<div className={styles.leftContent}>
+						<h1 className={styles.leftContentTitle}>
 							Find your <br /> Pokémon <br /> Collection's Worth
 						</h1>
-						<p className='left-content-subtitle'>
+						<p className={styles.leftContentSubtitle}>
 							This will change the way you track the prices of your Pokemon
 							cards. Search your card below.
 						</p>
-						<div className='search-bar'>
-							<input type='text' placeholder='Search for your card...' />
-							<button>
+						<div className={styles.searchBar}>
+							<input
+								type='text'
+								placeholder='Search for your card...'
+								value={searchTerm}
+								onChange={(e) => setSearchTerm(e.target.value)}
+							/>
+							<button onClick={handleSearch}>
 								<img src={magnifyingGlass} alt='Search' width='15px' />
 							</button>
 						</div>
 					</div>
 
-					<div className='right-content'>
-						<div className='card' ref={cardRef}>
+					<div className={styles.rightContent}>
+						<div className={styles.card} ref={cardRef}>
 							<img
 								src={charizard}
 								alt='Charizard Card'
-								className='card-image'
+								className={styles.cardImage}
 							/>
 						</div>
 					</div>
