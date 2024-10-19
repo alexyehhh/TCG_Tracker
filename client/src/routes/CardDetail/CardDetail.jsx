@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-// import styles from './CardDetail.module.css';
+// import styles from './CardDetail.module.mss';
 
 function CardDetail() {
     const { id } = useParams(); // Get the card ID from the URL
