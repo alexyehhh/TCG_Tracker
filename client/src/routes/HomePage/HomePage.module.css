@@ -17,64 +17,53 @@ body {
 	overflow: hidden;
 }
 
-/* Background Clip with Animation */
-/* Background Clip with Smooth Animation */
-.background-clip {
+/* Background Clip */
+.backgroundClip {
 	position: absolute;
 	top: 0;
 	left: 0;
 	right: 0;
 	height: 70vh;
 	background: radial-gradient(
-			73.93% 155.79% at 56.93% 16.11%,
-			#ee755c 16.67%,
-			rgba(144, 224, 255, 0) 48.34%
-		),
+				73.93% 155.79% at 56.93% 16.11%,
+				#ee755c 16.67%,
+				rgba(144, 224, 255, 0) 48.34%
+			)
+			/* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */,
 		radial-gradient(
-			34.96% 33.39% at 56.66% 50%,
-			#ff333d 44.79%,
-			rgba(169, 96, 238, 0) 83.19%
-		),
+				34.96% 33.39% at 56.66% 50%,
+				#ff333d 44.79%,
+				rgba(169, 96, 238, 0) 83.19%
+			)
+			/* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */,
 		radial-gradient(
-			20.43% 35.1% at 45.83% 17.78%,
-			#ffcb57 31.7%,
-			rgba(238, 117, 92, 0) 100%
-		),
+				20.43% 35.1% at 45.83% 17.78%,
+				#ffcb57 31.7%,
+				rgba(238, 117, 92, 0) 100%
+			)
+			/* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */,
 		radial-gradient(
-			26.67% 62.22% at 0% 100%,
-			#ff333d 19.21%,
-			rgba(183, 120, 224, 0) 54.54%
-		),
+				26.67% 62.22% at 0% 100%,
+				#ff333d 19.21%,
+				rgba(183, 120, 224, 0) 54.54%
+			)
+			/* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */,
 		radial-gradient(
-			24.52% 60.67% at 5.34% 39.33%,
-			#ffcb57 41.18%,
-			rgba(183, 120, 225, 0) 71.99%
-		),
-		radial-gradient(34.48% 62.34% at 21.35% 32.43%, #ff6c8b 0%, #ff7d61 100%);
+				24.52% 60.67% at 5.34% 39.33%,
+				#ffcb57 41.18%,
+				rgba(183, 120, 225, 0) 71.99%
+			)
+			/* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */,
+		radial-gradient(34.48% 62.34% at 21.35% 32.43%, #ff6c8b 0%, #ff7d61 100%)
+			/* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
 	background-blend-mode: hard-light, normal, normal, normal, normal, normal;
-	clip-path: polygon(0 0, 100% 0, 100% 40%, 0 89%);
-	background-size: 300% 100%; /* More space for smoother flow */
+	clip-path: polygon(0 0, 100% 0, 100% 50%, 0 85%);
+
 	z-index: 1;
-
-	/* Animation */
-	animation: gradientFlow 20s ease-in-out infinite alternate;
-}
-
-/* Keyframes for Smooth Left-to-Right Flow */
-@keyframes gradientFlow {
-	0% {
-		background-position: 0% 0%;
-	}
-	50% {
-		background-position: 100% 0%;
-	}
-	100% {
-		background-position: 0% 0%;
-	}
 }
 
 /* Content Wrapper */
-.content-wrapper {
+.contentWrapper {
 	position: relative;
 	z-index: 2;
 	min-height: 100vh;
@@ -91,12 +80,12 @@ body {
 	background-color: transparent;
 }
 
-.navbar-left,
-.navbar-right {
+.navbarLeft,
+.navbarRight {
 	flex: 1;
 }
 
-.nav-links {
+.navLinks {
 	list-style-type: none;
 	display: flex;
 	gap: 30px;
@@ -105,18 +94,18 @@ body {
 	font-size: 16px;
 }
 
-.nav-links a {
+.navLinks a {
 	text-decoration: none;
 	color: white;
 	font-size: 16px;
 }
 
-.navbar-right {
+.navbarRight {
 	display: flex;
 	justify-content: flex-end;
 }
 
-.sign-in-btn {
+.signInBtn {
 	background-color: rgba(255, 255, 255, 0.2);
 	padding: 8px 16px;
 	color: white;
@@ -128,12 +117,12 @@ body {
 	font-size: 14px;
 }
 
-.sign-in-btn:hover {
+.signInBtn:hover {
 	background-color: rgba(255, 255, 255, 0.3);
 }
 
 /* Main Content Container */
-.content-container {
+.contentContainer {
 	display: flex;
 	align-items: center;
 	justify-content: space-around;
@@ -143,12 +132,12 @@ body {
 }
 
 /* Left Content */
-.left-content {
+.leftContent {
 	font-style: normal;
 	max-width: 50%;
 }
 
-.left-content-title {
+.leftContentTitle {
 	font-size: 78px;
 	font-weight: 700;
 	color: #393939;
@@ -158,7 +147,7 @@ body {
 	mix-blend-mode: luminosity;
 }
 
-.left-content-subtitle {
+.leftContentSubtitle {
 	font-size: 18px;
 	font-weight: 400;
 	width: 500px;
@@ -167,7 +156,7 @@ body {
 	mix-blend-mode: luminosity;
 }
 
-h1 {
+/* h1 {
 	font-size: 48px;
 	color: black;
 	margin-bottom: 20px;
@@ -178,16 +167,16 @@ p {
 	font-size: 18px;
 	color: black;
 	margin-bottom: 20px;
-}
+} */
 
-.search-bar {
+.searchBar {
 	display: flex;
 	overflow: hidden;
 	max-width: 500px;
 	height: 32px;
 }
 
-.search-bar input {
+.searchBar input {
 	flex: 1;
 	padding: 10px;
 	border: none;
@@ -198,7 +187,7 @@ p {
 	max-width: 450px;
 }
 
-.search-bar button {
+.searchBar button {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -213,14 +202,14 @@ p {
 }
 
 /* Right Content */
-.card-image {
+.cardImage {
 	max-width: 450px;
 	border-radius: 10px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Container for the card to define the 3D space */
-.right-content {
+.rightContent {
 	perspective: 1000px;
 	/* width: 300px;
 	height: 420px;
@@ -246,11 +235,11 @@ p {
 }
 
 /* Hover effect to tilt/warp the card */
-.card-container:hover .card {
+.cardContainer:hover .card {
 	transform: rotateY(15deg) rotateX(10deg) scale(1.05);
 }
 
 /* Additional hover effects for lighting and shadow */
-.card-container:hover .card {
+.cardContainer:hover .card {
 	box-shadow: 0 20px 30px rgba(0, 0, 0, 0.4);
 }

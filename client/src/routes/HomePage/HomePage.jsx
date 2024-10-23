@@ -1,10 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import charizard from '../../assets/images/charizard.png';
 import styles from './HomePage.module.css';
 
 export default function HomePage() {
 	const cardRef = useRef(null);
+	const [searchTerm, setSearchTerm] = useState('');
+	const navigate = useNavigate(); // For navigation
 
 	useEffect(() => {
 		const card = cardRef.current;
@@ -29,6 +32,14 @@ export default function HomePage() {
 			card.removeEventListener('mouseleave', handleMouseLeave);
 		};
 	}, []);
+
+	const handleSearch = () => {
+		if (searchTerm.trim() !== '') {
+			// Navigate to the PokemonCards page with the search term as a query parameter
+			navigate(`/pokemon-cards?name=${encodeURIComponent(searchTerm)}`);
+		}
+	};
+
 	return (
 		<div className={styles.homepage}>
 			<div className={styles['background-clip']}></div>
@@ -55,6 +66,7 @@ export default function HomePage() {
 					</nav>
 				</header>
 
+
 				<main className={styles['content-container']}>
 					<div className={styles['left-content']}>
 						<h1 className={styles['left-content-title']}>
@@ -65,19 +77,23 @@ export default function HomePage() {
 							cards. Search your card below.
 						</p>
 						<div className={styles['search-bar']}>
-							<input type='text' placeholder='Search for your card...' />
-							<button>
+							<input
+								type='text'
+								placeholder='Search for your card...'
+								value={searchTerm}
+								onChange={(e) => setSearchTerm(e.target.value)}
+							/>
+							<button onClick={handleSearch}>
 								<img src={magnifyingGlass} alt='Search' width='15px' />
 							</button>
 						</div>
 					</div>
-
 					<div className={styles['right-content']}>
 						<div className={styles.card} ref={cardRef}>
 							<img
 								src={charizard}
 								alt='Charizard Card'
-								className='card-image'
+								className={styles.cardImage}
 							/>
 						</div>
 					</div>

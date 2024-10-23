@@ -1,0 +1,20 @@
+.pokemonCards {
+    padding: 20px;
+}
+
+.cardsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.cardItem {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.cardItem img {
+    max-width: 100%;
+}
