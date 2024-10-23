@@ -42,12 +42,12 @@ export default function HomePage() {
 
 	return (
 		<div className={styles.homepage}>
-			<div className={styles['background-clip']}></div>
-			<div className={styles['content-wrapper']}>
+			<div className={styles.backgroundClip}></div>
+			<div className={styles.contentWrapper}>
 				<header>
 					<nav className={styles.navbar}>
-						<div className={styles['navbar-left']}></div>
-						<ul className={styles['nav-links']}>
+						<div className={styles.navbarLeft}></div>
+						<ul className={styles.navLinks}>
 							<li>
 								<a href='#'>Search</a>
 							</li>
@@ -58,25 +58,24 @@ export default function HomePage() {
 								<a href='#'>Upload</a>
 							</li>
 						</ul>
-						<div className={styles['navbar-right']}>
-							<a href='/signin' className={styles['sign-in-btn']}>
+						<div className={styles.navbarRight}>
+							<a href='/signin' className={styles.signInBtn}>
 								Sign in &gt;
 							</a>
 						</div>
 					</nav>
 				</header>
 
-
-				<main className={styles['content-container']}>
-					<div className={styles['left-content']}>
-						<h1 className={styles['left-content-title']}>
+				<main className={styles.contentContainer}>
+					<div className={styles.leftContent}>
+						<h1 className={styles.leftContentTitle}>
 							Find your <br /> Pokémon <br /> Collection's Worth
 						</h1>
-						<p className={styles['left-content-subtitle']}>
+						<p className={styles.leftContentSubtitle}>
 							This will change the way you track the prices of your Pokemon
 							cards. Search your card below.
 						</p>
-						<div className={styles['search-bar']}>
+						<div className={styles.searchBar}>
 							<input
 								type='text'
 								placeholder='Search for your card...'
@@ -88,7 +87,8 @@ export default function HomePage() {
 							</button>
 						</div>
 					</div>
-					<div className={styles['right-content']}>
+
+					<div className={styles.rightContent}>
 						<div className={styles.card} ref={cardRef}>
 							<img
 								src={charizard}
