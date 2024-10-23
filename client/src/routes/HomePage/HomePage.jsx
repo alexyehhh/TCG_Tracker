@@ -42,12 +42,12 @@ export default function HomePage() {
 
 	return (
 		<div className={styles.homepage}>
-			<div className={styles.backgroundClip}></div>
-			<div className={styles.contentWrapper}>
+			<div className={styles['background-clip']}></div>
+			<div className={styles['content-wrapper']}>
 				<header>
 					<nav className={styles.navbar}>
-						<div className={styles.navbarLeft}></div>
-						<ul className={styles.navLinks}>
+						<div className={styles['navbar-left']}></div>
+						<ul className={styles['nav-links']}>
 							<li>
 								<a href='#'>Search</a>
 							</li>
@@ -58,24 +58,25 @@ export default function HomePage() {
 								<a href='#'>Upload</a>
 							</li>
 						</ul>
-						<div className={styles.navbarRight}>
-							<a href='#' className={styles.signInBtn}>
+						<div className={styles['navbar-right']}>
+							<a href='/signin' className={styles['sign-in-btn']}>
 								Sign in &gt;
 							</a>
 						</div>
 					</nav>
 				</header>
 
-				<main className={styles.contentContainer}>
-					<div className={styles.leftContent}>
-						<h1 className={styles.leftContentTitle}>
+
+				<main className={styles['content-container']}>
+					<div className={styles['left-content']}>
+						<h1 className={styles['left-content-title']}>
 							Find your <br /> Pokémon <br /> Collection's Worth
 						</h1>
-						<p className={styles.leftContentSubtitle}>
+						<p className={styles['left-content-subtitle']}>
 							This will change the way you track the prices of your Pokemon
 							cards. Search your card below.
 						</p>
-						<div className={styles.searchBar}>
+						<div className={styles['search-bar']}>
 							<input
 								type='text'
 								placeholder='Search for your card...'
@@ -87,8 +88,7 @@ export default function HomePage() {
 							</button>
 						</div>
 					</div>
-
-					<div className={styles.rightContent}>
+					<div className={styles['right-content']}>
 						<div className={styles.card} ref={cardRef}>
 							<img
 								src={charizard}
