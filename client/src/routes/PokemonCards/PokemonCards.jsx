@@ -20,7 +20,7 @@ function PokemonCards() {
         const fetchCards = async () => {
             try {
                 const response = await axios.get(
-                    `https://api.pokemontcg.io/v2/cards?q=name:${pokemonName}`,
+                    `https://api.pokemontcg.io/v2/cards?q=name:"${pokemonName}"`,
                     {
                         headers: { 'X-Api-Key': import.meta.env.VITE_POKEMON_KEY },
                     }
