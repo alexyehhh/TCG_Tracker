@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { auth, googleProvider } from '../../util/firebase';
-import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithPopup, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import styles from './SignUp.module.css';
 import questionMark from '../../assets/images/questionMark.png';
@@ -14,24 +14,24 @@ const SignIn = () => {
 	const [showPassword, setShowPassword] = useState(false);
 	const navigate = useNavigate();
 
-	const handleGoogleSignIn = async () => {
+	const handleGoogleSignUp = async () => {
 		try {
 			await signInWithPopup(auth, googleProvider);
-			console.log('Signed In with google');
+			console.log('Signed Up with google');
 			navigate('/');
 		} catch (error) {
-			console.error('Google Sign-In Error:', error.message);
+			console.error('Google Sign-Up Error:', error.message);
 		}
 	};
 
-	const handleLogin = async (e) => {
+	const handleSignup = async (e) => {
 		e.preventDefault();
 		try {
-			await signInWithEmailAndPassword(auth, email, password);
-			console.log('Signed In with user and pass');
+			await createUserWithEmailAndPassword(auth, email, password);
+			console.log('Signed Up with user and pass');
 			navigate('/');
 		} catch (error) {
-			console.error('Login Error:', error.message);
+			console.error('SignUp Error:', error.message);
 		}
 	};
 
@@ -73,7 +73,7 @@ const SignIn = () => {
 
 				<div className={styles.formContainer}>
 					<div className={styles.leftSection}>
-						<form onSubmit={handleLogin} className={styles.loginForm}>
+						<form onSubmit={handleSignup} className={styles.loginForm}>
 							<div className={styles.inputGroup}>
 								<label htmlFor='email'>Email address</label>
 								<input
@@ -121,7 +121,7 @@ const SignIn = () => {
 
 					<div className={styles.rightSection}>
 						<button
-							onClick={handleGoogleSignIn}
+							onClick={handleGoogleSignUp}
 							className={styles.googleButton}>
 							<svg
 								viewBox='0 0 24 24'

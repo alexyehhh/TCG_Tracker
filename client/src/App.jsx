@@ -18,7 +18,7 @@ function App() {
 					<Route path='/' element={<HomePage />} />
 					<Route path='/signin' element={<SignIn />} />
 					<Route path='/signup' element={<SignUp />} />
-					{/* <Route path='/forgot-password' element={<ForgotPassword />} /> */}
+					<Route path='/forgot-password' element={<ForgotPassword />} />
 					<Route path='/basic-card' element={<BasicCard />} />
 					<Route path='/card-detail/:id' element={<CardDetail />} />
 					<Route path='/pokemon-cards' element={<PokemonCards />} />
