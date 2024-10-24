@@ -57,6 +57,12 @@ export default function HomePage() {
 		}
 	};
 
+	const handleKeyDown = (event) => {
+		if (event.key === 'Enter') {
+			handleSearch();
+		}
+	};
+
 	const handleLogout = () => {
 		// Clear authentication state
 		localStorage.removeItem('token'); // Or however you store auth state
@@ -113,6 +119,7 @@ export default function HomePage() {
 								placeholder='Search for your card...'
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
+								onKeyDown={handleKeyDown}
 							/>
 							<button onClick={handleSearch}>
 								<img src={magnifyingGlass} alt='Search' width='15px' />
