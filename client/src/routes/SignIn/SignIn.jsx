@@ -166,14 +166,16 @@ const SignIn = () => {
 						<a
 							href='https://policies.google.com/terms'
 							target='_blank'
-							rel='noopener noreferrer'>
+							rel='noopener noreferrer'
+							className={styles.underline}>
 							Terms
 						</a>{' '}
 						&{' '}
 						<a
 							href='https://policies.google.com/privacy'
 							target='_blank'
-							rel='noopener noreferrer'>
+							rel='noopener noreferrer'
+							className={styles.underline}>
 							Privacy
 						</a>
 					</p>
