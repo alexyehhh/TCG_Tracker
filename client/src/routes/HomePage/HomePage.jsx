@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import charizard from '../../assets/images/charizard.png';
 import styles from './HomePage.module.css';
@@ -7,7 +8,24 @@ import styles from './HomePage.module.css';
 export default function HomePage() {
 	const cardRef = useRef(null);
 	const [searchTerm, setSearchTerm] = useState('');
-	const navigate = useNavigate(); // For navigation
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
+	const [user, setUser] = useState(null);
+	const navigate = useNavigate();
+	const auth = getAuth();
+
+	useEffect(() => {
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			if (user) {
+				setIsLoggedIn(true);
+				setUser(user);
+			} else {
+				setIsLoggedIn(false);
+				setUser(null);
+			}
+		});
+
+		return () => unsubscribe();
+	}, [auth]);
 
 	useEffect(() => {
 		const card = cardRef.current;
@@ -35,8 +53,22 @@ export default function HomePage() {
 
 	const handleSearch = () => {
 		if (searchTerm.trim() !== '') {
-			// Navigate to the PokemonCards page with the search term as a query parameter
 			navigate(`/pokemon-cards?name=${encodeURIComponent(searchTerm)}`);
+		}
+	};
+
+	const handleLogout = () => {
+		// Clear authentication state
+		localStorage.removeItem('token'); // Or however you store auth state
+		setIsLoggedIn(false);
+		navigate('/'); // Redirect to home page after logout
+	};
+
+	const handleAuthClick = () => {
+		if (isLoggedIn) {
+			handleLogout();
+		} else {
+			navigate('/signin');
 		}
 	};
 
@@ -59,9 +91,9 @@ export default function HomePage() {
 							</li>
 						</ul>
 						<div className={styles.navbarRight}>
-							<a href='/signin' className={styles.signInBtn}>
-								Sign in &gt;
-							</a>
+							<button onClick={handleAuthClick} className={styles.signInBtn}>
+								{isLoggedIn ? 'Log out >' : 'Sign in >'}
+							</button>
 						</div>
 					</nav>
 				</header>

@@ -88,6 +88,10 @@ body {
 	align-items: center;
 	padding: 20px 50px;
 	background-color: transparent;
+	background: rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(8px);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	padding: 20px 50px;
 }
 
 .navbarLeft,
@@ -110,13 +114,19 @@ body {
 	font-size: 16px;
 }
 
+.navLinks a:hover {
+	text-decoration: none;
+	color: white;
+	font-size: 16px;
+}
+
 .navbarRight {
 	display: flex;
 	justify-content: flex-end;
 }
 
 .signInBtn {
-	background-color: rgba(255, 255, 255, 0.2);
+	background-color: rgba(255, 255, 255, 0.3);
 	padding: 8px 16px;
 	color: white;
 	border-radius: 20px;
@@ -124,11 +134,13 @@ body {
 	text-decoration: none;
 	transition: background-color 0.3s ease;
 	font-weight: 500;
+	border: none;
+	cursor: pointer;
 	font-size: 14px;
 }
 
 .signInBtn:hover {
-	background-color: rgba(255, 255, 255, 0.3);
+	background-color: rgba(255, 255, 255, 0.5);
 }
 
 /* Main Content Container */

@@ -12,6 +12,7 @@ const SignIn = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
+	const [error, setError] = useState('');
 	const navigate = useNavigate();
 
 	const handleGoogleSignIn = async () => {
@@ -20,7 +21,8 @@ const SignIn = () => {
 			console.log('Signed In with google');
 			navigate('/');
 		} catch (error) {
-			console.error('Google Sign-In Error:', error.message);
+			setError('Failed to sign in with Google. Please try again.');
+			setTimeout(() => setError(''), 5000); // Clear error after 5 seconds
 		}
 	};
 
@@ -31,7 +33,14 @@ const SignIn = () => {
 			console.log('Signed In with user and pass');
 			navigate('/');
 		} catch (error) {
-			console.error('Login Error:', error.message);
+			let errorMessage = 'Invalid email or password. Please try again.';
+			if (error.code === 'auth/user-not-found') {
+				errorMessage = 'No account found with this email address.';
+			} else if (error.code === 'auth/wrong-password') {
+				errorMessage = 'Incorrect password. Please try again.';
+			}
+			setError(errorMessage);
+			setTimeout(() => setError(''), 5000); // Clear error after 5 seconds
 		}
 	};
 
@@ -45,6 +54,24 @@ const SignIn = () => {
 
 	return (
 		<div className={styles.container}>
+			{error && (
+				<div className={styles.errorAlert}>
+					<div className={styles.errorContent}>
+						<svg
+							viewBox='0 0 24 24'
+							className={styles.errorIcon}
+							fill='none'
+							stroke='currentColor'
+							strokeWidth='2'>
+							<circle cx='12' cy='12' r='10' />
+							<line x1='12' y1='8' x2='12' y2='12' />
+							<line x1='12' y1='16' x2='12' y2='16' />
+						</svg>
+						{error}
+					</div>
+				</div>
+			)}
+
 			<header>
 				<nav className={styles.navbar}>
 					<div className={styles.navbarLeft}>
