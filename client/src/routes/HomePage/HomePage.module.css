@@ -110,7 +110,7 @@ body {
 
 .navLinks a {
 	text-decoration: none;
-	color: white;
+	color: #dadada;
 	font-size: 16px;
 }
 
@@ -126,9 +126,10 @@ body {
 }
 
 .signInBtn {
-	background-color: rgba(255, 255, 255, 0.3);
+	background-color: rgba(0, 0, 0, 0.4);
+
 	padding: 8px 16px;
-	color: white;
+	color: #dadada;
 	border-radius: 20px;
 	font-size: 16px;
 	text-decoration: none;
@@ -140,7 +141,8 @@ body {
 }
 
 .signInBtn:hover {
-	background-color: rgba(255, 255, 255, 0.5);
+	color: black;
+	background-color: rgba(255, 255, 255, 0.9);
 }
 
 /* Main Content Container */
@@ -221,6 +223,10 @@ p {
 	cursor: pointer;
 	width: 50px;
 	height: 32px;
+}
+
+.searchBar button:hover {
+	background-color: #ff9c4f;
 }
 
 /* Right Content */
