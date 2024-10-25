@@ -5,6 +5,21 @@ import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import charizard from '../../assets/images/charizard.png';
 import styles from './HomePage.module.css';
 
+const RightArrow = () => {
+	return (
+		<svg
+			className={styles.rightArrow}
+			viewBox='0 0 1024 1024'
+			xmlns='http://www.w3.org/2000/svg'
+			aria-label='Right Arrow Icon'>
+			<path
+				d='M170.666667 469.333333v85.333334h512l-234.666667 234.666666 60.586667 60.586667L846.506667 512l-337.92-337.92L448 234.666667 682.666667 469.333333H170.666667z'
+				fill='currentColor'
+			/>
+		</svg>
+	);
+};
+
 export default function HomePage() {
 	const cardRef = useRef(null);
 	const [searchTerm, setSearchTerm] = useState('');
@@ -100,11 +115,11 @@ export default function HomePage() {
 							<button onClick={handleAuthClick} className={styles.signInBtn}>
 								{isLoggedIn ? (
 									<h4>
-										Sign out <span className={styles.logArrow}>{'>'}</span>
+										Sign out <RightArrow />
 									</h4>
 								) : (
 									<h4>
-										Sign in <span className={styles.logArrow}>{'>'}</span>
+										Sign in <RightArrow />
 									</h4>
 								)}
 							</button>
