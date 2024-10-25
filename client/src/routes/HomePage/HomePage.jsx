@@ -79,9 +79,7 @@ export default function HomePage() {
 	};
 
 	const handleLogout = () => {
-		// Clear authentication state
-		localStorage.removeItem('token'); // Or however you store auth state
-		setIsLoggedIn(false);
+		signOut(auth);
 		navigate('/'); // Redirect to home page after logout
 	};
 
@@ -89,7 +87,7 @@ export default function HomePage() {
 		if (isLoggedIn) {
 			handleLogout();
 		} else {
-			navigate('/signin');
+			navigate('/login');
 		}
 	};
 
@@ -119,7 +117,7 @@ export default function HomePage() {
 									</h4>
 								) : (
 									<h4>
-										Sign in <RightArrow />
+										Log in <RightArrow />
 									</h4>
 								)}
 							</button>
