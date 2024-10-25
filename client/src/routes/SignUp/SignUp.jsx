@@ -49,7 +49,16 @@ const SignIn = () => {
 				<nav className={styles.navbar}>
 					<div className={styles.navbarLeft}>
 						<button onClick={handleBack} className={styles.backButton}>
-							<img src={leftArrow} alt='Back' className={styles.backIcon} />
+							<svg
+								className={styles.backIcon}
+								viewBox='0 0 1024 1024'
+								version='1.1'
+								xmlns='http://www.w3.org/2000/svg'>
+								<path
+									d='M853.333333 469.333333v85.333334H341.333333l234.666667 234.666666-60.586667 60.586667L177.493333 512l337.92-337.92L576 234.666667 341.333333 469.333333h512z'
+									fill=''
+								/>
+							</svg>
 							Back
 						</button>
 					</div>
