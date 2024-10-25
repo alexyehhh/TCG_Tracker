@@ -34,6 +34,10 @@
 	font-weight: 500;
 }
 
+.navLinks a:hover {
+	color: #989898;
+}
+
 .navbarRight {
 	display: flex;
 	justify-content: flex-end;
