@@ -3,7 +3,6 @@ import { auth } from '../../util/firebase';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import styles from './ForgotPassword.module.css';
-import questionMark from '../../assets/images/questionMark.png';
 import leftArrow from '../../assets/images/leftArrow.png';
 
 const ForgotPassword = () => {
