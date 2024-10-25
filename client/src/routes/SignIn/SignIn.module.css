@@ -69,9 +69,17 @@
 	padding: 0;
 }
 
+.backButton:hover {
+	color: #989898;
+}
+
 .backIcon {
 	width: 20px;
 	height: 20px;
+
+	vertical-align: middle;
+	fill: currentColor;
+	overflow: hidden;
 }
 
 .questionMark {
