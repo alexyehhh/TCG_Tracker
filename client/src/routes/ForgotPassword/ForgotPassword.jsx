@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { auth } from '../../util/firebase';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import styles from './ForgotPassword.module.css';
 
 const ForgotPassword = () => {
@@ -44,13 +44,13 @@ const ForgotPassword = () => {
 					</div>
 					<ul className={styles.navLinks}>
 						<li>
-							<a href='#'>Search</a>
+							<Link to='/'>Search</Link>
 						</li>
 						<li>
-							<a href='#'>Collection</a>
+							<Link to='/collection'>Collection</Link>
 						</li>
 						<li>
-							<a href='#'>Upload</a>
+							<Link to='/upload'>Upload</Link>
 						</li>
 					</ul>
 					<div className={styles.navbarRight}></div>
