@@ -8,7 +8,6 @@ import BasicCard from './routes/BasicCard/BasicCard'; // http://localhost:5173/b
 import CardDetail from './routes/CardDetail/CardDetail'; // ex for card detail: http://localhost:5173/card-detail/base1-2
 import PokemonCards from './routes/PokemonCards/PokemonCards'; // http://localhost:5173/pokemon-cards -> sends to pikachu for default
 import ForgotPassword from './routes/ForgotPassword/ForgotPassword'; // http://localhost:5173/forgot-password
-// search bar works, and redirects to PokemonCards
 
 function App() {
 	return (
