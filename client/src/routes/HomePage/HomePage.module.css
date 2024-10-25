@@ -5,6 +5,15 @@
 	font-family: 'Poppins', sans-serif;
 }
 
+h4 {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: 'Poppins', sans-serif;
+	font-size: 14px;
+	font-weight: 400;
+}
+
 body {
 	font-family: 'Arial', sans-serif;
 }
@@ -135,11 +144,21 @@ body {
 	border: none;
 	cursor: pointer;
 	font-size: 14px;
+	display: flex;
+	align-items: center;
 	transition: color 0.3s ease;
 }
 
 .signInBtn:hover {
 	color: #989898;
+}
+
+.logArrow {
+	transition: transform 0.5s ease;
+}
+
+.signInBtn:hover .logArrow {
+	margin-left: 3px;
 }
 
 /* Main Content Container */

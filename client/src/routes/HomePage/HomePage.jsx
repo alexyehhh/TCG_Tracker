@@ -98,7 +98,15 @@ export default function HomePage() {
 						</ul>
 						<div className={styles.navbarRight}>
 							<button onClick={handleAuthClick} className={styles.signInBtn}>
-								{isLoggedIn ? 'Log out >' : 'Sign in >'}
+								{isLoggedIn ? (
+									<h4>
+										Sign out <span className={styles.logArrow}>{'>'}</span>
+									</h4>
+								) : (
+									<h4>
+										Sign in <span className={styles.logArrow}>{'>'}</span>
+									</h4>
+								)}
 							</button>
 						</div>
 					</nav>
