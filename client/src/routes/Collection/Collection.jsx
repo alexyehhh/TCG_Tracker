@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Search } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
 import styles from './Collection.module.css';
 
 const Collection = () => {
@@ -19,13 +20,13 @@ const Collection = () => {
 			<nav className={styles.navbar}>
 				<ul className={styles.navLinks}>
 					<li>
-						<a href='/search'>Search</a>
+						<Link to='/'>Search</Link>
 					</li>
 					<li>
-						<a href='/collection'>Collection</a>
+						<Link to='/collection'>Collection</Link>
 					</li>
 					<li>
-						<a href='/upload'>Upload</a>
+						<Link to='/upload'>Upload</Link>
 					</li>
 				</ul>
 			</nav>
