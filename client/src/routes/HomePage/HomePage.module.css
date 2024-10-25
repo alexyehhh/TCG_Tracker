@@ -153,11 +153,11 @@ body {
 	color: #989898;
 }
 
-.logArrow {
+.rightArrow {
 	transition: transform 0.5s ease;
 }
 
-.signInBtn:hover .logArrow {
+.signInBtn:hover .rightArrow {
 	transform: translateX(5px);
 }
 
