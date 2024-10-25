@@ -34,6 +34,10 @@
 	font-weight: 500;
 }
 
+.navLinks a:hover {
+	color: #989898;
+}
+
 .navbarRight {
 	display: flex;
 	justify-content: flex-end;
@@ -47,6 +51,10 @@
 	color: #333;
 	font-size: 14px;
 	font-weight: 500;
+}
+
+.signInBtn:hover {
+	color: #989898;
 }
 
 .backButton {
@@ -64,6 +72,14 @@
 .backIcon {
 	width: 20px;
 	height: 20px;
+}
+
+.questionMark {
+	width: 1em;
+	height: 1em;
+	vertical-align: middle;
+	fill: currentColor;
+	overflow: hidden;
 }
 
 /* Main Content Styles */
