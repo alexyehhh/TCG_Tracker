@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { auth, googleProvider } from '../../util/firebase';
 import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import styles from './SignIn.module.css';
 import questionMark from '../../assets/images/questionMark.png';
 import leftArrow from '../../assets/images/leftArrow.png';
@@ -82,13 +82,13 @@ const SignIn = () => {
 					</div>
 					<ul className={styles.navLinks}>
 						<li>
-							<a href='#'>Search</a>
+							<Link to='/'>Search</Link>
 						</li>
 						<li>
-							<a href='#'>Collection</a>
+							<Link to='/'>Collection</Link>
 						</li>
 						<li>
-							<a href='#'>Upload</a>
+							<Link to='/'>Upload</Link>
 						</li>
 					</ul>
 					<div className={styles.navbarRight}>
