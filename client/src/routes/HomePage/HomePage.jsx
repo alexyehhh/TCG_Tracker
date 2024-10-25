@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import charizard from '../../assets/images/charizard.png';
@@ -87,13 +87,13 @@ export default function HomePage() {
 						<div className={styles.navbarLeft}></div>
 						<ul className={styles.navLinks}>
 							<li>
-								<a href='#'>Search</a>
+								<Link to='/'>Search</Link>
 							</li>
 							<li>
-								<a href='#'>Collection</a>
+								<Link to='/'>Collection</Link>
 							</li>
 							<li>
-								<a href='#'>Upload</a>
+								<Link to='/'>Upload</Link>
 							</li>
 						</ul>
 						<div className={styles.navbarRight}>
