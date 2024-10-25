@@ -90,10 +90,10 @@ export default function HomePage() {
 								<Link to='/'>Search</Link>
 							</li>
 							<li>
-								<Link to='/'>Collection</Link>
+								<Link to='/collection'>Collection</Link>
 							</li>
 							<li>
-								<Link to='/'>Upload</Link>
+								<Link to='/upload'>Upload</Link>
 							</li>
 						</ul>
 						<div className={styles.navbarRight}>

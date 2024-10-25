@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { auth } from '../../util/firebase';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import styles from './ForgotPassword.module.css';
-import questionMark from '../../assets/images/questionMark.png';
-import leftArrow from '../../assets/images/leftArrow.png';
 
 const ForgotPassword = () => {
 	const [email, setEmail] = useState('');
@@ -31,19 +29,28 @@ const ForgotPassword = () => {
 				<nav className={styles.navbar}>
 					<div className={styles.navbarLeft}>
 						<button onClick={handleBack} className={styles.backButton}>
-							<img src={leftArrow} alt='Back' className={styles.backIcon} />
+							<svg
+								className={styles.backIcon}
+								viewBox='0 0 1024 1024'
+								version='1.1'
+								xmlns='http://www.w3.org/2000/svg'>
+								<path
+									d='M853.333333 469.333333v85.333334H341.333333l234.666667 234.666666-60.586667 60.586667L177.493333 512l337.92-337.92L576 234.666667 341.333333 469.333333h512z'
+									fill=''
+								/>
+							</svg>
 							Back
 						</button>
 					</div>
 					<ul className={styles.navLinks}>
 						<li>
-							<a href='#'>Search</a>
+							<Link to='/'>Search</Link>
 						</li>
 						<li>
-							<a href='#'>Collection</a>
+							<Link to='/collection'>Collection</Link>
 						</li>
 						<li>
-							<a href='#'>Upload</a>
+							<Link to='/upload'>Upload</Link>
 						</li>
 					</ul>
 					<div className={styles.navbarRight}></div>
