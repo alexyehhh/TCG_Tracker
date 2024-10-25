@@ -109,13 +109,13 @@ body {
 
 .navLinks a {
 	text-decoration: none;
-	color: #dadada;
+	color: white;
 	font-size: 16px;
 }
 
 .navLinks a:hover {
 	text-decoration: none;
-	color: white;
+	color: #989898;
 	font-size: 16px;
 }
 
@@ -125,14 +125,12 @@ body {
 }
 
 .signInBtn {
-	background-color: rgba(0, 0, 0, 0.4);
-
 	padding: 8px 16px;
-	color: #dadada;
+	background-color: transparent;
+	color: white;
 	border-radius: 20px;
 	font-size: 16px;
 	text-decoration: none;
-	transition: background-color 0.3s ease;
 	font-weight: 500;
 	border: none;
 	cursor: pointer;
@@ -140,8 +138,7 @@ body {
 }
 
 .signInBtn:hover {
-	color: black;
-	background-color: rgba(255, 255, 255, 0.9);
+	color: #989898;
 }
 
 /* Main Content Container */
