@@ -79,9 +79,7 @@ export default function HomePage() {
 	};
 
 	const handleLogout = () => {
-		// Clear authentication state
-		localStorage.removeItem('token'); // Or however you store auth state
-		setIsLoggedIn(false);
+		signOut(auth);
 		navigate('/'); // Redirect to home page after logout
 	};
 
