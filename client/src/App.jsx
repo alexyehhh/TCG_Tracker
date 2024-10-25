@@ -15,7 +15,7 @@ function App() {
 			<div className='App'>
 				<Routes>
 					<Route path='/' element={<HomePage />} />
-					<Route path='/signin' element={<SignIn />} />
+					<Route path='/login' element={<SignIn />} />
 					<Route path='/signup' element={<SignUp />} />
 					<Route path='/forgot-password' element={<ForgotPassword />} />
 					<Route path='/basic-card' element={<BasicCard />} />

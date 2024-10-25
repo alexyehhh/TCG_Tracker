@@ -7,6 +7,7 @@ import styles from './Collection.module.css';
 const Collection = () => {
 	const [user, setUser] = useState(null);
 	const auth = getAuth();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -14,6 +15,10 @@ const Collection = () => {
 		});
 		return () => unsubscribe();
 	}, []);
+
+	const handleLogin = () => {
+		navigate('/login');
+	};
 
 	const LoggedOutView = () => (
 		<div className={styles.container}>
@@ -61,7 +66,9 @@ const Collection = () => {
 				</div>
 
 				<h2 className={styles.loginMessage}>Log in to view your collection.</h2>
-				<button className={styles.loginButton}>Log in</button>
+				<button className={styles.loginButton} onClick={handleLogin}>
+					Log in
+				</button>
 				<p className={styles.signupText}>
 					Don't have an account?{' '}
 					<a href='/signup' className={styles.signupLink}>

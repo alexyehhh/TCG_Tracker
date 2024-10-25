@@ -87,7 +87,7 @@ export default function HomePage() {
 		if (isLoggedIn) {
 			handleLogout();
 		} else {
-			navigate('/signin');
+			navigate('/login');
 		}
 	};
 
@@ -117,7 +117,7 @@ export default function HomePage() {
 									</h4>
 								) : (
 									<h4>
-										Sign in <RightArrow />
+										Log in <RightArrow />
 									</h4>
 								)}
 							</button>
