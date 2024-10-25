@@ -3,6 +3,11 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Search } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './Collection.module.css';
+import charizardex151 from '../../assets/images/charizardex151.png';
+import celebiFusion from '../../assets/images/celebiFusion.png';
+import lugiaSilverT from '../../assets/images/lugiaSilverT.png';
+import moonbreon from '../../assets/images/moonbreon.png';
+import venuEX151 from '../../assets/images/venuEX151.png';
 
 const Collection = () => {
 	const [user, setUser] = useState(null);
@@ -39,27 +44,27 @@ const Collection = () => {
 			<div className={styles.loggedOutContent}>
 				<div className={styles.previewGrid}>
 					<img
-						src='/api/placeholder/200/280'
+						src={venuEX151}
 						alt='Venusaur Card'
 						className={styles.cardImage}
 					/>
 					<img
-						src='/api/placeholder/200/280'
+						src={lugiaSilverT}
 						alt='Lugia Card'
 						className={styles.cardImage}
 					/>
 					<img
-						src='/api/placeholder/200/280'
+						src={charizardex151}
 						alt='Charizard Card'
 						className={styles.cardImage}
 					/>
 					<img
-						src='/api/placeholder/200/280'
+						src={moonbreon}
 						alt='Dark Pokemon Card'
 						className={styles.cardImage}
 					/>
 					<img
-						src='/api/placeholder/200/280'
+						src={celebiFusion}
 						alt='Celebi Card'
 						className={styles.cardImage}
 					/>
