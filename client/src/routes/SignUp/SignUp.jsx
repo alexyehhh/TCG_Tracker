@@ -3,7 +3,6 @@ import { auth, googleProvider } from '../../util/firebase';
 import { signInWithPopup, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './SignUp.module.css';
-import leftArrow from '../../assets/images/leftArrow.png';
 import middleDivider from '../../assets/images/middleDivider.png';
 import { Eye, EyeOff } from 'lucide-react';
 
