@@ -104,13 +104,13 @@ const Collection = () => {
 			<nav className={styles.navbar}>
 				<ul className={styles.navLinks}>
 					<li>
-						<a href='/'>Search</a>
+						<Link to='/'>Search</Link>
 					</li>
 					<li>
-						<a href='/collection'>Collection</a>
+						<Link to='/collection'>Collection</Link>
 					</li>
 					<li>
-						<a href='/upload'>Upload</a>
+						<Link to='/upload'>Upload</Link>
 					</li>
 				</ul>
 			</nav>
