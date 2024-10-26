@@ -6,7 +6,7 @@ import styles from './Collection.module.css';
 import charizardex151 from '../../assets/images/charizardex151.png';
 import celebiFusion from '../../assets/images/celebiFusion.png';
 import lugiaSilverT from '../../assets/images/lugiaSilverT.png';
-import moonbreon from '../../assets/images/moonbreon.png';
+import moonbreon from '../../assets/images/moonbreon.jpg';
 import venuEX151 from '../../assets/images/venuEX151.png';
 
 const Collection = () => {
