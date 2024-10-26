@@ -27,9 +27,14 @@ const Collection = () => {
 		navigate('/login');
 	};
 
+	const handleInputChange = (e) => {
+		setSearchTerm(e.target.value);
+	};
+
 	const handleSearch = () => {
 		if (searchTerm.trim() !== '') {
-			console.log(searchTerm);
+			// navigate(`/pokemon-cards?name=${encodeURIComponent(searchTerm)}`);
+			console.log('Searching for:', searchTerm);
 		}
 	};
 
@@ -131,14 +136,11 @@ const Collection = () => {
 							type='text'
 							placeholder='Search your collection...'
 							value={searchTerm}
-							onChange={(e) => setSearchTerm(e.target.value)}
+							onChange={handleInputChange}
 							onKeyDown={handleKeyDown}
 							className={styles.searchInput}
 						/>
-						<button
-							type='button'
-							onClick={handleSearch}
-							className={styles.searchButton}>
+						<button onClick={handleSearch} className={styles.searchButton}>
 							<img
 								src={magnifyingGlass}
 								alt='Search'
