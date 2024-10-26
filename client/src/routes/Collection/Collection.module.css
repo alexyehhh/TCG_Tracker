@@ -105,6 +105,11 @@
 	gap: 1.5rem;
 }
 
+.cardsGrid img {
+	width: 260px;
+	height: auto;
+}
+
 .cardImage {
 	border-radius: 0.5rem;
 	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);

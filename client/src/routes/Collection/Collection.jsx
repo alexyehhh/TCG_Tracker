@@ -243,22 +243,22 @@ const Collection = () => {
 
 				<div className={styles.cardsGrid}>
 					<img
-						src='/api/placeholder/280/400'
+						src={venuEX151}
 						alt='Pokemon Card'
 						className={styles.cardImage}
 					/>
 					<img
-						src='/api/placeholder/280/400'
+						src={lugiaSilverT}
 						alt='Pokemon Card'
 						className={styles.cardImage}
 					/>
 					<img
-						src='/api/placeholder/280/400'
+						src={charizardex151}
 						alt='Pokemon Card'
 						className={styles.cardImage}
 					/>
 					<img
-						src='/api/placeholder/280/400'
+						src={moonbreon}
 						alt='Pokemon Card'
 						className={styles.cardImage}
 					/>
