@@ -4,7 +4,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import styles from './Collection.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
-import { Search } from 'lucide-react';
 import charizardex151 from '../../assets/images/charizardex151.png';
 import celebiFusion from '../../assets/images/celebiFusion.png';
 import lugiaSilverT from '../../assets/images/lugiaSilverT.png';
@@ -130,16 +129,19 @@ const Collection = () => {
 					<div className={styles.searchBar}>
 						<input
 							type='text'
-							placeholder='Hinted search text'
+							placeholder='Search your collection...'
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
 							onKeyDown={handleKeyDown}
 							className={styles.searchInput}
 						/>
-						<button onClick={handleSearch} className={styles.searchButton}>
+						<button
+							type='button'
+							onClick={handleSearch}
+							className={styles.searchButton}>
 							<img
 								src={magnifyingGlass}
-								alt=''
+								alt='Search'
 								className={styles.magnifyingGlass}
 							/>
 						</button>
