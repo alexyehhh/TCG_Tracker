@@ -40,7 +40,11 @@ const Collection = () => {
 	};
 
 	const LoggedOutView = () => (
-		<div className={styles.container}>
+		<div
+			className={styles.container}
+			style={{
+				backgroundColor: user ? '#fff4fc' : '#8874b4',
+			}}>
 			<PokemonBackground />
 			<nav className={styles.navbar}>
 				<ul className={styles.navLinks}>
@@ -124,7 +128,7 @@ const Collection = () => {
 					<div className={styles.searchBar}>
 						<input
 							type='text'
-							placeholder='Search for your card...'
+							placeholder='Hinted search text'
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
 							onKeyDown={handleKeyDown}
@@ -154,6 +158,31 @@ const Collection = () => {
 				</div>
 
 				<div className={styles.cardsGrid}>
+					<img
+						src={venuEX151}
+						alt='Pokemon Card'
+						className={styles.cardImage}
+					/>
+					<img
+						src={lugiaSilverT}
+						alt='Pokemon Card'
+						className={styles.cardImage}
+					/>
+					<img
+						src={charizardex151}
+						alt='Pokemon Card'
+						className={styles.cardImage}
+					/>
+					<img
+						src={moonbreon}
+						alt='Pokemon Card'
+						className={styles.cardImage}
+					/>
+					<img
+						src={celebiFusion}
+						alt='Pokemon Card'
+						className={styles.cardImage}
+					/>
 					<img
 						src={venuEX151}
 						alt='Pokemon Card'

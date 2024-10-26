@@ -1,6 +1,5 @@
 .container {
 	min-height: 100vh;
-	background-color: #8874b4;
 	position: relative;
 }
 
@@ -51,11 +50,14 @@
 	font-size: 2.25rem;
 	font-weight: bold;
 	margin-bottom: 2rem;
+	font-weight: 500;
 	color: #581c87;
+	text-align: center;
 }
 
 .searchContainer {
 	display: flex;
+	justify-content: center;
 	align-items: center;
 	margin-bottom: 2rem;
 }
@@ -101,7 +103,7 @@
 .cardsGrid {
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
-	gap: 1.5rem;
+	gap: 2rem;
 }
 
 .cardsGrid img {
@@ -246,4 +248,67 @@
 
 .signupLink:hover {
 	text-decoration: underline;
+}
+
+.searchBar {
+	display: flex;
+	overflow: hidden;
+	max-width: 500px;
+	height: 42px; /* Increased height for better proportions */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	transition: all 0.3s ease;
+}
+
+.searchBar:hover {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	transform: translateY(-1px);
+}
+
+.searchBar input {
+	flex: 1;
+	padding: 12px 16px;
+	border: 1px solid #e2e8f0;
+	border-right: none;
+	border-top-left-radius: 6px;
+	border-bottom-left-radius: 6px;
+	outline: none;
+	max-width: 450px;
+	font-size: 14px;
+	transition: all 0.3s ease;
+}
+
+.searchBar input:focus {
+	border-color: #ec8414;
+	box-shadow: 0 0 0 1px rgba(236, 132, 20, 0.1);
+}
+
+.searchBar button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #ec8414;
+	border-top-right-radius: 6px;
+	border-bottom-right-radius: 6px;
+	border: 1px solid #ec8414;
+	padding: 12px;
+	cursor: pointer;
+	width: 50px;
+	height: 42px;
+	transition: all 0.3s ease;
+}
+
+.searchBar button:hover {
+	background-color: #d67711;
+	border-color: #d67711;
+}
+
+.searchBar button img {
+	width: 16px;
+	height: 16px;
+	opacity: 0.9;
+	transition: opacity 0.3s ease;
+}
+
+.searchBar button:hover img {
+	opacity: 1;
 }
