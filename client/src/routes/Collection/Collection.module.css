@@ -76,7 +76,6 @@
 
 .searchInput:focus {
 	outline: none;
-	ring: 2px solid #8b5cf6;
 }
 
 .searchIcon {
