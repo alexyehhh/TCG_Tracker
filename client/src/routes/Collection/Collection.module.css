@@ -1,7 +1,7 @@
 .container {
 	min-height: 100vh;
-	background-color: #8874b4;
 	position: relative;
+	overflow: hidden;
 }
 
 .navbar {
@@ -51,11 +51,14 @@
 	font-size: 2.25rem;
 	font-weight: bold;
 	margin-bottom: 2rem;
+	font-weight: 500;
 	color: #581c87;
+	text-align: center;
 }
 
 .searchContainer {
 	display: flex;
+	justify-content: center;
 	align-items: center;
 	margin-bottom: 2rem;
 }
@@ -67,7 +70,7 @@
 }
 
 .searchInput {
-	width: 100%;
+	min-height: 100%;
 	padding: 0.5rem 2.5rem 0.5rem 1rem;
 	border-radius: 0.5rem;
 	background-color: #f3e8ff;
@@ -76,7 +79,6 @@
 
 .searchInput:focus {
 	outline: none;
-	ring: 2px solid #8b5cf6;
 }
 
 .searchIcon {
@@ -90,6 +92,7 @@
 	display: flex;
 	gap: 1rem;
 	margin-left: 1rem;
+	z-index: 2;
 }
 
 .filterSelect {
@@ -102,17 +105,23 @@
 .cardsGrid {
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
-	gap: 1.5rem;
+	gap: 1.25rem;
 }
 
 .cardsGrid img {
 	width: 260px;
 	height: auto;
+	z-index: 2;
 }
 
 .cardImage {
+	width: 260px;
+	height: auto;
+	position: relative;
+	z-index: 2;
 	border-radius: 0.5rem;
 	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+	background-color: white;
 }
 
 .previewGrid {
@@ -248,70 +257,85 @@
 .signupLink:hover {
 	text-decoration: underline;
 }
-.backgroundContainer {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
+
+.searchContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 2rem;
 	width: 100%;
-	height: 100%;
-	pointer-events: none;
-	z-index: 1;
-}
-.pokeball {
-	position: absolute;
-	opacity: 0.75;
-	z-index: 1;
+	z-index: 2;
 }
 
-.pokeBallWrapper {
-	position: relative;
-	transform-origin: center;
+.searchBar {
+	display: flex;
+	align-items: center;
+	background-color: #64548c;
+	border-radius: 9999px;
+	padding: 0.25rem 0.5rem;
+	min-width: 30%;
+	max-width: 500px;
+	transition: all 0.2s ease;
+}
+
+.searchBar:focus-within {
+	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+.searchInput {
+	flex: 1;
+	background: transparent;
+	border: none;
+	padding: 0.5rem 1rem;
+	color: white;
+	font-size: 0.875rem;
 	width: 100%;
-	height: 100%;
 }
 
-.topLeft {
-	top: 8rem;
-	left: 4rem;
+.searchInput::placeholder {
+	color: rgba(255, 255, 255, 0.7);
 }
 
-.topLeft .pokeBallWrapper {
-	width: 230px;
-	height: 230px;
-	transform: rotate(-10deg);
+.searchInput:focus {
+	outline: none;
 }
 
-.topRight {
-	top: -1rem;
-	right: 2rem;
+.searchButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border: none;
+	padding: 0.5rem;
+	cursor: pointer;
+	transition: all 0.2s ease;
 }
 
-.topRight .pokeBallWrapper {
-	width: 430px;
-	height: 390px;
-	transform: rotate(-35deg);
+.searchButton:hover {
+	opacity: 0.8;
 }
 
-.bottomLeft {
-	bottom: 2rem;
-	left: 10rem;
+.filterContainer {
+	display: flex;
+	gap: 1rem;
 }
 
-.bottomLeft .pokeBallWrapper {
-	width: 440px;
-	height: 320px;
-	transform: rotate(10deg);
+.filterSelect {
+	padding: 0.5rem 1.2rem;
+	border-radius: 0.5rem;
+	background-color: #ffffff;
+	border: 1px solid #64548c;
+	color: #64548c;
+	font-size: 0.875rem;
+	cursor: pointer;
 }
 
-.bottomRight {
-	bottom: -5rem;
-	right: 2rem;
+.filterSelect:focus {
+	outline: none;
+	border-color: rgba(255, 255, 255, 0.2);
 }
 
-.bottomRight .pokeBallWrapper {
-	width: 360px;
-	height: 360px;
-	transform: rotate(35deg);
+.magnifyingGlass {
+	height: 15px;
 }
