@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import styles from './Collection.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
+import { Search } from 'lucide-react';
 import charizardex151 from '../../assets/images/charizardex151.png';
 import celebiFusion from '../../assets/images/celebiFusion.png';
 import lugiaSilverT from '../../assets/images/lugiaSilverT.png';
@@ -29,7 +30,7 @@ const Collection = () => {
 
 	const handleSearch = () => {
 		if (searchTerm.trim() !== '') {
-			navigate(`/pokemon-cards?name=${encodeURIComponent(searchTerm)}`);
+			console.log(searchTerm);
 		}
 	};
 
@@ -105,6 +106,7 @@ const Collection = () => {
 
 	const LoggedInView = () => (
 		<div className={styles.container}>
+			<PokemonBackground />
 			<nav className={styles.navbar}>
 				<ul className={styles.navLinks}>
 					<li>
@@ -132,9 +134,14 @@ const Collection = () => {
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
 							onKeyDown={handleKeyDown}
+							className={styles.searchInput}
 						/>
-						<button onClick={handleSearch}>
-							<img src={magnifyingGlass} alt='Search' width='15px' />
+						<button onClick={handleSearch} className={styles.searchButton}>
+							<img
+								src={magnifyingGlass}
+								alt=''
+								className={styles.magnifyingGlass}
+							/>
 						</button>
 					</div>
 
@@ -153,6 +160,9 @@ const Collection = () => {
 						</select>
 						<select className={styles.filterSelect}>
 							<option>Type</option>
+						</select>
+						<select className={styles.filterSelect}>
+							<option>Set</option>
 						</select>
 					</div>
 				</div>

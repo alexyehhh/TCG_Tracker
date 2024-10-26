@@ -1,6 +1,7 @@
 .container {
 	min-height: 100vh;
 	position: relative;
+	overflow: hidden;
 }
 
 .navbar {
@@ -69,7 +70,7 @@
 }
 
 .searchInput {
-	width: 100%;
+	min-height: 100%;
 	padding: 0.5rem 2.5rem 0.5rem 1rem;
 	border-radius: 0.5rem;
 	background-color: #f3e8ff;
@@ -91,6 +92,7 @@
 	display: flex;
 	gap: 1rem;
 	margin-left: 1rem;
+	z-index: 2;
 }
 
 .filterSelect {
@@ -109,11 +111,13 @@
 .cardsGrid img {
 	width: 260px;
 	height: auto;
+	z-index: 2;
 }
 
 .cardImage {
 	border-radius: 0.5rem;
 	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+	z-index: 2;
 }
 
 .previewGrid {
@@ -250,65 +254,84 @@
 	text-decoration: underline;
 }
 
+.searchContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 2rem;
+	width: 100%;
+	z-index: 2;
+}
+
 .searchBar {
 	display: flex;
-	overflow: hidden;
+	align-items: center;
+	background-color: #64548c;
+	border-radius: 9999px;
+	padding: 0.25rem 0.5rem;
+	min-width: 30%;
 	max-width: 500px;
-	height: 42px; /* Increased height for better proportions */
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-	transition: all 0.3s ease;
+	transition: all 0.2s ease;
 }
 
-.searchBar:hover {
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	transform: translateY(-1px);
+.searchBar:focus-within {
+	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
 }
 
-.searchBar input {
+.searchInput {
 	flex: 1;
-	padding: 12px 16px;
-	border: 1px solid #e2e8f0;
-	border-right: none;
-	border-top-left-radius: 6px;
-	border-bottom-left-radius: 6px;
+	background: transparent;
+	border: none;
+	padding: 0.5rem 1rem;
+	color: white;
+	font-size: 0.875rem;
+	width: 100%;
+}
+
+.searchInput::placeholder {
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.searchInput:focus {
 	outline: none;
-	max-width: 450px;
-	font-size: 14px;
-	transition: all 0.3s ease;
 }
 
-.searchBar input:focus {
-	border-color: #ec8414;
-	box-shadow: 0 0 0 1px rgba(236, 132, 20, 0.1);
-}
-
-.searchBar button {
+.searchButton {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: #ec8414;
-	border-top-right-radius: 6px;
-	border-bottom-right-radius: 6px;
-	border: 1px solid #ec8414;
-	padding: 12px;
+	background: transparent;
+	border: none;
+	padding: 0.5rem;
 	cursor: pointer;
-	width: 50px;
-	height: 42px;
-	transition: all 0.3s ease;
+	transition: all 0.2s ease;
 }
 
-.searchBar button:hover {
-	background-color: #d67711;
-	border-color: #d67711;
+.searchButton:hover {
+	opacity: 0.8;
 }
 
-.searchBar button img {
-	width: 16px;
-	height: 16px;
-	opacity: 0.9;
-	transition: opacity 0.3s ease;
+.filterContainer {
+	display: flex;
+	gap: 1rem;
 }
 
-.searchBar button:hover img {
-	opacity: 1;
+.filterSelect {
+	padding: 0.5rem 1.2rem;
+	border-radius: 0.5rem;
+	background-color: #ffffff;
+	border: 1px solid #64548c;
+	color: #64548c;
+	font-size: 0.875rem;
+	cursor: pointer;
+}
+
+.filterSelect:focus {
+	outline: none;
+	border-color: rgba(255, 255, 255, 0.2);
+}
+
+.magnifyingGlass {
+	height: 15px;
 }
