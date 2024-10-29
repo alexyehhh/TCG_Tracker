@@ -1,92 +1,135 @@
-// ./routes/PokemonCards/PokemonCards.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import styles from './PokemonCards.module.css';
+import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 
 function PokemonCards() {
-    const [cards, setCards] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const location = useLocation();
-    
-    // Extract the Pokémon name from the query parameter
-    const query = new URLSearchParams(location.search);
-    const searchQuery = query.get('name') || 'Pikachu'; // pikachu is set to default 
+	const [cards, setCards] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
+	const location = useLocation();
 
-    // obtain name for pokemon 
+	const query = new URLSearchParams(location.search);
+	const searchQuery = query.get('name') || 'Pikachu';
 
-    // Function to parse user input into name and number
-    const parseSearchQuery = (query) => {
-        const parts = query.trim().split(' ');
-        const nameParts = [];
-        let number = '';
+	const handleBackToSearch = () => {
+		navigate('/');
+	};
 
-        parts.forEach(part => {
-            if (!number && /^\d+/.test(part)) { // Check if part starts with a number
-                number = part.match(/^\d+/)[0]; // Extract only the initial numeric part (e.g., "2" from "2/122")
-            } else {
-                nameParts.push(part);
-            }
-        });
+	const parseSearchQuery = (query) => {
+		const parts = query.trim().split(' ');
+		const nameParts = [];
+		let number = '';
 
-        const name = nameParts.join(' ');
-        return { name, number };
-    };
+		parts.forEach((part) => {
+			if (!number && /^\d+/.test(part)) {
+				number = part.match(/^\d+/)[0];
+			} else {
+				nameParts.push(part);
+			}
+		});
 
-    // Destructure parsed name and number from searchQuery
-    const { name: pokemonName, number: cardNumber } = parseSearchQuery(searchQuery);
+		const name = nameParts.join(' ');
+		return { name, number };
+	};
 
-    useEffect(() => { 
-        const fetchCards = async () => {
-            try {
-                // construct the query based on the parsed name and optional card number
-                let query = `name:"${pokemonName}"`;
-                
-                if (cardNumber) {
-                    query += ` number:"${cardNumber}"`; // add card number to the query if provided
-                }
+	const { name: pokemonName, number: cardNumber } =
+		parseSearchQuery(searchQuery);
 
-                const response = await axios.get(
-                    `https://api.pokemontcg.io/v2/cards?q=${query}`,
-                    {
-                        headers: { 'X-Api-Key': import.meta.env.VITE_POKEMON_KEY },
-                    }
-                );
-                setCards(response.data.data);
-            } catch (err) {
-                setError(`Failed to fetch cards. Error: ${err}`);
-            } finally {
-                setLoading(false);
-            }
-        };
+	useEffect(() => {
+		const fetchCards = async () => {
+			try {
+				let query = `name:"${pokemonName}"`;
 
-        fetchCards();
-    }, [pokemonName, cardNumber]); // "useEffect" runs when either name or card number changes
+				if (cardNumber) {
+					query += ` number:"${cardNumber}"`;
+				}
 
-    if (loading) return <p>Loading cards...</p>;
-    if (error) return <p>{error}</p>;
+				const response = await axios.get(
+					`https://api.pokemontcg.io/v2/cards?q=${query}`,
+					{
+						headers: { 'X-Api-Key': import.meta.env.VITE_POKEMON_KEY },
+					}
+				);
+				setCards(response.data.data);
+			} catch (err) {
+				setError(`Failed to fetch cards. Error: ${err}`);
+			} finally {
+				setLoading(false);
+			}
+		};
 
-    return (
-        <div className={styles.pokemonCards}>
-            <h1>Cards for {searchQuery}</h1>
-            <div className={styles.cardsGrid}>
-                {cards.length > 0 ? ( /* checking if there are cards in the array */
-                    cards.map((card) => (
-                        <div key={card.id} className={styles.cardItem}>
-                            <h2>{card.name}</h2>
-                            <img src={card.images.large} alt={card.name} />
-                            <p>Set: {card.set.name}</p>
-                            <p>Rarity: {card.rarity}</p>
-                        </div>
-                    ))
-                ) : (
-                    <p>No cards found for {pokemonName}.</p>
-                )}
-            </div>
-            {/* end of grid */}
-        </div>
-    );
+		fetchCards();
+	}, [pokemonName, cardNumber]);
+
+	const renderContent = () => {
+		if (loading) {
+			return (
+				<div className={styles.centerContent}>
+					<p>Loading cards...</p>
+				</div>
+			);
+		}
+
+		if (error) {
+			return (
+				<div className={styles.centerContent}>
+					<p className={styles.errorMessage}>{error}</p>
+				</div>
+			);
+		}
+
+		return (
+			<div
+				className={
+					cards.length > 0 ? styles.cardsGrid : styles.centerContainer
+				}>
+				{cards.length > 0 ? (
+					cards.map((card) => (
+						<div key={card.id} className={styles.cardItem}>
+							<h2>{card.name}</h2>
+							<img src={card.images.large} alt={card.name} />
+							<p>Set: {card.set.name}</p>
+							<p>Rarity: {card.rarity}</p>
+						</div>
+					))
+				) : (
+					<>
+						<h5 className={styles.invalid}>
+							No cards found for {pokemonName}.
+						</h5>
+						<Link to='/' className={styles.loginButton}>
+							Back to Search
+						</Link>
+					</>
+				)}
+			</div>
+		);
+	};
+
+	return (
+		<div>
+			<PokemonBackground />
+			<nav className={styles.navbar}>
+				<ul className={styles.navLinks}>
+					<li>
+						<Link to='/'>Search</Link>
+					</li>
+					<li>
+						<Link to='/collection'>Collection</Link>
+					</li>
+					<li>
+						<Link to='/upload'>Upload</Link>
+					</li>
+				</ul>
+			</nav>
+			<div className={styles.pokemonCards}>
+				{cards.length > 0 && <h1>Cards for {searchQuery}</h1>}
+				{renderContent()}
+			</div>
+		</div>
+	);
 }
 
 export default PokemonCards;
