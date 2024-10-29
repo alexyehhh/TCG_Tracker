@@ -139,6 +139,7 @@ const Collection = () => {
 							onChange={handleInputChange}
 							onKeyDown={handleKeyDown}
 							className={styles.searchInput}
+							autoFocus
 						/>
 						<button onClick={handleSearch} className={styles.searchButton}>
 							<img
