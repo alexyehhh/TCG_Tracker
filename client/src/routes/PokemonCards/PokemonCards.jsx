@@ -12,15 +12,43 @@ function PokemonCards() {
     
     // Extract the Pokémon name from the query parameter
     const query = new URLSearchParams(location.search);
-    const pokemonName = query.get('name') || 'Pikachu'; // pikachu is set to default 
+    const searchQuery = query.get('name') || 'Pikachu'; // pikachu is set to default 
 
     // obtain name for pokemon 
+
+    // Function to parse user input into name and number
+    const parseSearchQuery = (query) => {
+        const parts = query.trim().split(' ');
+        const nameParts = [];
+        let number = '';
+
+        parts.forEach(part => {
+            if (!number && /^\d+/.test(part)) { // Check if part starts with a number
+                number = part.match(/^\d+/)[0]; // Extract only the initial numeric part (e.g., "2" from "2/122")
+            } else {
+                nameParts.push(part);
+            }
+        });
+
+        const name = nameParts.join(' ');
+        return { name, number };
+    };
+
+    // Destructure parsed name and number from searchQuery
+    const { name: pokemonName, number: cardNumber } = parseSearchQuery(searchQuery);
 
     useEffect(() => { 
         const fetchCards = async () => {
             try {
+                // construct the query based on the parsed name and optional card number
+                let query = `name:"${pokemonName}"`;
+                
+                if (cardNumber) {
+                    query += ` number:"${cardNumber}"`; // add card number to the query if provided
+                }
+
                 const response = await axios.get(
-                    `https://api.pokemontcg.io/v2/cards?q=name:"${pokemonName}"`,
+                    `https://api.pokemontcg.io/v2/cards?q=${query}`,
                     {
                         headers: { 'X-Api-Key': import.meta.env.VITE_POKEMON_KEY },
                     }
@@ -34,15 +62,14 @@ function PokemonCards() {
         };
 
         fetchCards();
-    }, [pokemonName]); // "useEffect" runs when pokemonName changes (user searches for card)
+    }, [pokemonName, cardNumber]); // "useEffect" runs when either name or card number changes
 
     if (loading) return <p>Loading cards...</p>;
     if (error) return <p>{error}</p>;
 
     return (
         <div className={styles.pokemonCards}>
-            <h1>Cards for {pokemonName}</h1>
-            {/* grid container starts */}
+            <h1>Cards for {searchQuery}</h1>
             <div className={styles.cardsGrid}>
                 {cards.length > 0 ? ( /* checking if there are cards in the array */
                     cards.map((card) => (
