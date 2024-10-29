@@ -92,7 +92,7 @@ const ForgotPassword = () => {
 								<strong>{email}</strong>
 							</p>
 							<button
-								onClick={() => navigate('/signin')}
+								onClick={() => navigate('/login')}
 								className={styles.returnToLoginButton}>
 								Return to Login
 							</button>
@@ -101,7 +101,7 @@ const ForgotPassword = () => {
 				</div>
 
 				<div className={styles.footer}>
-					<a href='/signin' className={styles.rememberPassword}>
+					<a href='/login' className={styles.rememberPassword}>
 						Remember your password?
 					</a>
 					<p className={styles.recaptchaText}>
