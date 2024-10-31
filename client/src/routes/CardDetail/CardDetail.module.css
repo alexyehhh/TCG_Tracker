@@ -187,3 +187,8 @@
 	flex-direction: column;
 	gap: 0.5rem;
 }
+
+.priceProfit {
+	display: flex;
+	gap: 50px;
+}

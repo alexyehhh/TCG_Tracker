@@ -99,46 +99,48 @@ const CardDetail = () => {
 						</div>
 					</div>
 
-					<div className={styles.section}>
-						<input
-							type='number'
-							placeholder='Price paid for card'
-							value={pricePaid}
-							onChange={(e) => setPricePaid(e.target.value)}
-							className={styles.priceInput}
-						/>
-						<div className={styles.checkboxGroup}>
-							<div className={styles.checkboxContainer}>
-								<input
-									type='checkbox'
-									id='psa-sub'
-									className={styles.checkbox}
-								/>
-								<label htmlFor='psa-sub'>PSA Subscription</label>
-							</div>
-							<div className={styles.checkboxContainer}>
-								<input
-									type='checkbox'
-									id='bulk-grading'
-									className={styles.checkbox}
-								/>
-								<label htmlFor='bulk-grading'>Bulk Grading</label>
-							</div>
-							<div className={styles.checkboxContainer}>
-								<input
-									type='checkbox'
-									id='gamestop-pro'
-									className={styles.checkbox}
-								/>
-								<label htmlFor='gamestop-pro'>GameStop Pro</label>
+					<div className={styles.priceProfit}>
+						<div className={styles.section}>
+							<input
+								type='number'
+								placeholder='Price paid for card'
+								value={pricePaid}
+								onChange={(e) => setPricePaid(e.target.value)}
+								className={styles.priceInput}
+							/>
+							<div className={styles.checkboxGroup}>
+								<div className={styles.checkboxContainer}>
+									<input
+										type='checkbox'
+										id='psa-sub'
+										className={styles.checkbox}
+									/>
+									<label htmlFor='psa-sub'>PSA Subscription</label>
+								</div>
+								<div className={styles.checkboxContainer}>
+									<input
+										type='checkbox'
+										id='bulk-grading'
+										className={styles.checkbox}
+									/>
+									<label htmlFor='bulk-grading'>Bulk Grading</label>
+								</div>
+								<div className={styles.checkboxContainer}>
+									<input
+										type='checkbox'
+										id='gamestop-pro'
+										className={styles.checkbox}
+									/>
+									<label htmlFor='gamestop-pro'>GameStop Pro</label>
+								</div>
 							</div>
 						</div>
-						<button className={styles.actionButton}>Calculate profit</button>
-					</div>
 
-					<div className={styles.gradingPrices}>
-						<p>GameStop grading: [price]</p>
-						<p>PSA grading: [price]</p>
+						<div className={styles.gradingPrices}>
+							<button className={styles.actionButton}>Calculate profit</button>
+							<p>GameStop grading: [price]</p>
+							<p>PSA grading: [price]</p>
+						</div>
 					</div>
 				</div>
 			</div>
