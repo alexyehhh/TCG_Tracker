@@ -89,7 +89,6 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	gap: 1.5rem;
 }
 
 .cardName {
@@ -104,6 +103,18 @@
 	flex-direction: column;
 	gap: 0.5rem;
 	margin-bottom: 40px;
+	position: relative;
+	padding-bottom: 40px;
+	border-bottom: 4px solid #ccc;
+}
+
+.section::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 1px;
 }
 
 .sectionTitle {
@@ -191,12 +202,7 @@
 .gradingPrices {
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
-}
-
-.priceProfit {
-	display: flex;
-	gap: 50px;
+	gap: 0.1rem;
 }
 
 .sectionCustom {
@@ -205,6 +211,18 @@
 	justify-content: space-between;
 	margin-bottom: 40px;
 	gap: 2rem;
+	position: relative;
+	padding-bottom: 40px;
+	border-bottom: 4px solid #ccc;
+}
+
+.sectionCustom::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 1px;
 }
 
 .sectionCustom .sectionTitle {
@@ -217,4 +235,35 @@
 	align-items: center;
 	gap: 20px;
 	margin-bottom: 0;
+}
+
+/* Remove the bottom divider from the last section */
+.sectionCustom:last-of-type::after,
+.section:last-of-type::after {
+	display: none;
+}
+
+.priceProfit {
+	display: flex;
+	gap: 50px;
+	position: relative;
+	border-bottom: none;
+}
+
+/* Remove margin bottom from the last section to avoid extra space */
+.sectionCustom:last-child,
+.section:last-child {
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+
+.sectionSpecial {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	position: relative;
+}
+
+.gamestop {
+	margin-top: 10px;
 }

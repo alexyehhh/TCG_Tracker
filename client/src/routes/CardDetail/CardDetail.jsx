@@ -107,7 +107,7 @@ const CardDetail = () => {
 					</div>
 
 					<div className={styles.priceProfit}>
-						<div className={styles.section}>
+						<div className={styles.sectionSpecial}>
 							<input
 								type='number'
 								placeholder='Price paid for card'
@@ -145,7 +145,7 @@ const CardDetail = () => {
 
 						<div className={styles.gradingPrices}>
 							<button className={styles.actionButton}>Calculate profit</button>
-							<p>GameStop grading: [price]</p>
+							<p className={styles.gamestop}>GameStop grading: [price]</p>
 							<p>PSA grading: [price]</p>
 						</div>
 					</div>
