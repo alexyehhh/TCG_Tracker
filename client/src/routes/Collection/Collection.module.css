@@ -110,13 +110,11 @@
 
 .cardsGrid img {
 	width: 260px;
-	height: auto;
+	height: 360px;
 	z-index: 2;
 }
 
 .cardImage {
-	width: 260px;
-	height: auto;
 	position: relative;
 	z-index: 2;
 	border-radius: 1rem;
