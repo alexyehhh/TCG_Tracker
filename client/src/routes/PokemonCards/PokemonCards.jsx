@@ -87,12 +87,15 @@ function PokemonCards() {
 				}>
 				{cards.length > 0 ? (
 					cards.map((card) => (
-						<div key={card.id} className={styles.cardItem}>
+						<Link
+							to={`/card-detail/${card.id}`}
+							key={card.id}
+							className={styles.cardItem}>
 							<h2>{card.name}</h2>
 							<img src={card.images.large} alt={card.name} />
 							<p>Set: {card.set.name}</p>
 							<p>Rarity: {card.rarity}</p>
-						</div>
+						</Link>
 					))
 				) : (
 					<>
