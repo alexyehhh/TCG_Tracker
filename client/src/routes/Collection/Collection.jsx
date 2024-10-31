@@ -7,6 +7,7 @@ import styles from './Collection.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 import LoggedOutView from '../../components/LoggedOutView/LoggedOutView';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
+import cardSets from '../../util/cardSets.js';
 
 const Collection = () => {
 	const [user, setUser] = useState(null);
@@ -231,10 +232,13 @@ const Collection = () => {
 								<option value='Psychic'>Psychic</option>
 								<option value='Water'>Water</option>
 							</select>
-							{/* <select className={styles.filterSelect}>
-								<option>Set</option>
-								<option>Set 1</option>
-							</select> */}
+							<select className={styles.filterSelect}>
+								{cardSets.map((set, index) => (
+									<option key={index} value={set}>
+										{set}
+									</option>
+								))}
+							</select>
 						</div>
 					</div>
 
