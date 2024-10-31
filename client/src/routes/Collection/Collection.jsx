@@ -1,32 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { auth, googleProvider, db } from '../../util/firebase';
-import {
-	getFirestore,
-	doc,
-	setDoc,
-	collection,
-	query,
-	where,
-	getDocs,
-} from 'firebase/firestore';
+import { db } from '../../util/firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { useNavigate, Link, useFetcher } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styles from './Collection.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 import LoggedOutView from '../../components/LoggedOutView/LoggedOutView';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
-import charizardex151 from '../../assets/images/charizardex151.png';
-import celebiFusion from '../../assets/images/celebiFusion.png';
-import lugiaSilverT from '../../assets/images/lugiaSilverT.png';
-import moonbreon from '../../assets/images/moonbreon.jpg';
-import venuEX151 from '../../assets/images/venuEX151.png';
 
 const Collection = () => {
 	const [user, setUser] = useState(null);
+	const [cards, setCards] = useState([]);
 	const auth = getAuth();
 	const [hasCards, setHasCards] = useState(false);
 	const [searchTerm, setSearchTerm] = useState('');
 
+	// Listen for user auth state changes
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			setUser(user);
@@ -34,29 +23,29 @@ const Collection = () => {
 		return () => unsubscribe();
 	}, []);
 
+	// Change input value of search
 	const handleInputChange = (e) => {
 		setSearchTerm(e.target.value);
 	};
 
+	// Handle search
 	const handleSearch = () => {
 		if (searchTerm.trim() !== '') {
-			// navigate(`/pokemon-cards?name=${encodeURIComponent(searchTerm)}`);
 			console.log('Searching for:', searchTerm);
 		}
 	};
 
+	// User presses Enter key to search
 	const handleKeyDown = (event) => {
 		if (event.key === 'Enter') {
 			handleSearch();
 		}
 	};
 
-	// Get the user by email for their specific doc
+	// Fetch user by email from Firestore
 	async function getUserByEmail(email) {
 		try {
 			const usersRef = collection(db, 'users');
-			console.log('usersRef:', usersRef);
-
 			const q = query(usersRef, where('email', '==', email));
 			const querySnapshot = await getDocs(q);
 
@@ -76,56 +65,48 @@ const Collection = () => {
 		}
 	}
 
-	// search a user's subcollection by userId for the cards subcollection
-	async function checkUserCollectionByEmail(email, collectionName) {
+	// Fetch user's cards from Firestore and set within state
+	async function fetchUserCards(userId) {
 		try {
-			const user = await getUserByEmail(email);
+			const cardsRef = collection(db, `users/${userId}/cards`);
+			const querySnapshot = await getDocs(cardsRef);
 
-			if (!user) {
-				console.log('User not found');
-				return false;
-			}
+			const cardsList = [];
+			querySnapshot.forEach((doc) => {
+				const cardData = doc.data();
+				if (cardData.image) {
+					cardsList.push(cardData);
+				}
+			});
 
-			const subCollectionRef = collection(
-				db,
-				`users/${user.id}/${collectionName}`
-			);
-			const querySnapshot = await getDocs(subCollectionRef);
-
-			if (!querySnapshot.empty) {
-				setHasCards(true);
-				return true;
-			} else {
-				setHasCards(false);
-				return false;
-			}
+			setCards(cardsList);
+			setHasCards(cardsList.length > 0);
+			return cardsList;
 		} catch (error) {
-			console.error('Error checking collection:', error);
+			console.error('Error fetching cards:', error);
 			throw error;
 		}
 	}
 
 	useEffect(() => {
-		const checkUser = async () => {
+		const loadUserCards = async () => {
 			try {
 				if (user && user.email) {
-					console.log('Current User Email:', user.email);
-					await checkUserCollectionByEmail(user.email, 'cards');
+					const userData = await getUserByEmail(user.email);
+					if (userData) {
+						await fetchUserCards(userData.id);
+					}
 				}
 			} catch (error) {
-				console.error('Error checking user collection:', error);
+				console.error('Error loading user cards:', error);
 			}
 		};
 
-		checkUser();
+		loadUserCards();
 	}, [user]);
 
-	const LoggedInView = () => (
-		<div
-			className={styles.container}
-			style={{
-				backgroundColor: '#fff4fc',
-			}}>
+	const EmptyCollectionView = () => (
+		<div className={styles.container} style={{ backgroundColor: '#fff4fc' }}>
 			<PokemonBackground color='#2f213e' />
 			<nav className={styles.navbar}>
 				<ul className={styles.navLinks}>
@@ -140,103 +121,98 @@ const Collection = () => {
 					</li>
 				</ul>
 			</nav>
-			<div className={styles.mainContent}>
-				<h1 className={styles.title}>
-					{user?.displayName || 'Your'}'s Collection
-				</h1>
-
-				<div className={styles.searchContainer}>
-					<div className={styles.searchBar}>
-						<input
-							type='text'
-							placeholder='Search your collection...'
-							value={searchTerm}
-							onChange={handleInputChange}
-							onKeyDown={handleKeyDown}
-							className={styles.searchInput}
-							autoFocus
-						/>
-						<button onClick={handleSearch} className={styles.searchButton}>
-							<img
-								src={magnifyingGlass}
-								alt='Search'
-								className={styles.magnifyingGlass}
-							/>
-						</button>
-					</div>
-
-					<div className={styles.filterContainer}>
-						<select className={styles.filterSelect}>
-							<option>Name</option>
-						</select>
-						<select className={styles.filterSelect}>
-							<option>Rarity</option>
-						</select>
-						<select className={styles.filterSelect}>
-							<option>Price</option>
-						</select>
-						<select className={styles.filterSelect}>
-							<option>Recent</option>
-						</select>
-						<select className={styles.filterSelect}>
-							<option>Type</option>
-						</select>
-						<select className={styles.filterSelect}>
-							<option>Set</option>
-						</select>
-					</div>
-				</div>
-
-				<div className={styles.cardsGrid}>
-					<img
-						src={venuEX151}
-						alt='Pokemon Card'
-						className={styles.cardImage}
-					/>
-					<img
-						src={lugiaSilverT}
-						alt='Pokemon Card'
-						className={styles.cardImage}
-					/>
-					<img
-						src={charizardex151}
-						alt='Pokemon Card'
-						className={styles.cardImage}
-					/>
-					<img
-						src={moonbreon}
-						alt='Pokemon Card'
-						className={styles.cardImage}
-					/>
-					<img
-						src={celebiFusion}
-						alt='Pokemon Card'
-						className={styles.cardImage}
-					/>
-					<img
-						src={venuEX151}
-						alt='Pokemon Card'
-						className={styles.cardImage}
-					/>
-					<img
-						src={lugiaSilverT}
-						alt='Pokemon Card'
-						className={styles.cardImage}
-					/>
-					<img
-						src={charizardex151}
-						alt='Pokemon Card'
-						className={styles.cardImage}
-					/>
-					<img
-						src={moonbreon}
-						alt='Pokemon Card'
-						className={styles.cardImage}
-					/>
-				</div>
+			<div className={`${styles.mainContent} ${styles.emptyState}`}>
+				<h1 className={styles.title}>Your Collection is Empty!</h1>
+				<p className={styles.emptyMessage}>
+					Looks like you haven't added any cards yet. Start building your
+					collection by uploading your first card!
+				</p>
+				<Link to='/upload' className={styles.uploadButton}>
+					Upload Your First Card
+				</Link>
 			</div>
 		</div>
 	);
+
+	const LoggedInView = () =>
+		hasCards ? (
+			<div className={styles.container} style={{ backgroundColor: '#fff4fc' }}>
+				<PokemonBackground color='#2f213e' />
+				<nav className={styles.navbar}>
+					<ul className={styles.navLinks}>
+						<li>
+							<Link to='/'>Search</Link>
+						</li>
+						<li>
+							<Link to='/collection'>Collection</Link>
+						</li>
+						<li>
+							<Link to='/upload'>Upload</Link>
+						</li>
+					</ul>
+				</nav>
+				<div className={styles.mainContent}>
+					<h1 className={styles.title}>
+						{user?.displayName || 'Your'}'s Collection
+					</h1>
+
+					<div className={styles.searchContainer}>
+						<div className={styles.searchBar}>
+							<input
+								type='text'
+								placeholder='Search your collection...'
+								value={searchTerm}
+								onChange={handleInputChange}
+								onKeyDown={handleKeyDown}
+								className={styles.searchInput}
+								autoFocus
+							/>
+							<button onClick={handleSearch} className={styles.searchButton}>
+								<img
+									src={magnifyingGlass}
+									alt='Search'
+									className={styles.magnifyingGlass}
+								/>
+							</button>
+						</div>
+
+						<div className={styles.filterContainer}>
+							<select className={styles.filterSelect}>
+								<option>Name</option>
+							</select>
+							<select className={styles.filterSelect}>
+								<option>Rarity</option>
+							</select>
+							<select className={styles.filterSelect}>
+								<option>Price</option>
+							</select>
+							<select className={styles.filterSelect}>
+								<option>Recent</option>
+							</select>
+							<select className={styles.filterSelect}>
+								<option>Type</option>
+							</select>
+							<select className={styles.filterSelect}>
+								<option>Set</option>
+							</select>
+						</div>
+					</div>
+
+					<div className={styles.cardsGrid}>
+						{cards.map((card, index) => (
+							<img
+								key={index}
+								src={card.image}
+								alt={`Pokemon Card - ${card.name || ''}`}
+								className={styles.cardImage}
+							/>
+						))}
+					</div>
+				</div>
+			</div>
+		) : (
+			<EmptyCollectionView />
+		);
 
 	return user ? <LoggedInView /> : <LoggedOutView />;
 };

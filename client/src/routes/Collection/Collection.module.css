@@ -339,3 +339,34 @@
 .magnifyingGlass {
 	height: 15px;
 }
+
+.emptyState {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 60vh;
+	text-align: center;
+	padding: 2rem;
+}
+
+.emptyMessage {
+	font-size: 1.2rem;
+	color: #666;
+	margin: 1.5rem 0;
+	max-width: 600px;
+}
+
+.uploadButton {
+	background-color: #42275b;
+	color: white;
+	padding: 1rem 2rem;
+	border-radius: 8px;
+	text-decoration: none;
+	font-weight: bold;
+	transition: background-color 0.3s;
+}
+
+.uploadButton:hover {
+	background-color: #2f213e;
+}
