@@ -81,13 +81,15 @@ const CardDetail = () => {
 					</div>
 
 					<div className={styles.sectionCustom}>
-						<h2 className={styles.sectionTitle}>Type:</h2>
+						<div>
+							<h2 className={styles.sectionTitle}>Type:</h2>
+						</div>
+						<div className={styles.typeIcons}>
+							{card.types?.map((type) => (
+								<TypeIcon key={type} type={type} />
+							))}
+						</div>
 						<div className={styles.typeContainer}>
-							<div className={styles.typeIcons}>
-								{card.types?.map((type) => (
-									<TypeIcon key={type} type={type} />
-								))}
-							</div>
 							<button className={styles.actionButton}>
 								See cards with this type
 							</button>
@@ -96,8 +98,8 @@ const CardDetail = () => {
 
 					<div className={styles.sectionCustom}>
 						<h2 className={styles.sectionTitle}>Set:</h2>
+						<span>{card.set.name}</span>
 						<div className={styles.typeContainer}>
-							<span>{card.set.name}</span>
 							<button className={styles.actionButton}>
 								See cards from this set
 							</button>
