@@ -24,3 +24,5 @@ const rarities = [
 	'Rare Ultra',
 	'Uncommon',
 ];
+
+export default rarities;
