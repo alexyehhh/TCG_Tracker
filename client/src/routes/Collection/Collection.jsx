@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { auth, googleProvider, db } from '../../util/firebase';
+import {
+	getFirestore,
+	doc,
+	setDoc,
+	collection,
+	query,
+	where,
+	getDocs,
+} from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useFetcher } from 'react-router-dom';
 import styles from './Collection.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 import LoggedOutView from '../../components/LoggedOutView/LoggedOutView';
@@ -14,6 +24,7 @@ import venuEX151 from '../../assets/images/venuEX151.png';
 const Collection = () => {
 	const [user, setUser] = useState(null);
 	const auth = getAuth();
+	const [hasCards, setHasCards] = useState(false);
 	const [searchTerm, setSearchTerm] = useState('');
 
 	useEffect(() => {
@@ -39,6 +50,75 @@ const Collection = () => {
 			handleSearch();
 		}
 	};
+
+	// Get the user by email for their specific doc
+	async function getUserByEmail(email) {
+		try {
+			const usersRef = collection(db, 'users');
+			console.log('usersRef:', usersRef);
+
+			const q = query(usersRef, where('email', '==', email));
+			const querySnapshot = await getDocs(q);
+
+			if (querySnapshot.empty) {
+				console.log('No user found with this email');
+				return null;
+			}
+
+			const userDoc = querySnapshot.docs[0];
+			return {
+				id: userDoc.id,
+				...userDoc.data(),
+			};
+		} catch (error) {
+			console.error('Error fetching user by email:', error);
+			throw error;
+		}
+	}
+
+	// search a user's subcollection by userId for the cards subcollection
+	async function checkUserCollectionByEmail(email, collectionName) {
+		try {
+			const user = await getUserByEmail(email);
+
+			if (!user) {
+				console.log('User not found');
+				return false;
+			}
+
+			const subCollectionRef = collection(
+				db,
+				`users/${user.id}/${collectionName}`
+			);
+			const querySnapshot = await getDocs(subCollectionRef);
+
+			if (!querySnapshot.empty) {
+				setHasCards(true);
+				return true;
+			} else {
+				setHasCards(false);
+				return false;
+			}
+		} catch (error) {
+			console.error('Error checking collection:', error);
+			throw error;
+		}
+	}
+
+	useEffect(() => {
+		const checkUser = async () => {
+			try {
+				if (user && user.email) {
+					console.log('Current User Email:', user.email);
+					await checkUserCollectionByEmail(user.email, 'cards');
+				}
+			} catch (error) {
+				console.error('Error checking user collection:', error);
+			}
+		};
+
+		checkUser();
+	}, [user]);
 
 	const LoggedInView = () => (
 		<div

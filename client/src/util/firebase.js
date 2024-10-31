@@ -1,7 +1,15 @@
 // firebase.js
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import {
+	getFirestore,
+	doc,
+	setDoc,
+	collection,
+	query,
+	where,
+	getDocs,
+} from 'firebase/firestore';
 
 const firebaseApiKey = import.meta.env.VITE_FIREBASE_API_KEY;
 const firebaseAuthDomain = import.meta.env.VITE_FIREBASE_AUTH_DOMAIN;
