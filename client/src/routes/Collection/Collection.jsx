@@ -50,7 +50,7 @@ const Collection = () => {
 			style={{
 				backgroundColor: user ? '#fff4fc' : '#8874b4',
 			}}>
-			<PokemonBackground />
+			<PokemonBackground color='#2f213e' />
 			<nav className={styles.navbar}>
 				<ul className={styles.navLinks}>
 					<li>
@@ -110,7 +110,7 @@ const Collection = () => {
 
 	const LoggedInView = () => (
 		<div className={styles.container}>
-			<PokemonBackground />
+			<PokemonBackground color='#2f213e' />
 			<nav className={styles.navbar}>
 				<ul className={styles.navLinks}>
 					<li>
