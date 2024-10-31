@@ -29,7 +29,7 @@ const Collection = () => {
 	};
 
 	// Handle search
-	const handleSearch = () => {
+	const handleSearchCollection = () => {
 		if (searchTerm.trim() !== '') {
 			console.log('Searching for:', searchTerm);
 		}
@@ -38,7 +38,7 @@ const Collection = () => {
 	// User presses Enter key to search
 	const handleKeyDown = (event) => {
 		if (event.key === 'Enter') {
-			handleSearch();
+			handleSearchCollection();
 		}
 	};
 
@@ -167,7 +167,9 @@ const Collection = () => {
 								className={styles.searchInput}
 								autoFocus
 							/>
-							<button onClick={handleSearch} className={styles.searchButton}>
+							<button
+								onClick={handleSearchCollection}
+								className={styles.searchButton}>
 								<img
 									src={magnifyingGlass}
 									alt='Search'
@@ -178,23 +180,61 @@ const Collection = () => {
 
 						<div className={styles.filterContainer}>
 							<select className={styles.filterSelect}>
-								<option>Name</option>
-							</select>
-							<select className={styles.filterSelect}>
-								<option>Rarity</option>
+								<option value='Rarity'>Rarity</option>
+								<option value='Amazing Rare'>Amazing Rare</option>
+								<option value='Common'>Common</option>
+								<option value='LEGEND'>LEGEND</option>
+								<option value='Promo'>Promo</option>
+								<option value='Rare'>Rare</option>
+								<option value='Rare ACE'>Rare ACE</option>
+								<option value='Rare BREAK'>Rare BREAK</option>
+								<option value='Rare Holo'>Rare Holo</option>
+								<option value='Rare Holo EX'>Rare Holo EX</option>
+								<option value='Rare Holo GX'>Rare Holo GX</option>
+								<option value='Rare Holo LV.X'>Rare Holo LV.X</option>
+								<option value='Rare Holo Star'>Rare Holo Star</option>
+								<option value='Rare Holo V'>Rare Holo V</option>
+								<option value='Rare Holo VMAX'>Rare Holo VMAX</option>
+								<option value='Rare Prime'>Rare Prime</option>
+								<option value='Rare Prism Star'>Rare Prism Star</option>
+								<option value='Rare Rainbow'>Rare Rainbow</option>
+								<option value='Rare Secret'>Rare Secret</option>
+								<option value='Rare Shining'>Rare Shining</option>
+								<option value='Rare Shiny'>Rare Shiny</option>
+								<option value='Rare Shiny GX'>Rare Shiny GX</option>
+								<option value='Rare Ultra'>Rare Ultra</option>
+								<option value='Uncommon'>Uncommon</option>
 							</select>
 							<select className={styles.filterSelect}>
 								<option>Price</option>
-							</select>
-							<select className={styles.filterSelect}>
-								<option>Recent</option>
+								<option>$ 25</option>
+								<option>$ 50</option>
+								<option>$ 75</option>
+								<option>$ 100</option>
+								<option>$ 100</option>
+								<option>$ 125</option>
+								<option>$ 150</option>
+								<option>$ 175</option>
+								<option>$ 200</option>
 							</select>
 							<select className={styles.filterSelect}>
 								<option>Type</option>
+								<option value='Colorless'>Colorless</option>
+								<option value='Darkness'>Darkness</option>
+								<option value='Dragon'>Dragon</option>
+								<option value='Fairy'>Fairy</option>
+								<option value='Fighting'>Fighting</option>
+								<option value='Fire'>Fire</option>
+								<option value='Grass'>Grass</option>
+								<option value='Lightning'>Lightning</option>
+								<option value='Metal'>Metal</option>
+								<option value='Psychic'>Psychic</option>
+								<option value='Water'>Water</option>
 							</select>
-							<select className={styles.filterSelect}>
+							{/* <select className={styles.filterSelect}>
 								<option>Set</option>
-							</select>
+								<option>Set 1</option>
+							</select> */}
 						</div>
 					</div>
 
