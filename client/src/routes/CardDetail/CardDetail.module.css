@@ -133,7 +133,9 @@
 
 .typeContainer {
 	display: flex;
+	justify-content: center;
 	align-items: center;
+	margin-bottom: 60px;
 	gap: 1rem;
 }
 
@@ -195,4 +197,11 @@
 .priceProfit {
 	display: flex;
 	gap: 50px;
+}
+
+.sectionCustom {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.5rem;
 }

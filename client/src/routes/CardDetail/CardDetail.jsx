@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import styles from './CardDetail.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
+import TypeIcon from '../../components/TypeIcon/TypeIcon';
 
 const CardDetail = () => {
 	const { id } = useParams();
@@ -19,7 +20,8 @@ const CardDetail = () => {
 					{
 						headers: {
 							'X-Api-Key': import.meta.env.VITE_POKEMON_KEY,
-							'User-Agent': 'MyApp/1.0 (web; Windows; x64)',
+							// 'User-Agent':
+							// 	'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0',
 						},
 					}
 				);
@@ -78,12 +80,12 @@ const CardDetail = () => {
 						</div>
 					</div>
 
-					<div className={styles.section}>
+					<div className={styles.sectionCustom}>
 						<h2 className={styles.sectionTitle}>Type:</h2>
 						<div className={styles.typeContainer}>
 							<div className={styles.typeIcons}>
 								{card.types?.map((type) => (
-									<span key={type} className={styles.typeIcon} />
+									<TypeIcon key={type} type={type} />
 								))}
 							</div>
 							<button className={styles.actionButton}>
@@ -92,7 +94,7 @@ const CardDetail = () => {
 						</div>
 					</div>
 
-					<div className={styles.section}>
+					<div className={styles.sectionCustom}>
 						<h2 className={styles.sectionTitle}>Set:</h2>
 						<div className={styles.typeContainer}>
 							<span>{card.set.name}</span>
