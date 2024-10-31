@@ -17,7 +17,10 @@ const CardDetail = () => {
 				const response = await axios.get(
 					`https://api.pokemontcg.io/v2/cards/${id}`,
 					{
-						headers: { 'X-Api-Key': import.meta.env.VITE_POKEMON_KEY },
+						headers: {
+							'X-Api-Key': import.meta.env.VITE_POKEMON_KEY,
+							'User-Agent': 'MyApp/1.0 (web; Windows; x64)',
+						},
 					}
 				);
 				setCard(response.data.data);
