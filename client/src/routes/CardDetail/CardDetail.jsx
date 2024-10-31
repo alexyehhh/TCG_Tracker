@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import styles from './CardDetail.module.css';
+import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 
 const CardDetail = () => {
 	const { id } = useParams();
@@ -37,6 +38,7 @@ const CardDetail = () => {
 
 	return (
 		<div className={styles.container}>
+			<PokemonBackground color='white' />
 			<nav className={styles.navbar}>
 				<ul className={styles.navLinks}>
 					<li>
