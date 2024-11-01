@@ -47,6 +47,15 @@
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	color: black;
 	text-decoration: none;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cardItem:hover {
+	transform: scale(1.05);
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 255, 255, 0.2);
+	z-index: 10;
+	background-color: #fff;
+	cursor: pointer;
 }
 
 .cardItem img {
@@ -60,9 +69,9 @@
 	justify-content: center;
 	align-items: center;
 	min-height: 200px;
-	background-color: rgba(255, 255, 255, 0.9);
 	border-radius: 10px;
 	margin: 2rem 0;
+	font-size: 3.5rem;
 }
 
 .errorMessage {

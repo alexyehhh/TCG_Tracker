@@ -120,6 +120,15 @@
 	border-radius: 1rem;
 	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 	background-color: white;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cardImage:hover {
+	transform: scale(1.05);
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 255, 255, 0.2);
+	z-index: 10;
+	background-color: #fff;
+	cursor: pointer;
 }
 
 .previewGrid {
@@ -275,6 +284,7 @@
 	min-width: 30%;
 	max-width: 500px;
 	transition: all 0.2s ease;
+	z-index: 2;
 }
 
 .searchBar:focus-within {
@@ -367,4 +377,15 @@
 
 .uploadButton:hover {
 	background-color: #2f213e;
+}
+
+.centerContent {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 200px;
+	border-radius: 10px;
+	margin: 2rem 0;
+	text-align: center;
+	color: #581c87;
 }

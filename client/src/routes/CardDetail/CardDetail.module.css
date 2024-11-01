@@ -73,16 +73,17 @@
 	width: 360px;
 	margin-top: 1rem;
 	padding: 0.75rem;
-	background-color: #fb923c;
 	color: white;
 	border: none;
 	border-radius: 0.375rem;
 	cursor: pointer;
 	z-index: 2;
+	border: 1px solid transparent;
+	transition: background 0.3s, opacity 0.3s;
 }
 
 .addButton:hover {
-	background-color: #f97316;
+	opacity: 0.85;
 }
 
 .cardDetails {
@@ -131,15 +132,16 @@
 
 .gradeButton {
 	padding: 0.5rem 1rem;
-	background-color: #fb923c;
-	border: 1px solid #f97316;
 	border-radius: 0.375rem;
 	color: white;
 	cursor: pointer;
+	border: none;
+	border: 1px solid transparent;
+	border: 1px solid transparent;
 }
 
 .gradeButton:hover {
-	background-color: #f97316;
+	opacity: 0.85;
 }
 
 .typeContainer {
@@ -163,16 +165,16 @@
 
 .actionButton {
 	padding: 0.5rem 1rem;
-	background-color: #fb923c;
 	color: white;
 	border: none;
 	border-radius: 0.375rem;
 	cursor: pointer;
-	border: 1px solid #f97316;
+	border: 1px solid transparent;
+	transition: background 0.3s, opacity 0.3s;
 }
 
 .actionButton:hover {
-	background-color: #f97316;
+	opacity: 0.85;
 }
 
 .priceInput {
@@ -266,4 +268,33 @@
 
 .gamestop {
 	margin-top: 10px;
+}
+
+.added {
+	background-color: #4caf50; /* Green background for added state */
+	color: white;
+}
+
+.added:hover {
+	background-color: #2a9b2e; /* Green background for added state */
+}
+
+.centerContent {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 200px;
+	border-radius: 10px;
+	margin: 2rem 0;
+	text-align: center;
+	color: #55c5f1;
+}
+
+.errorMessage {
+	color: #dc3545;
+	font-weight: bold;
+}
+
+.prices {
+	margin-bottom: 20px;
 }

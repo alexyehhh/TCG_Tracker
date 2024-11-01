@@ -16,6 +16,7 @@ const Collection = () => {
 	const auth = getAuth();
 	const [hasCards, setHasCards] = useState(false);
 	const [searchTerm, setSearchTerm] = useState('');
+	const [loading, setLoading] = useState(true);
 
 	// Listen for user auth state changes
 	useEffect(() => {
@@ -87,6 +88,8 @@ const Collection = () => {
 		} catch (error) {
 			console.error('Error fetching cards:', error);
 			throw error;
+		} finally {
+			setLoading(false);
 		}
 	}
 
@@ -106,6 +109,28 @@ const Collection = () => {
 
 		loadUserCards();
 	}, [user]);
+
+	if (loading) {
+		return (
+			<div className={`${styles.container}`}>
+				<PokemonBackground color='#2f213e' />
+				<nav className={styles.navbar}>
+					<ul className={styles.navLinks}>
+						<li>
+							<Link to='/'>Search</Link>
+						</li>
+						<li>
+							<Link to='/collection'>Collection</Link>
+						</li>
+						<li>
+							<Link to='/upload'>Upload</Link>
+						</li>
+					</ul>
+				</nav>
+				<h1 className={styles.centerContent}>Loading cards...</h1>;
+			</div>
+		);
+	}
 
 	const EmptyCollectionView = () => (
 		<div className={styles.container} style={{ backgroundColor: '#fff4fc' }}>

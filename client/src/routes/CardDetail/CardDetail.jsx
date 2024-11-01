@@ -15,6 +15,7 @@ import {
 } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db } from '../../util/firebase';
+import typeColors from '../../util/typeColors';
 
 const CardDetail = () => {
 	const { id } = useParams();
@@ -22,8 +23,10 @@ const CardDetail = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [pricePaid, setPricePaid] = useState('');
-
+	const [isAdded, setIsAdded] = useState(false);
 	const [userEmail, setUserEmail] = useState(null);
+	const [currentCardType, setCurrentCardType] = useState('');
+
 	useEffect(() => {
 		const auth = getAuth();
 		onAuthStateChanged(auth, (user) => {
@@ -49,6 +52,10 @@ const CardDetail = () => {
 					}
 				);
 				setCard(response.data.data);
+
+				if (response.data.data.types && response.data.data.types.length > 0) {
+					setCurrentCardType(response.data.data.types[0]); // Just take the first type for simplicity
+				}
 			} catch (err) {
 				setError(`Failed to fetch card details. Error: ${err}`);
 			} finally {
@@ -113,6 +120,8 @@ const CardDetail = () => {
 			// Set the document with the card data
 			await setDoc(cardDocRef, cardToAdd);
 
+			setIsAdded(true);
+
 			return {
 				success: true,
 				cardId: cardData.id,
@@ -124,15 +133,85 @@ const CardDetail = () => {
 		}
 	};
 
-	if (loading)
-		return <div className={styles.container}>Loading card details...</div>;
-	if (error) return <div className={styles.container}>{error}</div>;
-	if (!card) return <div className={styles.container}>Card not found</div>;
+	if (loading) {
+		return (
+			<div className={styles.container}>
+				<PokemonBackground color='white' />
+				<nav className={styles.navbar}>
+					<ul className={styles.navLinks}>
+						<li>
+							<Link to='/'>Search</Link>
+						</li>
+						<li>
+							<Link to='/collection'>Collection</Link>
+						</li>
+						<li>
+							<Link to='/upload'>Upload</Link>
+						</li>
+					</ul>
+				</nav>
+				<h1 className={styles.centerContent}>Loading card details...</h1>;
+			</div>
+		);
+	}
+	if (error) {
+		return (
+			<div className={styles.container}>
+				<PokemonBackground color='white' />
+				<nav className={styles.navbar}>
+					<ul className={styles.navLinks}>
+						<li>
+							<Link to='/'>Search</Link>
+						</li>
+						<li>
+							<Link to='/collection'>Collection</Link>
+						</li>
+						<li>
+							<Link to='/upload'>Upload</Link>
+						</li>
+					</ul>
+				</nav>
+				<div className={`${styles.centerContent} ${styles.errorMessage}`}>
+					{error}
+				</div>
+			</div>
+		);
+	}
+	if (!card)
+		return (
+			<div className={styles.container}>
+				<PokemonBackground color='white' />
+				<nav className={styles.navbar}>
+					<ul className={styles.navLinks}>
+						<li>
+							<Link to='/'>Search</Link>
+						</li>
+						<li>
+							<Link to='/collection'>Collection</Link>
+						</li>
+						<li>
+							<Link to='/upload'>Upload</Link>
+						</li>
+					</ul>
+				</nav>
+				<div className={styles.container}>Card not found</div>
+			</div>
+		);
 
 	return (
-		<div className={styles.container}>
+		<div
+			className={styles.container}
+			style={{
+				backgroundColor:
+					typeColors[currentCardType]?.backgroundColor || '#fb923c',
+			}}>
 			<PokemonBackground color='white' />
-			<nav className={styles.navbar}>
+			<nav
+				className={styles.navbar}
+				style={{
+					backgroundColor:
+						typeColors[currentCardType]?.backgroundColor || '#fb923c',
+				}}>
 				<ul className={styles.navLinks}>
 					<li>
 						<Link to='/'>Search</Link>
@@ -146,29 +225,79 @@ const CardDetail = () => {
 				</ul>
 			</nav>
 
-			<h1 className={styles.cardName}>{card.name}</h1>
+			<h1
+				className={styles.cardName}
+				style={{
+					color: typeColors[currentCardType]?.buttonColor || '#fb923c',
+				}}>
+				{card.name}
+			</h1>
 			<div className={styles.mainContent}>
 				<div>
 					<img
 						src={card.images.large}
 						alt={card.name}
-						className={styles.cardImage}
+						className={`${styles.cardImage} `}
 					/>
 					<button
-						className={styles.addButton}
+						className={`${styles.addButton} ${isAdded ? styles.added : ''}`}
+						style={{
+							backgroundColor:
+								typeColors[currentCardType]?.buttonColor || '#fb923c',
+							borderColor:
+								typeColors[currentCardType]?.borderColor || '#f97316',
+						}}
 						onClick={() => addToCollection(userEmail, card)}>
-						Add to collection
+						{isAdded ? 'Added to collection!' : 'Add to collection'}
 					</button>
 				</div>
 
 				<div className={styles.cardDetails}>
 					<div className={styles.section}>
-						<h2 className={styles.sectionTitle}>Prices:</h2>
+						<h2 className={`${styles.sectionTitle} ${styles.prices}`}>
+							Prices:
+						</h2>
 						<div className={styles.gradeButtons}>
-							<button className={styles.gradeButton}>Ungraded</button>
-							<button className={styles.gradeButton}>PSA 8</button>
-							<button className={styles.gradeButton}>PSA 9</button>
-							<button className={styles.gradeButton}>PSA 10</button>
+							<button
+								className={styles.gradeButton}
+								style={{
+									backgroundColor:
+										typeColors[currentCardType]?.buttonColor || '#fb923c',
+									borderColor:
+										typeColors[currentCardType]?.borderColor || '#f97316',
+								}}>
+								Ungraded
+							</button>
+							<button
+								className={styles.gradeButton}
+								style={{
+									backgroundColor:
+										typeColors[currentCardType]?.buttonColor || '#fb923c',
+									borderColor:
+										typeColors[currentCardType]?.borderColor || '#f97316',
+								}}>
+								PSA 8
+							</button>
+							<button
+								className={styles.gradeButton}
+								style={{
+									backgroundColor:
+										typeColors[currentCardType]?.buttonColor || '#fb923c',
+									borderColor:
+										typeColors[currentCardType]?.borderColor || '#f97316',
+								}}>
+								PSA 9
+							</button>
+							<button
+								className={styles.gradeButton}
+								style={{
+									backgroundColor:
+										typeColors[currentCardType]?.buttonColor || '#fb923c',
+									borderColor:
+										typeColors[currentCardType]?.borderColor || '#f97316',
+								}}>
+								PSA 10
+							</button>
 						</div>
 					</div>
 
@@ -182,7 +311,14 @@ const CardDetail = () => {
 							))}
 						</div>
 						<div className={styles.typeContainer}>
-							<button className={styles.actionButton}>
+							<button
+								className={styles.actionButton}
+								style={{
+									backgroundColor:
+										typeColors[currentCardType]?.buttonColor || '#fb923c',
+									borderColor:
+										typeColors[currentCardType]?.borderColor || '#f97316',
+								}}>
 								See cards with this type
 							</button>
 						</div>
@@ -192,7 +328,14 @@ const CardDetail = () => {
 						<h2 className={styles.sectionTitle}>Set:</h2>
 						<span>{card.set.name}</span>
 						<div className={styles.typeContainer}>
-							<button className={styles.actionButton}>
+							<button
+								className={styles.actionButton}
+								style={{
+									backgroundColor:
+										typeColors[currentCardType]?.buttonColor || '#fb923c',
+									borderColor:
+										typeColors[currentCardType]?.borderColor || '#f97316',
+								}}>
 								See cards from this set
 							</button>
 						</div>
@@ -236,7 +379,16 @@ const CardDetail = () => {
 						</div>
 
 						<div className={styles.gradingPrices}>
-							<button className={styles.actionButton}>Calculate profit</button>
+							<button
+								className={styles.actionButton}
+								style={{
+									backgroundColor:
+										typeColors[currentCardType]?.buttonColor || '#fb923c',
+									borderColor:
+										typeColors[currentCardType]?.borderColor || '#f97316',
+								}}>
+								Calculate profit
+							</button>
 							<p className={styles.gamestop}>GameStop grading: [price]</p>
 							<p>PSA grading: [price]</p>
 						</div>
