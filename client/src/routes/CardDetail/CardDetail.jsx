@@ -4,6 +4,17 @@ import { useParams, Link } from 'react-router-dom';
 import styles from './CardDetail.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 import TypeIcon from '../../components/TypeIcon/TypeIcon';
+import {
+	collection,
+	addDoc,
+	query,
+	where,
+	getDocs,
+	doc,
+	setDoc,
+} from 'firebase/firestore';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { db } from '../../util/firebase';
 
 const CardDetail = () => {
 	const { id } = useParams();
@@ -11,6 +22,18 @@ const CardDetail = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [pricePaid, setPricePaid] = useState('');
+
+	const [userEmail, setUserEmail] = useState(null);
+	useEffect(() => {
+		const auth = getAuth();
+		onAuthStateChanged(auth, (user) => {
+			if (user) {
+				setUserEmail(user.email);
+			} else {
+				console.error('User is not logged in');
+			}
+		});
+	}, []);
 
 	useEffect(() => {
 		const fetchCardDetail = async () => {
@@ -35,6 +58,71 @@ const CardDetail = () => {
 
 		fetchCardDetail();
 	}, [id]);
+
+	// Get user document ID by email
+	const getUserByEmail = async (email) => {
+		try {
+			const usersRef = collection(db, 'users');
+			const q = query(usersRef, where('email', '==', email));
+			const querySnapshot = await getDocs(q);
+
+			if (querySnapshot.empty) {
+				console.error('No user found with this email');
+				return null;
+			}
+
+			const userDoc = querySnapshot.docs[0];
+			return userDoc.id;
+		} catch (error) {
+			console.error('Error fetching user:', error);
+			throw error;
+		}
+	};
+
+	// Add card to user's collection
+	// use setDoc instead of addDoc so that we can specify the id
+	// addDoc will generate a random id
+	const addToCollection = async (userEmail, cardData) => {
+		try {
+			// First get the user's document ID
+			const userId = await getUserByEmail(userEmail);
+
+			if (!userId) {
+				throw new Error('User not found');
+			}
+
+			// Prepare card data with required fields based on the API response structure
+			const cardToAdd = {
+				averageSellPrice: cardData.cardmarket?.prices?.averageSellPrice || 0,
+				image: cardData.images.large,
+				name: cardData.name,
+				number: cardData.number,
+				rarity: cardData.rarity,
+				setId: cardData.set.id,
+				setName: cardData.set.name,
+				setPrintedTotal: cardData.set.printedTotal,
+				setSeries: cardData.set.series,
+				types: cardData.types || [],
+				addedAt: new Date(),
+				lastUpdated: new Date(),
+			};
+
+			// Use the card's `id` as the document ID instead of an auto-generated ID
+			const cardDocRef = doc(db, 'users', userId, 'cards', cardData.id);
+
+			// Set the document with the card data
+			await setDoc(cardDocRef, cardToAdd);
+
+			return {
+				success: true,
+				cardId: cardData.id,
+				message: 'Card added to collection successfully',
+			};
+		} catch (error) {
+			console.error('Error adding card to collection:', error);
+			throw error;
+		}
+	};
 
 	if (loading)
 		return <div className={styles.container}>Loading card details...</div>;
@@ -66,7 +154,11 @@ const CardDetail = () => {
 						alt={card.name}
 						className={styles.cardImage}
 					/>
-					<button className={styles.addButton}>Add to collection</button>
+					<button
+						className={styles.addButton}
+						onClick={() => addToCollection(userEmail, card)}>
+						Add to collection
+					</button>
 				</div>
 
 				<div className={styles.cardDetails}>
