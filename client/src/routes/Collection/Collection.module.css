@@ -275,6 +275,7 @@
 	min-width: 30%;
 	max-width: 500px;
 	transition: all 0.2s ease;
+	z-index: 2;
 }
 
 .searchBar:focus-within {
@@ -367,4 +368,15 @@
 
 .uploadButton:hover {
 	background-color: #2f213e;
+}
+
+.centerContent {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 200px;
+	border-radius: 10px;
+	margin: 2rem 0;
+	text-align: center;
+	color: #333; /* Adjust color if needed */
 }
