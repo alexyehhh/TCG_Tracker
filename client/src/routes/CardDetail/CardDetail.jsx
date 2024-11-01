@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import styles from './CardDetail.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 import TypeIcon from '../../components/TypeIcon/TypeIcon';
@@ -26,6 +26,21 @@ const CardDetail = () => {
 	const [isAdded, setIsAdded] = useState(false);
 	const [userEmail, setUserEmail] = useState(null);
 	const [currentCardType, setCurrentCardType] = useState('');
+	const [user, setUser] = useState(null);
+	const auth = getAuth();
+
+	const navigate = useNavigate();
+
+	const handleLogin = () => {
+		navigate('/login');
+	};
+
+	useEffect(() => {
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			setUser(user);
+		});
+		return () => unsubscribe();
+	}, []);
 
 	useEffect(() => {
 		const auth = getAuth();
@@ -247,8 +262,16 @@ const CardDetail = () => {
 							borderColor:
 								typeColors[currentCardType]?.borderColor || '#f97316',
 						}}
-						onClick={() => addToCollection(userEmail, card)}>
-						{isAdded ? 'Added to collection!' : 'Add to collection'}
+						onClick={
+							user
+								? () => addToCollection(userEmail, card)
+								: () => handleLogin()
+						}>
+						{isAdded
+							? 'Added to collection!'
+							: user
+							? 'Add to collection'
+							: 'Log in to add to collection'}
 					</button>
 				</div>
 

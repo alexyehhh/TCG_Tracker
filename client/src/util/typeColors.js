@@ -32,7 +32,7 @@ const typeColors = {
 	Fire: {
 		buttonColor: '#ff7b00',
 		borderColor: '#ffa200',
-		backgroundColor: '#fff75e',
+		backgroundColor: '#ffbe0b',
 	},
 	Grass: {
 		buttonColor: '#228b22',
