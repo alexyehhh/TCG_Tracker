@@ -215,7 +215,7 @@ const CardDetail = () => {
 					<img
 						src={card.images.large}
 						alt={card.name}
-						className={styles.cardImage}
+						className={`${styles.cardImage} ${styles.glowingCardImage}`}
 					/>
 					<button
 						className={`${styles.addButton} ${isAdded ? styles.added : ''}`}
