@@ -276,3 +276,20 @@
 .added:hover {
 	background-color: #2a9b2e; /* Green background for added state */
 }
+
+.centerContent {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 200px;
+
+	border-radius: 10px;
+	margin: 2rem 0;
+	text-align: center;
+	color: #333; /* Adjust color if needed */
+}
+
+.errorMessage {
+	color: #dc3545;
+	font-weight: bold;
+}

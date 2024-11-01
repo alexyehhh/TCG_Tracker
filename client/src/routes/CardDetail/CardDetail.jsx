@@ -127,10 +127,70 @@ const CardDetail = () => {
 		}
 	};
 
-	if (loading)
-		return <div className={styles.container}>Loading card details...</div>;
-	if (error) return <div className={styles.container}>{error}</div>;
-	if (!card) return <div className={styles.container}>Card not found</div>;
+	if (loading) {
+		return (
+			<div className={styles.container}>
+				<PokemonBackground color='white' />
+				<nav className={styles.navbar}>
+					<ul className={styles.navLinks}>
+						<li>
+							<Link to='/'>Search</Link>
+						</li>
+						<li>
+							<Link to='/collection'>Collection</Link>
+						</li>
+						<li>
+							<Link to='/upload'>Upload</Link>
+						</li>
+					</ul>
+				</nav>
+				<h1 className={styles.centerContent}>Loading card details...</h1>;
+			</div>
+		);
+	}
+	if (error) {
+		return (
+			<div className={styles.container}>
+				<PokemonBackground color='white' />
+				<nav className={styles.navbar}>
+					<ul className={styles.navLinks}>
+						<li>
+							<Link to='/'>Search</Link>
+						</li>
+						<li>
+							<Link to='/collection'>Collection</Link>
+						</li>
+						<li>
+							<Link to='/upload'>Upload</Link>
+						</li>
+					</ul>
+				</nav>
+				<div className={`${styles.centerContent} ${styles.errorMessage}`}>
+					{error}
+				</div>
+			</div>
+		);
+	}
+	if (!card)
+		return (
+			<div className={styles.container}>
+				<PokemonBackground color='white' />
+				<nav className={styles.navbar}>
+					<ul className={styles.navLinks}>
+						<li>
+							<Link to='/'>Search</Link>
+						</li>
+						<li>
+							<Link to='/collection'>Collection</Link>
+						</li>
+						<li>
+							<Link to='/upload'>Upload</Link>
+						</li>
+					</ul>
+				</nav>
+				<div className={styles.container}>Card not found</div>
+			</div>
+		);
 
 	return (
 		<div className={styles.container}>
