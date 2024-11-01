@@ -225,7 +225,13 @@ const CardDetail = () => {
 				</ul>
 			</nav>
 
-			<h1 className={styles.cardName}>{card.name}</h1>
+			<h1
+				className={styles.cardName}
+				style={{
+					color: typeColors[currentCardType]?.buttonColor || '#fb923c',
+				}}>
+				{card.name}
+			</h1>
 			<div className={styles.mainContent}>
 				<div>
 					<img
@@ -248,7 +254,9 @@ const CardDetail = () => {
 
 				<div className={styles.cardDetails}>
 					<div className={styles.section}>
-						<h2 className={styles.sectionTitle}>Prices:</h2>
+						<h2 className={`${styles.sectionTitle} ${styles.prices}`}>
+							Prices:
+						</h2>
 						<div className={styles.gradeButtons}>
 							<button
 								className={styles.gradeButton}
