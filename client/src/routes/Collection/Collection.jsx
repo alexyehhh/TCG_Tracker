@@ -110,7 +110,7 @@ const Collection = () => {
 		loadUserCards();
 	}, [user]);
 
-	if (loading) {
+	if (loading && user) {
 		return (
 			<div className={`${styles.container}`}>
 				<PokemonBackground color='#2f213e' />
