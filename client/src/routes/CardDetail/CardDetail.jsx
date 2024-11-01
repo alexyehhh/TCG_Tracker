@@ -15,6 +15,7 @@ import {
 } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db } from '../../util/firebase';
+import typeColors from '../../util/typeColors';
 
 const CardDetail = () => {
 	const { id } = useParams();
@@ -23,8 +24,9 @@ const CardDetail = () => {
 	const [error, setError] = useState(null);
 	const [pricePaid, setPricePaid] = useState('');
 	const [isAdded, setIsAdded] = useState(false);
-
 	const [userEmail, setUserEmail] = useState(null);
+	const [currentCardType, setCurrentCardType] = useState('');
+
 	useEffect(() => {
 		const auth = getAuth();
 		onAuthStateChanged(auth, (user) => {
@@ -50,6 +52,10 @@ const CardDetail = () => {
 					}
 				);
 				setCard(response.data.data);
+
+				if (response.data.data.types && response.data.data.types.length > 0) {
+					setCurrentCardType(response.data.data.types[0]); // Just take the first type for simplicity
+				}
 			} catch (err) {
 				setError(`Failed to fetch card details. Error: ${err}`);
 			} finally {
@@ -193,9 +199,19 @@ const CardDetail = () => {
 		);
 
 	return (
-		<div className={styles.container}>
+		<div
+			className={styles.container}
+			style={{
+				backgroundColor:
+					typeColors[currentCardType]?.backgroundColor || '#fb923c',
+			}}>
 			<PokemonBackground color='white' />
-			<nav className={styles.navbar}>
+			<nav
+				className={styles.navbar}
+				style={{
+					backgroundColor:
+						typeColors[currentCardType]?.backgroundColor || '#fb923c',
+				}}>
 				<ul className={styles.navLinks}>
 					<li>
 						<Link to='/'>Search</Link>
@@ -219,6 +235,12 @@ const CardDetail = () => {
 					/>
 					<button
 						className={`${styles.addButton} ${isAdded ? styles.added : ''}`}
+						style={{
+							backgroundColor:
+								typeColors[currentCardType]?.buttonColor || '#fb923c',
+							borderColor:
+								typeColors[currentCardType]?.borderColor || '#f97316',
+						}}
 						onClick={() => addToCollection(userEmail, card)}>
 						{isAdded ? 'Added to collection!' : 'Add to collection'}
 					</button>
@@ -228,10 +250,46 @@ const CardDetail = () => {
 					<div className={styles.section}>
 						<h2 className={styles.sectionTitle}>Prices:</h2>
 						<div className={styles.gradeButtons}>
-							<button className={styles.gradeButton}>Ungraded</button>
-							<button className={styles.gradeButton}>PSA 8</button>
-							<button className={styles.gradeButton}>PSA 9</button>
-							<button className={styles.gradeButton}>PSA 10</button>
+							<button
+								className={styles.gradeButton}
+								style={{
+									backgroundColor:
+										typeColors[currentCardType]?.buttonColor || '#fb923c',
+									borderColor:
+										typeColors[currentCardType]?.borderColor || '#f97316',
+								}}>
+								Ungraded
+							</button>
+							<button
+								className={styles.gradeButton}
+								style={{
+									backgroundColor:
+										typeColors[currentCardType]?.buttonColor || '#fb923c',
+									borderColor:
+										typeColors[currentCardType]?.borderColor || '#f97316',
+								}}>
+								PSA 8
+							</button>
+							<button
+								className={styles.gradeButton}
+								style={{
+									backgroundColor:
+										typeColors[currentCardType]?.buttonColor || '#fb923c',
+									borderColor:
+										typeColors[currentCardType]?.borderColor || '#f97316',
+								}}>
+								PSA 9
+							</button>
+							<button
+								className={styles.gradeButton}
+								style={{
+									backgroundColor:
+										typeColors[currentCardType]?.buttonColor || '#fb923c',
+									borderColor:
+										typeColors[currentCardType]?.borderColor || '#f97316',
+								}}>
+								PSA 10
+							</button>
 						</div>
 					</div>
 
@@ -245,7 +303,14 @@ const CardDetail = () => {
 							))}
 						</div>
 						<div className={styles.typeContainer}>
-							<button className={styles.actionButton}>
+							<button
+								className={styles.actionButton}
+								style={{
+									backgroundColor:
+										typeColors[currentCardType]?.buttonColor || '#fb923c',
+									borderColor:
+										typeColors[currentCardType]?.borderColor || '#f97316',
+								}}>
 								See cards with this type
 							</button>
 						</div>
@@ -255,7 +320,14 @@ const CardDetail = () => {
 						<h2 className={styles.sectionTitle}>Set:</h2>
 						<span>{card.set.name}</span>
 						<div className={styles.typeContainer}>
-							<button className={styles.actionButton}>
+							<button
+								className={styles.actionButton}
+								style={{
+									backgroundColor:
+										typeColors[currentCardType]?.buttonColor || '#fb923c',
+									borderColor:
+										typeColors[currentCardType]?.borderColor || '#f97316',
+								}}>
 								See cards from this set
 							</button>
 						</div>
@@ -299,7 +371,16 @@ const CardDetail = () => {
 						</div>
 
 						<div className={styles.gradingPrices}>
-							<button className={styles.actionButton}>Calculate profit</button>
+							<button
+								className={styles.actionButton}
+								style={{
+									backgroundColor:
+										typeColors[currentCardType]?.buttonColor || '#fb923c',
+									borderColor:
+										typeColors[currentCardType]?.borderColor || '#f97316',
+								}}>
+								Calculate profit
+							</button>
 							<p className={styles.gamestop}>GameStop grading: [price]</p>
 							<p>PSA grading: [price]</p>
 						</div>
