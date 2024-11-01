@@ -65,18 +65,14 @@ function PokemonCards() {
 
 	const renderContent = () => {
 		if (loading) {
-			return (
-				<div className={styles.centerContent}>
-					<p>Loading cards...</p>
-				</div>
-			);
+			return <h1 className={styles.centerContent}>Loading cards...</h1>;
 		}
 
 		if (error) {
 			return (
-				<div className={styles.centerContent}>
-					<p className={styles.errorMessage}>{error}</p>
-				</div>
+				<h1 className={`${styles.centerContent} ${styles.errorMessage}`}>
+					{error}
+				</h1>
 			);
 		}
 

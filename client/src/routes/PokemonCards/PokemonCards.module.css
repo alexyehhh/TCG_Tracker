@@ -60,9 +60,9 @@
 	justify-content: center;
 	align-items: center;
 	min-height: 200px;
-	background-color: rgba(255, 255, 255, 0.9);
 	border-radius: 10px;
 	margin: 2rem 0;
+	font-size: 3.5rem;
 }
 
 .errorMessage {
