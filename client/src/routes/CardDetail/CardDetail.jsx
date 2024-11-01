@@ -22,6 +22,7 @@ const CardDetail = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [pricePaid, setPricePaid] = useState('');
+	const [isAdded, setIsAdded] = useState(false);
 
 	const [userEmail, setUserEmail] = useState(null);
 	useEffect(() => {
@@ -113,6 +114,8 @@ const CardDetail = () => {
 			// Set the document with the card data
 			await setDoc(cardDocRef, cardToAdd);
 
+			setIsAdded(true);
+
 			return {
 				success: true,
 				cardId: cardData.id,
@@ -155,9 +158,9 @@ const CardDetail = () => {
 						className={styles.cardImage}
 					/>
 					<button
-						className={styles.addButton}
+						className={`${styles.addButton} ${isAdded ? styles.added : ''}`}
 						onClick={() => addToCollection(userEmail, card)}>
-						Add to collection
+						{isAdded ? 'Added to collection!' : 'Add to collection'}
 					</button>
 				</div>
 

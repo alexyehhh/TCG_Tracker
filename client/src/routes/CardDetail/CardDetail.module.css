@@ -267,3 +267,12 @@
 .gamestop {
 	margin-top: 10px;
 }
+
+.added {
+	background-color: #4caf50; /* Green background for added state */
+	color: white;
+}
+
+.added:hover {
+	background-color: #2a9b2e; /* Green background for added state */
+}
