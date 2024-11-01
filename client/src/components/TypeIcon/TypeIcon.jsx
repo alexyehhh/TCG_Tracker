@@ -1,12 +1,12 @@
 import Colorless from '../../assets/images/colorlessEnergy.png';
 import Darkness from '../../assets/images/darkEnergy.png';
 import Dragon from '../../assets/images/dragonEnergy.png';
-import Electric from '../../assets/images/electricEnergy.png';
+import Lightning from '../../assets/images/lightningEnergy.png';
 import Fairy from '../../assets/images/fairyEnergy.png';
 import Fighting from '../../assets/images/fightingEnergy.png';
 import Fire from '../../assets/images/fireEnergy.png';
 import Grass from '../../assets/images/grassEnergy.png';
-import Steel from '../../assets/images/steelEnergy.png';
+import Metal from '../../assets/images/metalEnergy.png';
 import Psychic from '../../assets/images/psychicEnergy.png';
 import Water from '../../assets/images/waterEnergy.png';
 
@@ -17,12 +17,12 @@ const TypeIcon = ({ type }) => {
 		Colorless: Colorless,
 		Darkness: Darkness,
 		Dragon: Dragon,
-		Electric: Electric,
+		Lightning: Lightning,
 		Fairy: Fairy,
 		Fighting: Fighting,
 		Fire: Fire,
 		Grass: Grass,
-		Steel: Steel,
+		Metal: Metal,
 		Psychic: Psychic,
 		Water: Water,
 	};
