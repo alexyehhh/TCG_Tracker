@@ -24,6 +24,7 @@ const CardDetail = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [pricePaid, setPricePaid] = useState('');
+	const [collectionState, setCollectionState] = useState('neutral'); // 'added', 'removed', 'neutral'
 	const [isAdded, setIsAdded] = useState(false); // a state for add feature
 	const [isRemoved, setIsRemoved] = useState(false); // a state for remove feature
 	const [userEmail, setUserEmail] = useState(null);
@@ -137,16 +138,17 @@ const CardDetail = () => {
 			// Set the document with the card data
 			await setDoc(cardDocRef, cardToAdd);
 
-			setIsAdded(true);
+			setCollectionState('added');
+			// setIsAdded(true);
 
-			return {
-				success: true,
-				cardId: cardData.id,
-				message: 'Card added to collection successfully',
-			};
+			// return {
+			// 	success: true,
+			// 	cardId: cardData.id,
+			// 	message: 'Card added to collection successfully',
+			// };
 		} catch (error) {
 			console.error('Error adding card to collection:', error);
-			throw error;
+			// throw error;
 		}
 	};
 
@@ -165,11 +167,12 @@ const CardDetail = () => {
 			await deleteDoc(cardDocRef);
 		
 			// update the state to show the card was removed
-			setIsRemoved(true);
-			setIsAdded(false);
+			// setIsRemoved(true);
+			// setIsAdded(false);
+			setCollectionState('removed');
 		} catch (error) {
 			console.error('Error removing card from collection:', error);
-			throw error;
+			// throw error;
 		}
 	};
 
@@ -280,31 +283,36 @@ const CardDetail = () => {
 						className={`${styles.cardImage} `}
 					/>
 					<button
-						className={`${styles.addButton} ${isAdded ? styles.added : ''}`}
-						style={{
-							backgroundColor:
-								typeColors[currentCardType]?.buttonColor || '#fb923c',
-							borderColor:
-								typeColors[currentCardType]?.borderColor || '#f97316',
-						}}
-						onClick={
-							user
-								? () => {
-									if (isAdded && !isRemoved) {
-									  removeFromCollection(userEmail, card);
-									} else {
-									  addToCollection(userEmail, card);
-									}
-								  }
-								: () => handleLogin()
-							}>
-						{isAdded && !isRemoved
-							? 'Remove from collection'
-							: isRemoved
-							? 'Removed from collection'
-							: user
-							? 'Add to collection'
-							: 'Log in to add to collection'}
+					className={`${styles.actionButton} ${
+						collectionState === 'added'
+						? styles.removeButton
+						: collectionState === 'removed'
+						? styles.removedButton
+						: styles.addButton
+					}`}
+					style={{
+						backgroundColor: typeColors[currentCardType]?.buttonColor || '#fb923c',
+						borderColor: typeColors[currentCardType]?.borderColor || '#f97316',
+					}}
+					onClick={
+						user
+						? () => {
+							if (collectionState === 'added') {
+								removeFromCollection(userEmail, card);
+							} else {
+								addToCollection(userEmail, card);
+							}
+							}
+						: () => handleLogin()
+					}
+					>
+					{collectionState === 'added'
+						? 'Remove from collection'
+						: collectionState === 'removed'
+						? 'Add to collection'
+						: user
+						? 'Add to collection'
+						: 'Log in to add to collection'}
 					</button>
 				</div>
 
