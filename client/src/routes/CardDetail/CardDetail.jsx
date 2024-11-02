@@ -24,9 +24,7 @@ const CardDetail = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [pricePaid, setPricePaid] = useState('');
-	const [collectionState, setCollectionState] = useState('neutral'); // 'added', 'removed', 'neutral'
-	const [isAdded, setIsAdded] = useState(false); // a state for add feature
-	const [isRemoved, setIsRemoved] = useState(false); // a state for remove feature
+	const [collectionState, setCollectionState] = useState('neutral'); // collection state for'added', 'removed', 'neutral'
 	const [userEmail, setUserEmail] = useState(null);
 	const [currentCardType, setCurrentCardType] = useState('');
 	const [user, setUser] = useState(null);
