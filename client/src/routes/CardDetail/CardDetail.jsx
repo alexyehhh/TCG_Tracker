@@ -11,6 +11,7 @@ import {
 	query,
 	where,
 	getDocs,
+	getDoc,
 	doc,
 	setDoc,
 } from 'firebase/firestore';
@@ -101,6 +102,33 @@ const CardDetail = () => {
 			throw error;
 		}
 	};
+
+	useEffect(() => {
+		if (userEmail && card) {
+			const checkCardInCollection = async () => {
+			try {
+				const userId = await getUserByEmail(userEmail);
+				if (!userId) {
+				throw new Error('User not found');
+				}
+		
+				// check if the card exists in the user's collection
+				const cardDocRef = doc(db, 'users', userId, 'cards', card.id);
+				const cardSnapshot = await getDoc(cardDocRef);
+		
+				if (cardSnapshot.exists()) {
+				setCollectionState('added');
+				} else {
+				setCollectionState('neutral');
+				}
+			} catch (error) {
+				console.error('Error checking card in collection:', error);
+			}
+			};
+		
+			checkCardInCollection();
+		}
+	}, [userEmail, card]);
 
 	// Add card to user's collection
 	// use setDoc instead of addDoc so that we can specify the id
