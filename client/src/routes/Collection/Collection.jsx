@@ -10,13 +10,20 @@ import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import cardSets from '../../util/cardSets.js';
 import cardRarities from '../../util/cardRarities.js';
 
-const Collection = () => {
+const Collection = () => { 
 	const [user, setUser] = useState(null);
 	const [cards, setCards] = useState([]);
+	const [filteredCards, setFilteredCards] = useState([]);
 	const auth = getAuth();
 	const [hasCards, setHasCards] = useState(false);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [loading, setLoading] = useState(true);
+	const [filters, setFilters] = useState({
+		rarity: '',  // rarity filter value
+		price: '',   // price range filter value
+		type: '',    // type filter value
+		set: ''      // set filter value
+	});
 
 	// Listen for user auth state changes
 	useEffect(() => {
@@ -26,26 +33,41 @@ const Collection = () => {
 		return () => unsubscribe();
 	}, []);
 
-	// Change input value of search
+	// change input value of search as you type
 	const handleInputChange = (e) => {
-		setSearchTerm(e.target.value);
-	};
-
-	// Handle search
-	const handleSearchCollection = () => {
-		if (searchTerm.trim() !== '') {
-			console.log('Searching for:', searchTerm);
+		const value = e.target.value;
+		setSearchTerm(value);
+	
+		if (value.trim() !== '') {
+			const searchFiltered = cards.filter((card) =>
+				card.name.toLowerCase().includes(value.toLowerCase())
+			);
+			setFilteredCards(searchFiltered);
+		} else {
+			setFilteredCards(cards); // reset to full list if search term is empty
 		}
 	};
 
-	// User presses Enter key to search
+	// handle search
+	const handleSearchCollection = () => {
+		if (searchTerm.trim() !== '') {
+			const searchFiltered = cards.filter((card) =>
+				card.name.toLowerCase().includes(searchTerm.toLowerCase())
+			);
+			setFilteredCards(searchFiltered);
+		} else {
+			setFilteredCards(cards); // reset to full list if search term is empty
+		}
+	};
+
+	// user presses Enter key to search
 	const handleKeyDown = (event) => {
 		if (event.key === 'Enter') {
 			handleSearchCollection();
 		}
 	};
 
-	// Fetch user by email from Firestore
+	// get user by email from Firestore
 	async function getUserByEmail(email) {
 		try {
 			const usersRef = collection(db, 'users');
@@ -68,7 +90,7 @@ const Collection = () => {
 		}
 	}
 
-	// Fetch user's cards from Firestore and set within state
+	// fetch user's cards from Firestore and set within state
 	async function fetchUserCards(userId) {
 		try {
 			const cardsRef = collection(db, `users/${userId}/cards`);
@@ -82,6 +104,7 @@ const Collection = () => {
 				}
 			});
 
+			setCards(cardsList);
 			setCards(cardsList);
 			setHasCards(cardsList.length > 0);
 			return cardsList;
@@ -109,6 +132,49 @@ const Collection = () => {
 
 		loadUserCards();
 	}, [user]);
+
+	// handle filter change
+	const handleFilterChange = (e) => {
+		const { name, value } = e.target;
+		setFilters((prevFilters) => ({
+			...prevFilters,
+			[name]: value, // update the specific filter with the new value
+		}));
+	};
+
+	// apply filters whenever filters change
+	useEffect(() => {
+		let filtered = [...cards];
+		
+		// filter by rarity
+		if (filters.rarity) {
+			filtered = filtered.filter((card) => card.rarity && card.rarity.toLowerCase() === filters.rarity.toLowerCase());
+		}
+	
+		// filter by price range
+		if (filters.price) {
+			const [minPrice, maxPrice] = filters.price.split('-').map(Number);
+			filtered = filtered.filter((card) => {
+				const cardPrice = parseInt(card.price);
+				return cardPrice >= minPrice && cardPrice <= maxPrice;
+			});
+		}
+	
+		//filter by type 
+		if (filters.type) {
+			filtered = filtered.filter((card) =>
+				card.types && card.types.map(type => type.toLowerCase()).includes(filters.type.toLowerCase())
+			);
+		}
+	
+		//filter by set name 
+		if (filters.set) {
+			// make sure the card setName matches the selected set exactly
+			filtered = filtered.filter((card) => card.setName && card.setName.toLowerCase() === filters.set.toLowerCase());
+		}
+	
+		setFilteredCards(filtered); // update the list of displayed cards based on filters
+	}, [filters, cards]);
 
 	if (loading && user) {
 		return (
@@ -206,27 +272,44 @@ const Collection = () => {
 						</div>
 
 						<div className={styles.filterContainer}>
-							<select className={styles.filterSelect}>
-								{cardRarities.map((set, index) => (
-									<option key={index} value={set}>
-										{set}
+							<select
+								name="rarity"
+								className={styles.filterSelect}
+								value={filters.rarity} // <-- Bind to filters.rarity
+								onChange={handleFilterChange}
+							>
+								<option value="">Rarity</option>
+								{cardRarities.map((rarity, index) => (
+									<option key={index} value={rarity}>
+										{rarity}
 									</option>
 								))}
 							</select>
-							<select className={styles.filterSelect}>
-								<option>Price</option>
-								<option>$ 25</option>
-								<option>$ 50</option>
-								<option>$ 75</option>
-								<option>$ 100</option>
-								<option>$ 100</option>
-								<option>$ 125</option>
-								<option>$ 150</option>
-								<option>$ 175</option>
-								<option>$ 200</option>
+
+							<select
+								name="price"
+								className={styles.filterSelect}
+								value={filters.price} // <-- Bind to filters.price
+								onChange={handleFilterChange}
+							>
+								<option value="">Price</option>
+								<option value="0-25">$ 0 - $ 25</option>
+								<option value="25-50">$ 25 - $ 50</option>
+								<option value="50-75">$ 50 - $ 75</option>
+								<option value="75-100">$ 75 - $ 100</option>
+								<option value="100-125">$ 100 - $ 125</option>
+								<option value="125-150">$ 125 - $ 150</option>
+								<option value="150-175">$ 150 - $ 175</option>
+								<option value="175-200">$ 175 - $ 200</option>
 							</select>
-							<select className={styles.filterSelect}>
-								<option>Type</option>
+
+							<select
+								name="type"
+								className={styles.filterSelect}
+								value={filters.type} // <-- Bind to filters.type
+								onChange={handleFilterChange}
+							>
+								<option value="">Type</option>
 								<option value='Colorless'>Colorless</option>
 								<option value='Darkness'>Darkness</option>
 								<option value='Dragon'>Dragon</option>
@@ -239,7 +322,14 @@ const Collection = () => {
 								<option value='Psychic'>Psychic</option>
 								<option value='Water'>Water</option>
 							</select>
-							<select className={styles.filterSelect}>
+
+							<select
+								name="set"
+								className={styles.filterSelect}
+								value={filters.set} // <-- Bind to filters.set
+								onChange={handleFilterChange}
+							>
+								<option value="">Set</option>
 								{cardSets.map((set, index) => (
 									<option key={index} value={set}>
 										{set}
@@ -250,11 +340,11 @@ const Collection = () => {
 					</div>
 
 					<div className={styles.cardsGrid}>
-						{cards.map((card, index) => (
+						{filteredCards.map((card, index) => (
 							<img
 								key={index}
-								src={card.image}
-								alt={`Pokemon Card - ${card.name || ''}`}
+								src={card.image || ""}
+								alt={`Pokemon Card - ${card.name || 'Unknown'}`}
 								className={styles.cardImage}
 							/>
 						))}
