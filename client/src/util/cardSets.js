@@ -1,12 +1,10 @@
 const cardSets = [
-	'Set',
 	'Alternate Art Promos',
 	'Ancient Origins',
 	'Aquapolis',
 	'Arceus',
 	'Astral Radiance',
 	'Base',
-	'Base Set 1st Edition',
 	'Base Set 2',
 	'Base Set Shadowless',
 	'Base Set Unlimited',
