@@ -1,13 +1,46 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import charizard from '../../assets/images/charizard.png';
 import styles from './HomePage.module.css';
 
+const RightArrow = () => {
+	return (
+		<svg
+			className={styles.rightArrow}
+			viewBox='0 0 1024 1024'
+			xmlns='http://www.w3.org/2000/svg'
+			aria-label='Right Arrow Icon'>
+			<path
+				d='M170.666667 469.333333v85.333334h512l-234.666667 234.666666 60.586667 60.586667L846.506667 512l-337.92-337.92L448 234.666667 682.666667 469.333333H170.666667z'
+				fill='currentColor'
+			/>
+		</svg>
+	);
+};
+
 export default function HomePage() {
 	const cardRef = useRef(null);
 	const [searchTerm, setSearchTerm] = useState('');
-	const navigate = useNavigate(); // For navigation
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
+	const [user, setUser] = useState(null);
+	const navigate = useNavigate();
+	const auth = getAuth();
+
+	useEffect(() => {
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			if (user) {
+				setIsLoggedIn(true);
+				setUser(user);
+			} else {
+				setIsLoggedIn(false);
+				setUser(null);
+			}
+		});
+
+		return () => unsubscribe();
+	}, [auth]);
 
 	useEffect(() => {
 		const card = cardRef.current;
@@ -35,8 +68,26 @@ export default function HomePage() {
 
 	const handleSearch = () => {
 		if (searchTerm.trim() !== '') {
-			// Navigate to the PokemonCards page with the search term as a query parameter
 			navigate(`/pokemon-cards?name=${encodeURIComponent(searchTerm)}`);
+		}
+	};
+
+	const handleKeyDown = (event) => {
+		if (event.key === 'Enter') {
+			handleSearch();
+		}
+	};
+
+	const handleLogout = () => {
+		signOut(auth);
+		navigate('/'); // Redirect to home page after logout
+	};
+
+	const handleAuthClick = () => {
+		if (isLoggedIn) {
+			handleLogout();
+		} else {
+			navigate('/login');
 		}
 	};
 
@@ -49,19 +100,27 @@ export default function HomePage() {
 						<div className={styles.navbarLeft}></div>
 						<ul className={styles.navLinks}>
 							<li>
-								<a href='#'>Search</a>
+								<Link to='/'>Search</Link>
 							</li>
 							<li>
-								<a href='#'>Collection</a>
+								<Link to='/collection'>Collection</Link>
 							</li>
 							<li>
-								<a href='#'>Upload</a>
+								<Link to='/upload'>Upload</Link>
 							</li>
 						</ul>
 						<div className={styles.navbarRight}>
-							<a href='#' className={styles.signInBtn}>
-								Sign in &gt;
-							</a>
+							<button onClick={handleAuthClick} className={styles.signInBtn}>
+								{isLoggedIn ? (
+									<h4>
+										Sign out <RightArrow />
+									</h4>
+								) : (
+									<h4>
+										Log in <RightArrow />
+									</h4>
+								)}
+							</button>
 						</div>
 					</nav>
 				</header>
@@ -81,6 +140,7 @@ export default function HomePage() {
 								placeholder='Search for your card...'
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
+								onKeyDown={handleKeyDown}
 							/>
 							<button onClick={handleSearch}>
 								<img src={magnifyingGlass} alt='Search' width='15px' />
