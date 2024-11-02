@@ -7,6 +7,7 @@ import TypeIcon from '../../components/TypeIcon/TypeIcon';
 import {
 	collection,
 	addDoc,
+	deleteDoc,
 	query,
 	where,
 	getDocs,
@@ -23,7 +24,8 @@ const CardDetail = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [pricePaid, setPricePaid] = useState('');
-	const [isAdded, setIsAdded] = useState(false);
+	const [isAdded, setIsAdded] = useState(false); // a state for add feature
+	const [isRemoved, setIsRemoved] = useState(false); // a state for remove feature
 	const [userEmail, setUserEmail] = useState(null);
 	const [currentCardType, setCurrentCardType] = useState('');
 	const [user, setUser] = useState(null);
@@ -148,6 +150,29 @@ const CardDetail = () => {
 		}
 	};
 
+	const removeFromCollection = async (userEmail, cardData) => {
+		try {
+			// get the user's document ID first
+			const userId = await getUserByEmail(userEmail);
+			if (!userId) {
+			throw new Error('User not found');
+			}
+		
+			// reference specific card document in Firebase
+			const cardDocRef = doc(db, 'users', userId, 'cards', cardData.id);
+			
+			// delete the card document
+			await deleteDoc(cardDocRef);
+		
+			// update the state to show the card was removed
+			setIsRemoved(true);
+			setIsAdded(false);
+		} catch (error) {
+			console.error('Error removing card from collection:', error);
+			throw error;
+		}
+	};
+
 	if (loading) {
 		return (
 			<div className={styles.container}>
@@ -264,11 +289,19 @@ const CardDetail = () => {
 						}}
 						onClick={
 							user
-								? () => addToCollection(userEmail, card)
+								? () => {
+									if (isAdded && !isRemoved) {
+									  removeFromCollection(userEmail, card);
+									} else {
+									  addToCollection(userEmail, card);
+									}
+								  }
 								: () => handleLogin()
-						}>
-						{isAdded
-							? 'Added to collection!'
+							}>
+						{isAdded && !isRemoved
+							? 'Remove from collection'
+							: isRemoved
+							? 'Removed from collection'
 							: user
 							? 'Add to collection'
 							: 'Log in to add to collection'}
