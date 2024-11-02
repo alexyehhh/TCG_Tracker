@@ -1,5 +1,4 @@
 const rarities = [
-	'Rarity',
 	'Amazing Rare',
 	'Common',
 	'LEGEND',
