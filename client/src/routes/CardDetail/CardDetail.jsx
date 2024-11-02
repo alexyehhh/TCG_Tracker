@@ -11,6 +11,7 @@ import {
 	query,
 	where,
 	getDocs,
+	getDoc,
 	doc,
 	setDoc,
 } from 'firebase/firestore';
@@ -24,7 +25,6 @@ const CardDetail = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [pricePaid, setPricePaid] = useState('');
-
 	const [collectionState, setCollectionState] = useState('neutral'); // collection state for'added', 'removed', 'neutral'
 	const [userEmail, setUserEmail] = useState(null);
 	const [currentCardType, setCurrentCardType] = useState('');
@@ -103,6 +103,33 @@ const CardDetail = () => {
 		}
 	};
 
+	useEffect(() => {
+		if (userEmail && card) {
+			const checkCardInCollection = async () => {
+			try {
+				const userId = await getUserByEmail(userEmail);
+				if (!userId) {
+				throw new Error('User not found');
+				}
+		
+				// check if the card exists in the user's collection
+				const cardDocRef = doc(db, 'users', userId, 'cards', card.id);
+				const cardSnapshot = await getDoc(cardDocRef);
+		
+				if (cardSnapshot.exists()) {
+				setCollectionState('added');
+				} else {
+				setCollectionState('neutral');
+				}
+			} catch (error) {
+				console.error('Error checking card in collection:', error);
+			}
+			};
+		
+			checkCardInCollection();
+		}
+	}, [userEmail, card]);
+
 	// Add card to user's collection
 	// use setDoc instead of addDoc so that we can specify the id
 	// addDoc will generate a random id
@@ -138,7 +165,6 @@ const CardDetail = () => {
 			await setDoc(cardDocRef, cardToAdd);
 
 			setCollectionState('added');
-
 			// setIsAdded(true);
 
 			// return {
@@ -150,7 +176,6 @@ const CardDetail = () => {
 			console.error('Error adding card to collection:', error);
 			// throw error;
 		}
-
 	};
 
 	const removeFromCollection = async (userEmail, cardData) => {
@@ -170,11 +195,9 @@ const CardDetail = () => {
 			// update the state to show the card was removed
 			// setIsRemoved(true);
 			// setIsAdded(false);
-
 			setCollectionState('removed');
 		} catch (error) {
 			console.error('Error removing card from collection:', error);
-
 			// throw error;
 		}
 	};
@@ -293,7 +316,6 @@ const CardDetail = () => {
 						? styles.removedButton
 						: styles.addButton
 					}`}
-
 					style={{
 						backgroundColor: typeColors[currentCardType]?.buttonColor || '#fb923c',
 						borderColor: typeColors[currentCardType]?.borderColor || '#f97316',
