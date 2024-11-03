@@ -205,6 +205,8 @@
 	display: flex;
 	flex-direction: column;
 	gap: 0.1rem;
+	align-items: flex-end;
+	min-width: 200px;
 }
 
 .sectionCustom {
@@ -264,10 +266,17 @@
 	flex-direction: column;
 	gap: 0.5rem;
 	position: relative;
+	flex: 1;
 }
 
 .gamestop {
 	margin-top: 10px;
+	text-align: right;
+}
+
+.gradingPrices p {
+	text-align: right;
+	width: 100%;
 }
 
 .added {
