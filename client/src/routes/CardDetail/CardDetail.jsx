@@ -6,7 +6,6 @@ import PokemonBackground from '../../components/PokemonBackground/PokemonBackgro
 import TypeIcon from '../../components/TypeIcon/TypeIcon';
 import {
 	collection,
-	addDoc,
 	deleteDoc,
 	query,
 	where,
@@ -19,19 +18,89 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db } from '../../util/firebase';
 import typeColors from '../../util/typeColors';
 
+// Cache configuration
+const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000;
+
+const useCardCache = (cardId) => {
+	// Helper function to check if cached data is still valid
+	const isValidCache = (cachedData) => {
+		if (!cachedData) return false;
+		const now = new Date().getTime();
+		return now - cachedData.timestamp < CACHE_DURATION;
+	};
+
+	// Helper function to get cached data
+	const getCachedData = () => {
+		const cached = localStorage.getItem(`card_${cardId}`);
+		if (!cached) return null;
+
+		const parsedCache = JSON.parse(cached);
+		return isValidCache(parsedCache) ? parsedCache.data : null;
+	};
+
+	// Helper function to set cached data
+	const setCachedData = (data) => {
+		const cacheData = {
+			data,
+			timestamp: new Date().getTime(),
+		};
+		localStorage.setItem(`card_${cardId}`, JSON.stringify(cacheData));
+	};
+
+	return { getCachedData, setCachedData };
+};
+
+const usePriceCache = (cardName, grade) => {
+	const cacheKey = `price_${cardName}_${grade}`;
+
+	// Helper function to check if cached price is still valid
+	const isValidCache = (cachedData) => {
+		if (!cachedData) return false;
+		const now = new Date().getTime();
+		return now - cachedData.timestamp < CACHE_DURATION;
+	};
+
+	// Helper function to get cached price
+	const getCachedPrice = () => {
+		const cached = localStorage.getItem(cacheKey);
+		if (!cached) return null;
+
+		const parsedCache = JSON.parse(cached);
+		return isValidCache(parsedCache) ? parsedCache.price : null;
+	};
+
+	// Helper function to set cached price
+	const setCachedPrice = (price) => {
+		const cacheData = {
+			price,
+			timestamp: new Date().getTime(),
+		};
+		localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+	};
+
+	return { getCachedPrice, setCachedPrice };
+};
+
 const CardDetail = () => {
 	const { id } = useParams();
 	const [card, setCard] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [pricePaid, setPricePaid] = useState('');
-	const [collectionState, setCollectionState] = useState('neutral'); // collection state for'added', 'removed', 'neutral'
+	const [collectionState, setCollectionState] = useState('neutral');
 	const [userEmail, setUserEmail] = useState(null);
 	const [currentCardType, setCurrentCardType] = useState('');
 	const [user, setUser] = useState(null);
+	const [cardPrices, setCardPrices] = useState({
+		ungraded: null,
+		psa8: null,
+		psa9: null,
+		psa10: null,
+	});
+	const [selectedGrade, setSelectedGrade] = useState('ungraded');
 	const auth = getAuth();
-
 	const navigate = useNavigate();
+	const { getCachedData, setCachedData } = useCardCache(id);
 
 	const handleLogin = () => {
 		navigate('/login');
@@ -106,26 +175,26 @@ const CardDetail = () => {
 	useEffect(() => {
 		if (userEmail && card) {
 			const checkCardInCollection = async () => {
-			try {
-				const userId = await getUserByEmail(userEmail);
-				if (!userId) {
-				throw new Error('User not found');
+				try {
+					const userId = await getUserByEmail(userEmail);
+					if (!userId) {
+						throw new Error('User not found');
+					}
+
+					// check if the card exists in the user's collection
+					const cardDocRef = doc(db, 'users', userId, 'cards', card.id);
+					const cardSnapshot = await getDoc(cardDocRef);
+
+					if (cardSnapshot.exists()) {
+						setCollectionState('added');
+					} else {
+						setCollectionState('neutral');
+					}
+				} catch (error) {
+					console.error('Error checking card in collection:', error);
 				}
-		
-				// check if the card exists in the user's collection
-				const cardDocRef = doc(db, 'users', userId, 'cards', card.id);
-				const cardSnapshot = await getDoc(cardDocRef);
-		
-				if (cardSnapshot.exists()) {
-				setCollectionState('added');
-				} else {
-				setCollectionState('neutral');
-				}
-			} catch (error) {
-				console.error('Error checking card in collection:', error);
-			}
 			};
-		
+
 			checkCardInCollection();
 		}
 	}, [userEmail, card]);
@@ -166,7 +235,6 @@ const CardDetail = () => {
 
 			setCollectionState('added');
 			// setIsAdded(true);
-
 		} catch (error) {
 			console.error('Error adding card to collection:', error);
 			// throw error;
@@ -178,21 +246,132 @@ const CardDetail = () => {
 			// get the user's document ID first
 			const userId = await getUserByEmail(userEmail);
 			if (!userId) {
-			throw new Error('User not found');
+				throw new Error('User not found');
 			}
-		
+
 			// reference specific card document in Firebase
 			const cardDocRef = doc(db, 'users', userId, 'cards', cardData.id);
-			
+
 			// delete the card document
 			await deleteDoc(cardDocRef);
-		
+
 			setCollectionState('removed');
 		} catch (error) {
 			console.error('Error removing card from collection:', error);
 			// throw error;
 		}
 	};
+
+	const fetchPriceForGrade = async (cardName, grade) => {
+		const { getCachedPrice, setCachedPrice } = usePriceCache(cardName, grade);
+
+		// Check cache first
+		const cachedPrice = getCachedPrice();
+		if (cachedPrice !== null) {
+			return cachedPrice;
+		}
+
+		try {
+			const response = await axios.get(
+				`${import.meta.env.VITE_API_URL}/card-prices`,
+				{
+					params: {
+						name: cardName,
+						grade: grade === 'ungraded' ? '' : grade,
+					},
+				}
+			);
+			const price = response.data.averagePrice;
+			setCachedPrice(price);
+			return price;
+		} catch (error) {
+			console.error(`Error fetching ${grade} price:`, error);
+			return null;
+		}
+	};
+
+	useEffect(() => {
+		const fetchCardDetailAndPrices = async () => {
+			try {
+				// Check cache first
+				const cachedCard = getCachedData();
+				if (cachedCard) {
+					setCard(cachedCard);
+					if (cachedCard.types && cachedCard.types.length > 0) {
+						setCurrentCardType(cachedCard.types[0]);
+					}
+				} else {
+					// Fetch from API if not in cache
+					const response = await axios.get(
+						`https://api.pokemontcg.io/v2/cards/${id}`,
+						{
+							headers: {
+								'X-Api-Key': import.meta.env.VITE_POKEMON_KEY,
+							},
+						}
+					);
+					setCard(response.data.data);
+					setCachedData(response.data.data);
+
+					if (response.data.data.types && response.data.data.types.length > 0) {
+						setCurrentCardType(response.data.data.types[0]);
+					}
+				}
+
+				// Fetch prices for all grades
+				const cardName = cachedCard?.name || card?.name;
+				if (cardName) {
+					const prices = {
+						ungraded: await fetchPriceForGrade(cardName, 'ungraded'),
+						psa8: await fetchPriceForGrade(cardName, 'PSA 8'),
+						psa9: await fetchPriceForGrade(cardName, 'PSA 9'),
+						psa10: await fetchPriceForGrade(cardName, 'PSA 10'),
+					};
+					setCardPrices(prices);
+				}
+			} catch (err) {
+				setError(`Failed to fetch card details. Error: ${err}`);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchCardDetailAndPrices();
+	}, [id]);
+
+	const renderGradeButtons = () => (
+		<div className={styles.gradeButtons}>
+			{['ungraded', 'psa8', 'psa9', 'psa10'].map((grade) => (
+				<button
+					key={grade}
+					className={`${styles.gradeButton} ${
+						selectedGrade === grade ? styles.selectedGrade : ''
+					}`}
+					onClick={() => setSelectedGrade(grade)}
+					// style={{
+					// 	backgroundColor:
+					// 		selectedGrade === grade
+					// 			? typeColors[currentCardType]?.buttonColor || '#fb923c'
+					// 			: 'transparent',
+					// 	borderColor: typeColors[currentCardType]?.borderColor || '#f97316',
+					// 	color:
+					// 		selectedGrade === grade
+					// 			? 'white'
+					// 			: typeColors[currentCardType]?.buttonColor || '#fb923c',
+					// }}
+					style={{
+						backgroundColor:
+							typeColors[currentCardType]?.buttonColor || '#fb923c',
+						borderColor: typeColors[currentCardType]?.borderColor || '#f97316',
+					}}>
+					{grade === 'ungraded' ? 'Ungraded' : `PSA ${grade.slice(3)}`}
+					<div className={styles.price}>
+						{cardPrices[grade] ? `$${cardPrices[grade]}` : 'Loading...'}
+					</div>
+				</button>
+			))}
+		</div>
+	);
 
 	if (loading) {
 		return (
@@ -301,86 +480,46 @@ const CardDetail = () => {
 						className={`${styles.cardImage} `}
 					/>
 					<button
-					className={`${styles.actionButton} ${
-						collectionState === 'added'
-						? styles.removeButton
-						: collectionState === 'removed'
-						? styles.removedButton
-						: styles.addButton
-					}`}
-					style={{
-						backgroundColor: typeColors[currentCardType]?.buttonColor || '#fb923c',
-						borderColor: typeColors[currentCardType]?.borderColor || '#f97316',
-					}}
-					onClick={
-						user
-						? () => {
-							if (collectionState === 'added') {
-								removeFromCollection(userEmail, card);
-							} else {
-								addToCollection(userEmail, card);
-							}
-							}
-						: () => handleLogin()
-					}
-					>
-					{collectionState === 'added'
-						? 'Remove from collection'
-						: collectionState === 'removed'
-						? 'Add to collection'
-						: user
-						? 'Add to collection'
-						: 'Log in to add to collection'}
+						className={`${styles.actionButton} ${
+							collectionState === 'added'
+								? styles.removeButton
+								: collectionState === 'removed'
+								? styles.removedButton
+								: styles.addButton
+						}`}
+						style={{
+							backgroundColor:
+								typeColors[currentCardType]?.buttonColor || '#fb923c',
+							borderColor:
+								typeColors[currentCardType]?.borderColor || '#f97316',
+						}}
+						onClick={
+							user
+								? () => {
+										if (collectionState === 'added') {
+											removeFromCollection(userEmail, card);
+										} else {
+											addToCollection(userEmail, card);
+										}
+								  }
+								: () => handleLogin()
+						}>
+						{collectionState === 'added'
+							? 'Remove from collection'
+							: collectionState === 'removed'
+							? 'Add to collection'
+							: user
+							? 'Add to collection'
+							: 'Log in to add to collection'}
 					</button>
 				</div>
 
 				<div className={styles.cardDetails}>
 					<div className={styles.section}>
 						<h2 className={`${styles.sectionTitle} ${styles.prices}`}>
-							Prices:
+							Market Prices:
 						</h2>
-						<div className={styles.gradeButtons}>
-							<button
-								className={styles.gradeButton}
-								style={{
-									backgroundColor:
-										typeColors[currentCardType]?.buttonColor || '#fb923c',
-									borderColor:
-										typeColors[currentCardType]?.borderColor || '#f97316',
-								}}>
-								Ungraded
-							</button>
-							<button
-								className={styles.gradeButton}
-								style={{
-									backgroundColor:
-										typeColors[currentCardType]?.buttonColor || '#fb923c',
-									borderColor:
-										typeColors[currentCardType]?.borderColor || '#f97316',
-								}}>
-								PSA 8
-							</button>
-							<button
-								className={styles.gradeButton}
-								style={{
-									backgroundColor:
-										typeColors[currentCardType]?.buttonColor || '#fb923c',
-									borderColor:
-										typeColors[currentCardType]?.borderColor || '#f97316',
-								}}>
-								PSA 9
-							</button>
-							<button
-								className={styles.gradeButton}
-								style={{
-									backgroundColor:
-										typeColors[currentCardType]?.buttonColor || '#fb923c',
-									borderColor:
-										typeColors[currentCardType]?.borderColor || '#f97316',
-								}}>
-								PSA 10
-							</button>
-						</div>
+						{renderGradeButtons()}
 					</div>
 
 					<div className={styles.sectionCustom}>
