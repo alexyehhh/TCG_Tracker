@@ -6,7 +6,6 @@ import PokemonBackground from '../../components/PokemonBackground/PokemonBackgro
 import TypeIcon from '../../components/TypeIcon/TypeIcon';
 import {
 	collection,
-	addDoc,
 	deleteDoc,
 	query,
 	where,
@@ -18,6 +17,8 @@ import {
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db } from '../../util/firebase';
 import typeColors from '../../util/typeColors';
+import { useCardCache, usePriceCache } from '../../util/cacheUtils';
+import PageLayout from '../../components/PageLayout/PageLayout';
 
 const CardDetail = () => {
 	const { id } = useParams();
@@ -25,13 +26,20 @@ const CardDetail = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [pricePaid, setPricePaid] = useState('');
-	const [collectionState, setCollectionState] = useState('neutral'); // collection state for'added', 'removed', 'neutral'
+	const [collectionState, setCollectionState] = useState('neutral');
 	const [userEmail, setUserEmail] = useState(null);
 	const [currentCardType, setCurrentCardType] = useState('');
 	const [user, setUser] = useState(null);
+	const [cardPrices, setCardPrices] = useState({
+		ungraded: null,
+		psa8: null,
+		psa9: null,
+		psa10: null,
+	});
+	const [selectedGrade, setSelectedGrade] = useState('ungraded');
 	const auth = getAuth();
-
 	const navigate = useNavigate();
+	const { getCachedData, setCachedData, getCacheMetadata } = useCardCache(id);
 
 	const handleLogin = () => {
 		navigate('/login');
@@ -63,15 +71,13 @@ const CardDetail = () => {
 					{
 						headers: {
 							'X-Api-Key': import.meta.env.VITE_POKEMON_KEY,
-							// 'User-Agent':
-							// 	'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0',
 						},
 					}
 				);
 				setCard(response.data.data);
 
 				if (response.data.data.types && response.data.data.types.length > 0) {
-					setCurrentCardType(response.data.data.types[0]); // Just take the first type for simplicity
+					setCurrentCardType(response.data.data.types[0]); // First type
 				}
 			} catch (err) {
 				setError(`Failed to fetch card details. Error: ${err}`);
@@ -106,26 +112,26 @@ const CardDetail = () => {
 	useEffect(() => {
 		if (userEmail && card) {
 			const checkCardInCollection = async () => {
-			try {
-				const userId = await getUserByEmail(userEmail);
-				if (!userId) {
-				throw new Error('User not found');
+				try {
+					const userId = await getUserByEmail(userEmail);
+					if (!userId) {
+						throw new Error('User not found');
+					}
+
+					// check if the card exists in the user's collection
+					const cardDocRef = doc(db, 'users', userId, 'cards', card.id);
+					const cardSnapshot = await getDoc(cardDocRef);
+
+					if (cardSnapshot.exists()) {
+						setCollectionState('added');
+					} else {
+						setCollectionState('neutral');
+					}
+				} catch (error) {
+					console.error('Error checking card in collection:', error);
 				}
-		
-				// check if the card exists in the user's collection
-				const cardDocRef = doc(db, 'users', userId, 'cards', card.id);
-				const cardSnapshot = await getDoc(cardDocRef);
-		
-				if (cardSnapshot.exists()) {
-				setCollectionState('added');
-				} else {
-				setCollectionState('neutral');
-				}
-			} catch (error) {
-				console.error('Error checking card in collection:', error);
-			}
 			};
-		
+
 			checkCardInCollection();
 		}
 	}, [userEmail, card]);
@@ -166,7 +172,6 @@ const CardDetail = () => {
 
 			setCollectionState('added');
 			// setIsAdded(true);
-
 		} catch (error) {
 			console.error('Error adding card to collection:', error);
 			// throw error;
@@ -178,15 +183,15 @@ const CardDetail = () => {
 			// get the user's document ID first
 			const userId = await getUserByEmail(userEmail);
 			if (!userId) {
-			throw new Error('User not found');
+				throw new Error('User not found');
 			}
-		
+
 			// reference specific card document in Firebase
 			const cardDocRef = doc(db, 'users', userId, 'cards', cardData.id);
-			
+
 			// delete the card document
 			await deleteDoc(cardDocRef);
-		
+
 			setCollectionState('removed');
 		} catch (error) {
 			console.error('Error removing card from collection:', error);
@@ -194,70 +199,145 @@ const CardDetail = () => {
 		}
 	};
 
+	const fetchPriceForGrade = async (cardName, grade) => {
+		const { getCachedPrice, setCachedPrice } = usePriceCache(cardName, grade);
+
+		// Check cache first
+		const cachedPrice = getCachedPrice();
+		if (cachedPrice !== null) {
+			return cachedPrice;
+		}
+
+		try {
+			const response = await axios.get(
+				`${import.meta.env.VITE_API_URL}/card-prices`,
+				{
+					params: {
+						name: cardName,
+						grade: grade === 'ungraded' ? '' : grade,
+					},
+				}
+			);
+			const price = response.data.averagePrice;
+			setCachedPrice(price);
+			return price;
+		} catch (error) {
+			console.error(`Error fetching ${grade} price:`, error);
+			return null;
+		}
+	};
+
+	useEffect(() => {
+		const fetchCardDetailAndPrices = async () => {
+			try {
+				// Check cache first
+				const cachedCard = getCachedData();
+				if (cachedCard) {
+					setCard(cachedCard);
+					if (cachedCard.types && cachedCard.types.length > 0) {
+						setCurrentCardType(cachedCard.types[0]);
+					}
+				} else {
+					// Fetch from API if not in cache
+					const response = await axios.get(
+						`https://api.pokemontcg.io/v2/cards/${id}`,
+						{
+							headers: {
+								'X-Api-Key': import.meta.env.VITE_POKEMON_KEY,
+							},
+						}
+					);
+					setCard(response.data.data);
+					setCachedData(response.data.data);
+
+					if (response.data.data.types && response.data.data.types.length > 0) {
+						setCurrentCardType(response.data.data.types[0]);
+					}
+				}
+
+				// Fetch prices for all grades
+				const cardName = cachedCard?.name || card?.name;
+				if (cardName) {
+					const prices = {
+						ungraded: await fetchPriceForGrade(cardName, 'ungraded'),
+						psa8: await fetchPriceForGrade(cardName, 'PSA 8'),
+						psa9: await fetchPriceForGrade(cardName, 'PSA 9'),
+						psa10: await fetchPriceForGrade(cardName, 'PSA 10'),
+					};
+					setCardPrices(prices);
+				}
+			} catch (err) {
+				setError(`Failed to fetch card details. Error: ${err}`);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchCardDetailAndPrices();
+	}, [id]);
+
+	const renderGradeButtons = () => (
+		<div className={styles.gradeButtons}>
+			{['ungraded', 'psa8', 'psa9', 'psa10'].map((grade) => (
+				<button
+					key={grade}
+					className={`${styles.gradeButton} ${
+						selectedGrade === grade ? styles.selectedGrade : ''
+					}`}
+					onClick={() => setSelectedGrade(grade)}
+					// If we want one button to be highlighted at a time
+					// style={{
+					// 	backgroundColor:
+					// 		selectedGrade === grade
+					// 			? typeColors[currentCardType]?.buttonColor || '#fb923c'
+					// 			: 'transparent',
+					// 	borderColor: typeColors[currentCardType]?.borderColor || '#f97316',
+					// 	color:
+					// 		selectedGrade === grade
+					// 			? 'white'
+					// 			: typeColors[currentCardType]?.buttonColor || '#fb923c',
+					// }}
+
+					// All buttons are colored the same
+					style={{
+						backgroundColor:
+							typeColors[currentCardType]?.buttonColor || '#fb923c',
+						borderColor: typeColors[currentCardType]?.borderColor || '#f97316',
+					}}>
+					{grade === 'ungraded' ? 'Ungraded' : `PSA ${grade.slice(3)}`}
+					<div className={styles.price}>
+						{cardPrices[grade] ? `$${cardPrices[grade]}` : 'Loading...'}
+					</div>
+				</button>
+			))}
+		</div>
+	);
+
 	if (loading) {
 		return (
-			<div className={styles.container}>
-				<PokemonBackground color='white' />
-				<nav className={styles.navbar}>
-					<ul className={styles.navLinks}>
-						<li>
-							<Link to='/'>Search</Link>
-						</li>
-						<li>
-							<Link to='/collection'>Collection</Link>
-						</li>
-						<li>
-							<Link to='/upload'>Upload</Link>
-						</li>
-					</ul>
-				</nav>
-				<h1 className={styles.centerContent}>Loading card details...</h1>;
-			</div>
+			<PageLayout>
+				<h1 className={styles.centerContent}>Loading card details...</h1>
+			</PageLayout>
 		);
 	}
+
 	if (error) {
 		return (
-			<div className={styles.container}>
-				<PokemonBackground color='white' />
-				<nav className={styles.navbar}>
-					<ul className={styles.navLinks}>
-						<li>
-							<Link to='/'>Search</Link>
-						</li>
-						<li>
-							<Link to='/collection'>Collection</Link>
-						</li>
-						<li>
-							<Link to='/upload'>Upload</Link>
-						</li>
-					</ul>
-				</nav>
+			<PageLayout>
 				<div className={`${styles.centerContent} ${styles.errorMessage}`}>
 					{error}
 				</div>
-			</div>
+			</PageLayout>
 		);
 	}
-	if (!card)
+
+	if (!card) {
 		return (
-			<div className={styles.container}>
-				<PokemonBackground color='white' />
-				<nav className={styles.navbar}>
-					<ul className={styles.navLinks}>
-						<li>
-							<Link to='/'>Search</Link>
-						</li>
-						<li>
-							<Link to='/collection'>Collection</Link>
-						</li>
-						<li>
-							<Link to='/upload'>Upload</Link>
-						</li>
-					</ul>
-				</nav>
+			<PageLayout>
 				<div className={styles.container}>Card not found</div>
-			</div>
+			</PageLayout>
 		);
+	}
 
 	return (
 		<div
@@ -301,86 +381,46 @@ const CardDetail = () => {
 						className={`${styles.cardImage} `}
 					/>
 					<button
-					className={`${styles.actionButton} ${
-						collectionState === 'added'
-						? styles.removeButton
-						: collectionState === 'removed'
-						? styles.removedButton
-						: styles.addButton
-					}`}
-					style={{
-						backgroundColor: typeColors[currentCardType]?.buttonColor || '#fb923c',
-						borderColor: typeColors[currentCardType]?.borderColor || '#f97316',
-					}}
-					onClick={
-						user
-						? () => {
-							if (collectionState === 'added') {
-								removeFromCollection(userEmail, card);
-							} else {
-								addToCollection(userEmail, card);
-							}
-							}
-						: () => handleLogin()
-					}
-					>
-					{collectionState === 'added'
-						? 'Remove from collection'
-						: collectionState === 'removed'
-						? 'Add to collection'
-						: user
-						? 'Add to collection'
-						: 'Log in to add to collection'}
+						className={`${styles.actionButton} ${
+							collectionState === 'added'
+								? styles.removeButton
+								: collectionState === 'removed'
+								? styles.removedButton
+								: styles.addButton
+						}`}
+						style={{
+							backgroundColor:
+								typeColors[currentCardType]?.buttonColor || '#fb923c',
+							borderColor:
+								typeColors[currentCardType]?.borderColor || '#f97316',
+						}}
+						onClick={
+							user
+								? () => {
+										if (collectionState === 'added') {
+											removeFromCollection(userEmail, card);
+										} else {
+											addToCollection(userEmail, card);
+										}
+								  }
+								: () => handleLogin()
+						}>
+						{collectionState === 'added'
+							? 'Remove from collection'
+							: collectionState === 'removed'
+							? 'Add to collection'
+							: user
+							? 'Add to collection'
+							: 'Log in to add to collection'}
 					</button>
 				</div>
 
 				<div className={styles.cardDetails}>
 					<div className={styles.section}>
 						<h2 className={`${styles.sectionTitle} ${styles.prices}`}>
-							Prices:
+							Market Prices:
 						</h2>
-						<div className={styles.gradeButtons}>
-							<button
-								className={styles.gradeButton}
-								style={{
-									backgroundColor:
-										typeColors[currentCardType]?.buttonColor || '#fb923c',
-									borderColor:
-										typeColors[currentCardType]?.borderColor || '#f97316',
-								}}>
-								Ungraded
-							</button>
-							<button
-								className={styles.gradeButton}
-								style={{
-									backgroundColor:
-										typeColors[currentCardType]?.buttonColor || '#fb923c',
-									borderColor:
-										typeColors[currentCardType]?.borderColor || '#f97316',
-								}}>
-								PSA 8
-							</button>
-							<button
-								className={styles.gradeButton}
-								style={{
-									backgroundColor:
-										typeColors[currentCardType]?.buttonColor || '#fb923c',
-									borderColor:
-										typeColors[currentCardType]?.borderColor || '#f97316',
-								}}>
-								PSA 9
-							</button>
-							<button
-								className={styles.gradeButton}
-								style={{
-									backgroundColor:
-										typeColors[currentCardType]?.buttonColor || '#fb923c',
-									borderColor:
-										typeColors[currentCardType]?.borderColor || '#f97316',
-								}}>
-								PSA 10
-							</button>
-						</div>
+						{renderGradeButtons()}
 					</div>
 
 					<div className={styles.sectionCustom}>
