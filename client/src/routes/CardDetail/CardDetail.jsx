@@ -17,69 +17,7 @@ import {
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db } from '../../util/firebase';
 import typeColors from '../../util/typeColors';
-
-// Cache configuration
-const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000;
-
-const useCardCache = (cardId) => {
-	// Helper function to check if cached data is still valid
-	const isValidCache = (cachedData) => {
-		if (!cachedData) return false;
-		const now = new Date().getTime();
-		return now - cachedData.timestamp < CACHE_DURATION;
-	};
-
-	// Helper function to get cached data
-	const getCachedData = () => {
-		const cached = localStorage.getItem(`card_${cardId}`);
-		if (!cached) return null;
-
-		const parsedCache = JSON.parse(cached);
-		return isValidCache(parsedCache) ? parsedCache.data : null;
-	};
-
-	// Helper function to set cached data
-	const setCachedData = (data) => {
-		const cacheData = {
-			data,
-			timestamp: new Date().getTime(),
-		};
-		localStorage.setItem(`card_${cardId}`, JSON.stringify(cacheData));
-	};
-
-	return { getCachedData, setCachedData };
-};
-
-const usePriceCache = (cardName, grade) => {
-	const cacheKey = `price_${cardName}_${grade}`;
-
-	// Helper function to check if cached price is still valid
-	const isValidCache = (cachedData) => {
-		if (!cachedData) return false;
-		const now = new Date().getTime();
-		return now - cachedData.timestamp < CACHE_DURATION;
-	};
-
-	// Helper function to get cached price
-	const getCachedPrice = () => {
-		const cached = localStorage.getItem(cacheKey);
-		if (!cached) return null;
-
-		const parsedCache = JSON.parse(cached);
-		return isValidCache(parsedCache) ? parsedCache.price : null;
-	};
-
-	// Helper function to set cached price
-	const setCachedPrice = (price) => {
-		const cacheData = {
-			price,
-			timestamp: new Date().getTime(),
-		};
-		localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-	};
-
-	return { getCachedPrice, setCachedPrice };
-};
+import { useCardCache, usePriceCache } from '../../util/cacheUtils';
 
 const CardDetail = () => {
 	const { id } = useParams();
@@ -98,9 +36,10 @@ const CardDetail = () => {
 		psa10: null,
 	});
 	const [selectedGrade, setSelectedGrade] = useState('ungraded');
+	const [cacheInfo, setCacheInfo] = useState(null);
 	const auth = getAuth();
 	const navigate = useNavigate();
-	const { getCachedData, setCachedData } = useCardCache(id);
+	const { getCachedData, setCachedData, getCacheMetadata } = useCardCache(id);
 
 	const handleLogin = () => {
 		navigate('/login');
@@ -132,15 +71,13 @@ const CardDetail = () => {
 					{
 						headers: {
 							'X-Api-Key': import.meta.env.VITE_POKEMON_KEY,
-							// 'User-Agent':
-							// 	'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0',
 						},
 					}
 				);
 				setCard(response.data.data);
 
 				if (response.data.data.types && response.data.data.types.length > 0) {
-					setCurrentCardType(response.data.data.types[0]); // Just take the first type for simplicity
+					setCurrentCardType(response.data.data.types[0]); // First type
 				}
 			} catch (err) {
 				setError(`Failed to fetch card details. Error: ${err}`);
@@ -300,6 +237,8 @@ const CardDetail = () => {
 					if (cachedCard.types && cachedCard.types.length > 0) {
 						setCurrentCardType(cachedCard.types[0]);
 					}
+					// Set cache metadata
+					setCacheInfo(getCacheMetadata());
 				} else {
 					// Fetch from API if not in cache
 					const response = await axios.get(
@@ -312,6 +251,7 @@ const CardDetail = () => {
 					);
 					setCard(response.data.data);
 					setCachedData(response.data.data);
+					setCacheInfo(getCacheMetadata());
 
 					if (response.data.data.types && response.data.data.types.length > 0) {
 						setCurrentCardType(response.data.data.types[0]);
