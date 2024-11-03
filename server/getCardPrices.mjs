@@ -18,12 +18,10 @@ async function getEBayAccessToken() {
 						`${clientId}:${clientSecret}`
 					).toString('base64')}`,
 				},
-				// Simplified scope for Browse API
 				body: 'grant_type=client_credentials&scope=https%3A%2F%2Fapi.ebay.com%2Foauth%2Fapi_scope',
 			}
 		);
 
-		// Handle error responses better
 		if (!response.ok) {
 			const errorText = await response.text();
 			let errorData;
@@ -43,7 +41,6 @@ async function getEBayAccessToken() {
 			throw new Error('Access token not found in response');
 		}
 
-		// Store token expiration time
 		const expiresAt = Date.now() + data.expires_in * 1000;
 		return {
 			token: data.access_token,
@@ -55,12 +52,10 @@ async function getEBayAccessToken() {
 	}
 }
 
-// Token cache
 let tokenCache = null;
 
 async function getValidToken() {
 	if (tokenCache && Date.now() < tokenCache.expiresAt - 60000) {
-		// 1 minute buffer
 		return tokenCache.token;
 	}
 
