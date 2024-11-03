@@ -18,6 +18,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db } from '../../util/firebase';
 import typeColors from '../../util/typeColors';
 import { useCardCache, usePriceCache } from '../../util/cacheUtils';
+import PageLayout from '../../components/PageLayout/PageLayout';
 
 const CardDetail = () => {
 	const { id } = useParams();
@@ -36,7 +37,6 @@ const CardDetail = () => {
 		psa10: null,
 	});
 	const [selectedGrade, setSelectedGrade] = useState('ungraded');
-	const [cacheInfo, setCacheInfo] = useState(null);
 	const auth = getAuth();
 	const navigate = useNavigate();
 	const { getCachedData, setCachedData, getCacheMetadata } = useCardCache(id);
@@ -237,8 +237,6 @@ const CardDetail = () => {
 					if (cachedCard.types && cachedCard.types.length > 0) {
 						setCurrentCardType(cachedCard.types[0]);
 					}
-					// Set cache metadata
-					setCacheInfo(getCacheMetadata());
 				} else {
 					// Fetch from API if not in cache
 					const response = await axios.get(
@@ -251,7 +249,6 @@ const CardDetail = () => {
 					);
 					setCard(response.data.data);
 					setCachedData(response.data.data);
-					setCacheInfo(getCacheMetadata());
 
 					if (response.data.data.types && response.data.data.types.length > 0) {
 						setCurrentCardType(response.data.data.types[0]);
@@ -318,68 +315,29 @@ const CardDetail = () => {
 
 	if (loading) {
 		return (
-			<div className={styles.container}>
-				<PokemonBackground color='white' />
-				<nav className={styles.navbar}>
-					<ul className={styles.navLinks}>
-						<li>
-							<Link to='/'>Search</Link>
-						</li>
-						<li>
-							<Link to='/collection'>Collection</Link>
-						</li>
-						<li>
-							<Link to='/upload'>Upload</Link>
-						</li>
-					</ul>
-				</nav>
-				<h1 className={styles.centerContent}>Loading card details...</h1>;
-			</div>
+			<PageLayout>
+				<h1 className={styles.centerContent}>Loading card details...</h1>
+			</PageLayout>
 		);
 	}
+
 	if (error) {
 		return (
-			<div className={styles.container}>
-				<PokemonBackground color='white' />
-				<nav className={styles.navbar}>
-					<ul className={styles.navLinks}>
-						<li>
-							<Link to='/'>Search</Link>
-						</li>
-						<li>
-							<Link to='/collection'>Collection</Link>
-						</li>
-						<li>
-							<Link to='/upload'>Upload</Link>
-						</li>
-					</ul>
-				</nav>
+			<PageLayout>
 				<div className={`${styles.centerContent} ${styles.errorMessage}`}>
 					{error}
 				</div>
-			</div>
+			</PageLayout>
 		);
 	}
-	if (!card)
+
+	if (!card) {
 		return (
-			<div className={styles.container}>
-				<PokemonBackground color='white' />
-				<nav className={styles.navbar}>
-					<ul className={styles.navLinks}>
-						<li>
-							<Link to='/'>Search</Link>
-						</li>
-						<li>
-							<Link to='/collection'>Collection</Link>
-						</li>
-						<li>
-							<Link to='/upload'>Upload</Link>
-						</li>
-					</ul>
-				</nav>
+			<PageLayout>
 				<div className={styles.container}>Card not found</div>
-			</div>
+			</PageLayout>
 		);
+	}
 
 	return (
 		<div
