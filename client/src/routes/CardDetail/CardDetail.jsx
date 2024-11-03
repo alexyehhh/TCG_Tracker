@@ -288,6 +288,7 @@ const CardDetail = () => {
 						selectedGrade === grade ? styles.selectedGrade : ''
 					}`}
 					onClick={() => setSelectedGrade(grade)}
+					// If we want one button to be highlighted at a time
 					// style={{
 					// 	backgroundColor:
 					// 		selectedGrade === grade
@@ -299,6 +300,8 @@ const CardDetail = () => {
 					// 			? 'white'
 					// 			: typeColors[currentCardType]?.buttonColor || '#fb923c',
 					// }}
+
+					// All buttons are colored the same
 					style={{
 						backgroundColor:
 							typeColors[currentCardType]?.buttonColor || '#fb923c',
