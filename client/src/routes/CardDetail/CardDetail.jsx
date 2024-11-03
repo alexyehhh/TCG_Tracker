@@ -167,11 +167,6 @@ const CardDetail = () => {
 			setCollectionState('added');
 			// setIsAdded(true);
 
-			// return {
-			// 	success: true,
-			// 	cardId: cardData.id,
-			// 	message: 'Card added to collection successfully',
-			// };
 		} catch (error) {
 			console.error('Error adding card to collection:', error);
 			// throw error;
@@ -192,9 +187,6 @@ const CardDetail = () => {
 			// delete the card document
 			await deleteDoc(cardDocRef);
 		
-			// update the state to show the card was removed
-			// setIsRemoved(true);
-			// setIsAdded(false);
 			setCollectionState('removed');
 		} catch (error) {
 			console.error('Error removing card from collection:', error);
