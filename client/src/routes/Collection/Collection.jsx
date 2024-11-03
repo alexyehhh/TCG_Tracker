@@ -100,7 +100,7 @@ const Collection = () => {
 			querySnapshot.forEach((doc) => {
 				const cardData = doc.data();
 				if (cardData.image) {
-					cardsList.push(cardData);
+					cardsList.push({ ...cardData, id: doc.id }); // add `id` from `doc.id`
 				}
 			});
 
@@ -341,12 +341,14 @@ const Collection = () => {
 
 					<div className={styles.cardsGrid}>
 						{filteredCards.map((card, index) => (
-							<img
-								key={index}
-								src={card.image || ""}
-								alt={`Pokemon Card - ${card.name || 'Unknown'}`}
-								className={styles.cardImage}
-							/>
+							<Link key={card.id} to={`/card-detail/${card.id}`}>
+								<img
+									// key={index}
+									src={card.image || ""}
+									alt={`Pokemon Card - ${card.name || 'Unknown'}`}
+									className={styles.cardImage}
+								/>
+							</Link>
 						))}
 					</div>
 				</div>
