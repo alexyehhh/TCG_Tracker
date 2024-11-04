@@ -5,15 +5,16 @@ const router = express.Router();
 
 router.get('/card-profit', async (req, res) => {
 	console.log('Received profit request:', req.query);
-    const salePrice = req.query.salePrice;
-    const pricePaid = req.query.pricePaid;
+    const salePrice = req.query.salePrice; //float
+    const pricePaid = req.query.pricePaid; //float
+    const gmeMembership = req.query.pricePaid //bool
 
 	if (!pricePaid) {
 		return res.status(400).json({ error: 'Price Paid is required' });
 	}
 
 	try {
-        const gmeAdditionalFees = 15.99 + (isMember ? 0 : 4.99);
+        const gmeAdditionalFees = 15.99 + (gmeMembership ? 0 : 4.99);
         const gmeProfit =  salePrice - (pricePaid + gmeAdditionalFees);
 
 		res.json({
