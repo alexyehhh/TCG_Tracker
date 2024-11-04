@@ -10,8 +10,8 @@ app.listen(port, () => {
 });
 
 
-app.get('/users/:id', async(req, res) =>{
-	const docRef = doc(collection(doc(collection(db, 'test_space'), "user1"), "cards"), req.params.id)
+app.get('/:user/:id', async(req, res) =>{
+	const docRef = doc(collection(doc(collection(db, 'test_space'), req.params.user), "cards"), req.params.id)
 	const docSnap = await getDoc(docRef)
 	if (docSnap.exists()){
 		console.log(docSnap.data())
@@ -22,8 +22,8 @@ app.get('/users/:id', async(req, res) =>{
 	}
 })
 
-app.post('/users/:id', async(req, res) =>{
-	const docRef = doc(collection(doc(collection(db, 'test_space'), "user1"), "cards"), req.params.id)
+app.post('/:user/:id', async(req, res) =>{
+	const docRef = doc(collection(doc(collection(db, 'test_space'), req.params.user), "cards"), req.params.id)
 	const docSnap = await getDoc(docRef)
 	if (docSnap.exists()){
 		res.status(200).json({method:"POST", status:"200", content_type:"json", body: "card already exists"})
@@ -36,8 +36,8 @@ app.post('/users/:id', async(req, res) =>{
 	}
 })
 
-app.put('/users/:id', async(req, res) =>{
-	const docRef = doc(collection(doc(collection(db, 'test_space'), "user1"), "cards"), req.params.id)
+app.put('/:user/:id', async(req, res) =>{
+	const docRef = doc(collection(doc(collection(db, 'test_space'), req.params.user), "cards"), req.params.id)
 	const docSnap = await getDoc(docRef)
 	if (docSnap.exists()){
 		await setDoc(docRef, {
@@ -50,8 +50,8 @@ app.put('/users/:id', async(req, res) =>{
 	}
 })
 
-app.delete('/users/:id', async(req, res) => {
-	const docRef = doc(collection(doc(collection(db, 'test_space'), "user1"), "cards"), req.params.id)
+app.delete('/:user/:id', async(req, res) => {
+	const docRef = doc(collection(doc(collection(db, 'test_space'), req.params.user), "cards"), req.params.id)
     const docSnap = await getDoc(docRef)
     if (docSnap.exists()){
     	await deleteDoc(docRef)
