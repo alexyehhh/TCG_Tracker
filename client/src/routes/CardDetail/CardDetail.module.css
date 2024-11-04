@@ -311,3 +311,13 @@
 .prices {
 	margin-bottom: 20px;
 }
+
+.profitResult {
+	margin-top: 1rem;
+	font-size: 1.1rem;
+}
+
+.actionButton:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}

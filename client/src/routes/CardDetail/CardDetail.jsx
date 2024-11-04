@@ -37,9 +37,38 @@ const CardDetail = () => {
 		psa10: null,
 	});
 	const [selectedGrade, setSelectedGrade] = useState('ungraded');
+	const [profit, setProfit] = useState(null);
+	const [isCalculating, setIsCalculating] = useState(false);
 	const auth = getAuth();
 	const navigate = useNavigate();
 	const { getCachedData, setCachedData, getCacheMetadata } = useCardCache(id);
+
+	const calculateProfit = async () => {
+		if (!pricePaid || !cardPrices[selectedGrade]) {
+			return;
+		}
+
+		setIsCalculating(true);
+		try {
+			const response = await axios.get(
+				`${import.meta.env.VITE_API_URL}/card-profit`,
+				{
+					params: {
+						salePrice: cardPrices[selectedGrade],
+						pricePaid: parseFloat(pricePaid),
+						gmeMembership: document.getElementById('gamestop-pro').checked,
+					},
+				}
+			);
+
+			setProfit(response.data.gmeProfit);
+		} catch (error) {
+			console.error('Error calculating profit:', error);
+			setError('Failed to calculate profit');
+		} finally {
+			setIsCalculating(false);
+		}
+	};
 
 	const handleLogin = () => {
 		navigate('/login');
@@ -286,23 +315,16 @@ const CardDetail = () => {
 					}`}
 					onClick={() => setSelectedGrade(grade)}
 					// If we want one button to be highlighted at a time
-					// style={{
-					// 	backgroundColor:
-					// 		selectedGrade === grade
-					// 			? typeColors[currentCardType]?.buttonColor || '#fb923c'
-					// 			: 'transparent',
-					// 	borderColor: typeColors[currentCardType]?.borderColor || '#f97316',
-					// 	color:
-					// 		selectedGrade === grade
-					// 			? 'white'
-					// 			: typeColors[currentCardType]?.buttonColor || '#fb923c',
-					// }}
-
-					// All buttons are colored the same
 					style={{
 						backgroundColor:
-							typeColors[currentCardType]?.buttonColor || '#fb923c',
+							selectedGrade === grade
+								? typeColors[currentCardType]?.buttonColor || '#fb923c'
+								: 'transparent',
 						borderColor: typeColors[currentCardType]?.borderColor || '#f97316',
+						color:
+							selectedGrade === grade
+								? 'white'
+								: typeColors[currentCardType]?.buttonColor || '#fb923c',
 					}}>
 					{grade === 'ungraded' ? 'Ungraded' : `PSA ${grade.slice(3)}`}
 					<div className={styles.price}>
@@ -503,15 +525,33 @@ const CardDetail = () => {
 						<div className={styles.gradingPrices}>
 							<button
 								className={styles.actionButton}
+								onClick={calculateProfit}
+								disabled={
+									!pricePaid || !cardPrices[selectedGrade] || isCalculating
+								}
 								style={{
 									backgroundColor:
 										typeColors[currentCardType]?.buttonColor || '#fb923c',
 									borderColor:
 										typeColors[currentCardType]?.borderColor || '#f97316',
+									opacity: !pricePaid || !cardPrices[selectedGrade] ? 0.5 : 1,
 								}}>
-								Calculate profit
+								{isCalculating ? 'Calculating...' : 'Calculate profit'}
 							</button>
-							<p className={styles.gamestop}>GameStop grading: [price]</p>
+
+							{profit !== null && (
+								<div
+									className={styles.profitResult}
+									style={{ textAlign: 'right', marginTop: '10px' }}>
+									<p
+										style={{
+											color: profit >= 0 ? '#22c55e' : '#ef4444',
+											fontWeight: 'bold',
+										}}>
+										Estimated Profit: ${profit.toFixed(2)}
+									</p>
+								</div>
+							)}
 							<p>PSA grading: [price]</p>
 						</div>
 					</div>
