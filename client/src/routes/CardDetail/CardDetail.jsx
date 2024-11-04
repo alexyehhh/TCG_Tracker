@@ -548,7 +548,7 @@ const CardDetail = () => {
 											color: profit >= 0 ? '#22c55e' : '#ef4444',
 											fontWeight: 'bold',
 										}}>
-										Estimated Profit: ${profit.toFixed(2)}
+										GameStop Grading Profit: ${profit.toFixed(2)}
 									</p>
 								</div>
 							)}
