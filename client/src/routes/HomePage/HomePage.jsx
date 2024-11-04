@@ -5,6 +5,21 @@ import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import charizard from '../../assets/images/charizard.png';
 import styles from './HomePage.module.css';
 
+const RightArrow = () => {
+	return (
+		<svg
+			className={styles.rightArrow}
+			viewBox='0 0 1024 1024'
+			xmlns='http://www.w3.org/2000/svg'
+			aria-label='Right Arrow Icon'>
+			<path
+				d='M170.666667 469.333333v85.333334h512l-234.666667 234.666666 60.586667 60.586667L846.506667 512l-337.92-337.92L448 234.666667 682.666667 469.333333H170.666667z'
+				fill='currentColor'
+			/>
+		</svg>
+	);
+};
+
 export default function HomePage() {
 	const cardRef = useRef(null);
 	const [searchTerm, setSearchTerm] = useState('');
@@ -64,9 +79,7 @@ export default function HomePage() {
 	};
 
 	const handleLogout = () => {
-		// Clear authentication state
-		localStorage.removeItem('token'); // Or however you store auth state
-		setIsLoggedIn(false);
+		signOut(auth);
 		navigate('/'); // Redirect to home page after logout
 	};
 
@@ -74,7 +87,7 @@ export default function HomePage() {
 		if (isLoggedIn) {
 			handleLogout();
 		} else {
-			navigate('/signin');
+			navigate('/login');
 		}
 	};
 
@@ -90,15 +103,23 @@ export default function HomePage() {
 								<Link to='/'>Search</Link>
 							</li>
 							<li>
-								<Link to='/'>Collection</Link>
+								<Link to='/collection'>Collection</Link>
 							</li>
 							<li>
-								<Link to='/'>Upload</Link>
+								<Link to='/upload'>Upload</Link>
 							</li>
 						</ul>
 						<div className={styles.navbarRight}>
 							<button onClick={handleAuthClick} className={styles.signInBtn}>
-								{isLoggedIn ? 'Log out >' : 'Sign in >'}
+								{isLoggedIn ? (
+									<h4>
+										Sign out <RightArrow />
+									</h4>
+								) : (
+									<h4>
+										Log in <RightArrow />
+									</h4>
+								)}
 							</button>
 						</div>
 					</nav>

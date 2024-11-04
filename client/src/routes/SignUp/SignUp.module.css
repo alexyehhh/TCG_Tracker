@@ -34,6 +34,10 @@
 	font-weight: 500;
 }
 
+.navLinks a:hover {
+	color: #989898;
+}
+
 .navbarRight {
 	display: flex;
 	justify-content: flex-end;
@@ -61,9 +65,21 @@
 	padding: 0;
 }
 
+.backButton:hover {
+	color: #989898;
+}
+
 .backIcon {
 	width: 20px;
 	height: 20px;
+	vertical-align: middle;
+	fill: currentColor;
+	overflow: hidden;
+	transition: transform 0.5s ease;
+}
+
+.backButton:hover .backIcon {
+	transform: translateX(-5px);
 }
 
 /* Main Content Styles */

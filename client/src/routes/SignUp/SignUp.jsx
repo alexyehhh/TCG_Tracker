@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { auth, googleProvider } from '../../util/firebase';
+import { auth, googleProvider, db } from '../../util/firebase';
 import { signInWithPopup, createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './SignUp.module.css';
-import questionMark from '../../assets/images/questionMark.png';
-import leftArrow from '../../assets/images/leftArrow.png';
 import middleDivider from '../../assets/images/middleDivider.png';
 import { Eye, EyeOff } from 'lucide-react';
 
@@ -14,10 +13,32 @@ const SignIn = () => {
 	const [showPassword, setShowPassword] = useState(false);
 	const navigate = useNavigate();
 
+	// Create users document, ONLY IF THEY DONT HAVE ONE
+	const createDocument = async (user) => {
+		try {
+			const userDocRef = doc(db, 'users', user.uid);
+			const userDoc = await getDoc(userDocRef);
+
+			if (!userDoc.exists()) {
+				await setDoc(userDocRef, {
+					email: user.email,
+					name: user.displayName || email.split('@')[0],
+					createdAt: new Date(),
+				});
+				console.log('New user document created');
+			} else {
+				console.log('User document already exists');
+			}
+		} catch (error) {
+			console.error('Error handling user document:', error.message);
+		}
+	};
+
 	const handleGoogleSignUp = async () => {
 		try {
-			await signInWithPopup(auth, googleProvider);
+			const result = await signInWithPopup(auth, googleProvider);
 			console.log('Signed Up with google');
+			createDocument(result.user);
 			navigate('/');
 		} catch (error) {
 			console.error('Google Sign-Up Error:', error.message);
@@ -27,7 +48,12 @@ const SignIn = () => {
 	const handleSignup = async (e) => {
 		e.preventDefault();
 		try {
-			await createUserWithEmailAndPassword(auth, email, password);
+			const userCredential = await createUserWithEmailAndPassword(
+				auth,
+				email,
+				password
+			);
+			createDocument(userCredential.user);
 			console.log('Signed Up with user and pass');
 			navigate('/');
 		} catch (error) {
@@ -49,7 +75,16 @@ const SignIn = () => {
 				<nav className={styles.navbar}>
 					<div className={styles.navbarLeft}>
 						<button onClick={handleBack} className={styles.backButton}>
-							<img src={leftArrow} alt='Back' className={styles.backIcon} />
+							<svg
+								className={styles.backIcon}
+								viewBox='0 0 1024 1024'
+								version='1.1'
+								xmlns='http://www.w3.org/2000/svg'>
+								<path
+									d='M853.333333 469.333333v85.333334H341.333333l234.666667 234.666666-60.586667 60.586667L177.493333 512l337.92-337.92L576 234.666667 341.333333 469.333333h512z'
+									fill=''
+								/>
+							</svg>
 							Back
 						</button>
 					</div>
@@ -58,10 +93,10 @@ const SignIn = () => {
 							<Link to='/'>Search</Link>
 						</li>
 						<li>
-							<Link to='/'>Collection</Link>
+							<Link to='/collection'>Collection</Link>
 						</li>
 						<li>
-							<Link to='/'>Upload</Link>
+							<Link to='/upload'>Upload</Link>
 						</li>
 					</ul>
 					<div className={styles.navbarRight}></div>
