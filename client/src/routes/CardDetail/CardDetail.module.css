@@ -52,6 +52,7 @@
 	gap: 2rem;
 	position: relative;
 	z-index: 2;
+	padding-top: 25px;
 }
 
 @media (min-width: 768px) {
@@ -72,14 +73,15 @@
 .cardDetails {
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
+	justify-content: flex-start;
+	min-height: 600px;
 }
 
 .cardName {
 	font-size: 36px;
 	font-weight: bold;
 	text-align: center;
-	margin-top: 40px;
+	padding-top: 50px;
 }
 
 .section {
@@ -329,5 +331,8 @@
 .leftSide {
 	display: flex;
 	justify-content: center;
-	align-items: center;
+	align-items: flex-start;
+	position: sticky;
+	top: 100px;
+	height: fit-content;
 }
