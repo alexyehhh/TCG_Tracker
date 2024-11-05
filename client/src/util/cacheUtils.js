@@ -93,51 +93,24 @@ export const useCardCache = (cardId) => {
 export const usePriceCache = (cardName, grade) => {
 	const cacheKey = `price_${cardName}_${grade}`;
 
-	// Helper function to check if cached price is still valid
-	const isValidCache = (cachedData) => {
-		if (!cachedData) return false;
-		const now = new Date().getTime();
-		return now - cachedData.timestamp < CACHE_DURATION;
-	};
-
-	// Helper function to get cached price
 	const getCachedPrice = () => {
 		const cached = localStorage.getItem(cacheKey);
-		if (!cached) return null;
-
-		const parsedCache = JSON.parse(cached);
-		if (!isValidCache(parsedCache)) {
-			localStorage.removeItem(cacheKey);
-			return null;
+		if (cached) {
+			const { price, timestamp } = JSON.parse(cached);
+			// Cache valid for 24 hours
+			if (Date.now() - timestamp < 24 * 60 * 60 * 1000) {
+				return price;
+			}
 		}
-		return parsedCache.price;
+		return null;
 	};
 
-	// Helper function to set cached price
 	const setCachedPrice = (price) => {
-		const cacheData = {
-			price,
-			timestamp: new Date().getTime(),
-		};
-		localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+		localStorage.setItem(
+			cacheKey,
+			JSON.stringify({ price, timestamp: Date.now() })
+		);
 	};
 
-	// Get cache metadata
-	const getPriceCacheMetadata = () => {
-		const cached = localStorage.getItem(cacheKey);
-		if (!cached) return null;
-
-		const parsedCache = JSON.parse(cached);
-		const { timestamp } = parsedCache;
-		const { days, hours } = cacheUtils.getRemainingCacheTime(timestamp);
-		const expiryDate = cacheUtils.getCacheExpiryDate(timestamp);
-
-		return {
-			expiryDate,
-			remainingDays: days,
-			remainingHours: hours,
-		};
-	};
-
-	return { getCachedPrice, setCachedPrice, getPriceCacheMetadata };
+	return { getCachedPrice, setCachedPrice };
 };

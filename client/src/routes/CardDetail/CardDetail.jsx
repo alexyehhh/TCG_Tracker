@@ -17,11 +17,16 @@ import {
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db } from '../../util/firebase';
 import typeColors from '../../util/typeColors';
-import { useCardCache, usePriceCache } from '../../util/cacheUtils';
+import { useCardCache } from '../../util/cacheUtils';
 import PageLayout from '../../components/PageLayout/PageLayout';
+import { usePriceCache } from '../../util/cacheUtils';
 
 const CardDetail = () => {
 	const { id } = useParams();
+	const navigate = useNavigate();
+	const auth = getAuth();
+	const { getCachedData, setCachedData } = useCardCache(id);
+
 	const [card, setCard] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
@@ -40,9 +45,156 @@ const CardDetail = () => {
 	const [profit, setProfit] = useState(null);
 	const [PSA, setPSA] = useState(null);
 	const [isCalculating, setIsCalculating] = useState(false);
-	const auth = getAuth();
-	const navigate = useNavigate();
-	const { getCachedData, setCachedData, getCacheMetadata } = useCardCache(id);
+
+	// Auth effect
+	useEffect(() => {
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			setUser(user);
+			if (user) {
+				setUserEmail(user.email);
+			}
+		});
+		return () => unsubscribe();
+	}, [auth]);
+
+	// Card fetching effect
+	useEffect(() => {
+		const fetchCardDetail = async () => {
+			try {
+				// Check cache first
+				const cachedCard = getCachedData();
+				if (cachedCard) {
+					setCard(cachedCard);
+					if (cachedCard.types && cachedCard.types.length > 0) {
+						setCurrentCardType(cachedCard.types[0]);
+					}
+				} else {
+					const response = await axios.get(
+						`https://api.pokemontcg.io/v2/cards/${id}`,
+						{
+							headers: {
+								'X-Api-Key': import.meta.env.VITE_POKEMON_KEY,
+							},
+						}
+					);
+					const cardData = response.data.data;
+					setCard(cardData);
+					setCachedData(cardData);
+
+					if (cardData.types && cardData.types.length > 0) {
+						setCurrentCardType(cardData.types[0]);
+					}
+				}
+			} catch (err) {
+				setError(`Failed to fetch card details. Error: ${err}`);
+			}
+		};
+
+		fetchCardDetail();
+	}, [id, getCachedData, setCachedData]);
+
+	// Price fetching effect
+	useEffect(() => {
+		const fetchPrices = async () => {
+			if (!card?.name) return;
+
+			const fetchPriceForGrade = async (grade) => {
+				const { getCachedPrice, setCachedPrice } = usePriceCache(
+					card.name,
+					grade
+				);
+
+				// Check cache first
+				const cachedPrice = getCachedPrice();
+				if (cachedPrice !== null) {
+					return cachedPrice;
+				}
+
+				try {
+					const response = await axios.get(
+						`${import.meta.env.VITE_API_URL}/card-prices`,
+						{
+							params: {
+								name: card.name,
+								grade: grade === 'ungraded' ? '' : grade,
+							},
+						}
+					);
+					const price = response.data.averagePrice;
+					setCachedPrice(price);
+					return price;
+				} catch (error) {
+					console.error(`Error fetching ${grade} price:`, error);
+					return null;
+				}
+			};
+
+			try {
+				// Fetch all prices concurrently
+				const [ungraded, psa8, psa9, psa10] = await Promise.all([
+					fetchPriceForGrade('ungraded'),
+					fetchPriceForGrade('PSA 8'),
+					fetchPriceForGrade('PSA 9'),
+					fetchPriceForGrade('PSA 10'),
+				]);
+
+				setCardPrices({
+					ungraded,
+					psa8,
+					psa9,
+					psa10,
+				});
+			} catch (error) {
+				console.error('Error fetching prices:', error);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchPrices();
+	}, [card?.name]);
+
+	// Collection check effect
+	useEffect(() => {
+		if (userEmail && card) {
+			const checkCardInCollection = async () => {
+				try {
+					const userId = await getUserByEmail(userEmail);
+					if (!userId) {
+						throw new Error('User not found');
+					}
+
+					const cardDocRef = doc(db, 'users', userId, 'cards', card.id);
+					const cardSnapshot = await getDoc(cardDocRef);
+
+					setCollectionState(cardSnapshot.exists() ? 'added' : 'neutral');
+				} catch (error) {
+					console.error('Error checking card in collection:', error);
+				}
+			};
+
+			checkCardInCollection();
+		}
+	}, [userEmail, card]);
+
+	// Helper functions
+	const getUserByEmail = async (email) => {
+		try {
+			const usersRef = collection(db, 'users');
+			const q = query(usersRef, where('email', '==', email));
+			const querySnapshot = await getDocs(q);
+
+			if (querySnapshot.empty) {
+				console.error('No user found with this email');
+				return null;
+			}
+
+			return querySnapshot.docs[0].id;
+		} catch (error) {
+			console.error('Error fetching user:', error);
+			throw error;
+		}
+	};
 
 	const calculateProfit = async () => {
 		if (!pricePaid || !cardPrices[selectedGrade]) {
@@ -73,114 +225,13 @@ const CardDetail = () => {
 		}
 	};
 
-	const handleLogin = () => {
-		navigate('/login');
-	};
-
-	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, (user) => {
-			setUser(user);
-		});
-		return () => unsubscribe();
-	}, []);
-
-	useEffect(() => {
-		const auth = getAuth();
-		onAuthStateChanged(auth, (user) => {
-			if (user) {
-				setUserEmail(user.email);
-			} else {
-				console.error('User is not logged in');
-			}
-		});
-	}, []);
-
-	useEffect(() => {
-		const fetchCardDetail = async () => {
-			try {
-				const response = await axios.get(
-					`https://api.pokemontcg.io/v2/cards/${id}`,
-					{
-						headers: {
-							'X-Api-Key': import.meta.env.VITE_POKEMON_KEY,
-						},
-					}
-				);
-				setCard(response.data.data);
-
-				if (response.data.data.types && response.data.data.types.length > 0) {
-					setCurrentCardType(response.data.data.types[0]); // First type
-				}
-			} catch (err) {
-				setError(`Failed to fetch card details. Error: ${err}`);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchCardDetail();
-	}, [id]);
-
-	// Get user document ID by email
-	const getUserByEmail = async (email) => {
-		try {
-			const usersRef = collection(db, 'users');
-			const q = query(usersRef, where('email', '==', email));
-			const querySnapshot = await getDocs(q);
-
-			if (querySnapshot.empty) {
-				console.error('No user found with this email');
-				return null;
-			}
-
-			const userDoc = querySnapshot.docs[0];
-			return userDoc.id;
-		} catch (error) {
-			console.error('Error fetching user:', error);
-			throw error;
-		}
-	};
-
-	useEffect(() => {
-		if (userEmail && card) {
-			const checkCardInCollection = async () => {
-				try {
-					const userId = await getUserByEmail(userEmail);
-					if (!userId) {
-						throw new Error('User not found');
-					}
-
-					// check if the card exists in the user's collection
-					const cardDocRef = doc(db, 'users', userId, 'cards', card.id);
-					const cardSnapshot = await getDoc(cardDocRef);
-
-					if (cardSnapshot.exists()) {
-						setCollectionState('added');
-					} else {
-						setCollectionState('neutral');
-					}
-				} catch (error) {
-					console.error('Error checking card in collection:', error);
-				}
-			};
-
-			checkCardInCollection();
-		}
-	}, [userEmail, card]);
-
-	// Add card to user's collection
-	// use setDoc instead of addDoc so that we can specify the id
-	// addDoc will generate a random id
 	const addToCollection = async (userEmail, cardData) => {
 		try {
-			// First get the user's document ID
 			const userId = await getUserByEmail(userEmail);
-
 			if (!userId) {
 				throw new Error('User not found');
 			}
 
-			// Prepare card data with required fields based on the API response structure
 			const cardToAdd = {
 				averageSellPrice: cardData.cardmarket?.prices?.averageSellPrice || 0,
 				image: cardData.images.large,
@@ -196,117 +247,32 @@ const CardDetail = () => {
 				lastUpdated: new Date(),
 			};
 
-			// Use the card's `id` as the document ID instead of an auto-generated ID
 			const cardDocRef = doc(db, 'users', userId, 'cards', cardData.id);
-
-			// Set the document with the card data
 			await setDoc(cardDocRef, cardToAdd);
-
 			setCollectionState('added');
-			// setIsAdded(true);
 		} catch (error) {
 			console.error('Error adding card to collection:', error);
-			// throw error;
 		}
 	};
 
 	const removeFromCollection = async (userEmail, cardData) => {
 		try {
-			// get the user's document ID first
 			const userId = await getUserByEmail(userEmail);
 			if (!userId) {
 				throw new Error('User not found');
 			}
 
-			// reference specific card document in Firebase
 			const cardDocRef = doc(db, 'users', userId, 'cards', cardData.id);
-
-			// delete the card document
 			await deleteDoc(cardDocRef);
-
 			setCollectionState('removed');
 		} catch (error) {
 			console.error('Error removing card from collection:', error);
-			// throw error;
 		}
 	};
 
-	const fetchPriceForGrade = async (cardName, grade) => {
-		const { getCachedPrice, setCachedPrice } = usePriceCache(cardName, grade);
-
-		// Check cache first
-		const cachedPrice = getCachedPrice();
-		if (cachedPrice !== null) {
-			return cachedPrice;
-		}
-
-		try {
-			const response = await axios.get(
-				`${import.meta.env.VITE_API_URL}/card-prices`,
-				{
-					params: {
-						name: cardName,
-						grade: grade === 'ungraded' ? '' : grade,
-					},
-				}
-			);
-			const price = response.data.averagePrice;
-			setCachedPrice(price);
-			return price;
-		} catch (error) {
-			console.error(`Error fetching ${grade} price:`, error);
-			return null;
-		}
+	const handleLogin = () => {
+		navigate('/login');
 	};
-
-	useEffect(() => {
-		const fetchCardDetailAndPrices = async () => {
-			try {
-				// Check cache first
-				const cachedCard = getCachedData();
-				if (cachedCard) {
-					setCard(cachedCard);
-					if (cachedCard.types && cachedCard.types.length > 0) {
-						setCurrentCardType(cachedCard.types[0]);
-					}
-				} else {
-					// Fetch from API if not in cache
-					const response = await axios.get(
-						`https://api.pokemontcg.io/v2/cards/${id}`,
-						{
-							headers: {
-								'X-Api-Key': import.meta.env.VITE_POKEMON_KEY,
-							},
-						}
-					);
-					setCard(response.data.data);
-					setCachedData(response.data.data);
-
-					if (response.data.data.types && response.data.data.types.length > 0) {
-						setCurrentCardType(response.data.data.types[0]);
-					}
-				}
-
-				// Fetch prices for all grades
-				const cardName = cachedCard?.name || card?.name;
-				if (cardName) {
-					const prices = {
-						ungraded: await fetchPriceForGrade(cardName, 'ungraded'),
-						psa8: await fetchPriceForGrade(cardName, 'PSA 8'),
-						psa9: await fetchPriceForGrade(cardName, 'PSA 9'),
-						psa10: await fetchPriceForGrade(cardName, 'PSA 10'),
-					};
-					setCardPrices(prices);
-				}
-			} catch (err) {
-				setError(`Failed to fetch card details. Error: ${err}`);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchCardDetailAndPrices();
-	}, [id]);
 
 	const renderGradeButtons = () => (
 		<div className={styles.gradeButtons}>
@@ -317,7 +283,6 @@ const CardDetail = () => {
 						selectedGrade === grade ? styles.selectedGrade : ''
 					}`}
 					onClick={() => setSelectedGrade(grade)}
-					// If we want one button to be highlighted at a time
 					style={{
 						backgroundColor:
 							selectedGrade === grade
