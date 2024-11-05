@@ -18,13 +18,15 @@ function PokemonCards() {
 	};
 
 	const parseSearchQuery = (query) => {
-		const parts = query.trim().split(' ');
+		const parts = query.trim().toLowerCase().split(' ');
 		const nameParts = [];
 		let number = '';
 
 		parts.forEach((part) => {
-			if (!number && /^\d+/.test(part)) {
-				number = part.match(/^\d+/)[0];
+			if (!number && /^tg\d+/.test(part)) {
+				number = part.match(/tg\d+(\/\d+)?/i)[0]; 
+			} else if (!number && /^\d+/.test(part)) {
+				number = part.match(/^\d+/)[0].replace(/^0+/, ''); // Remove leading zeros
 			} else {
 				nameParts.push(part);
 			}
@@ -43,7 +45,11 @@ function PokemonCards() {
 				let query = `name:"${pokemonName}"`;
 
 				if (cardNumber) {
-					query += ` number:"${cardNumber}"`;
+					if (cardNumber.includes('TG')) {
+						query += ` (number:"${cardNumber}" OR number:"${cardNumber.split('/')[0]}")`;
+					} else {
+						query += ` number:"${cardNumber}"`;
+					}
 				}
 
 				const response = await axios.get(
