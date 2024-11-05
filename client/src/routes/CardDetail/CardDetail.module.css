@@ -79,14 +79,14 @@
 	font-size: 36px;
 	font-weight: bold;
 	text-align: center;
-	margin-top: 50px;
+	margin-top: 40px;
 }
 
 .section {
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
-	margin-bottom: 40px;
+	margin-bottom: 30px;
 	position: relative;
 	padding-bottom: 40px;
 	border-bottom: 4px solid #ccc;
@@ -217,10 +217,10 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	margin-bottom: 40px;
+	margin-bottom: 30px;
 	gap: 2rem;
 	position: relative;
-	padding-bottom: 40px;
+	padding-bottom: 30px;
 	border-bottom: 4px solid #ccc;
 }
 
@@ -316,8 +316,18 @@
 	margin-top: 1rem;
 	font-size: 1.1rem;
 }
+.PSAResult {
+	margin-top: 1rem;
+	font-size: 1.1rem;
+}
 
 .actionButton:disabled {
 	cursor: not-allowed;
 	opacity: 0.5;
+}
+
+.leftSide {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }

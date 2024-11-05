@@ -38,6 +38,7 @@ const CardDetail = () => {
 	});
 	const [selectedGrade, setSelectedGrade] = useState('ungraded');
 	const [profit, setProfit] = useState(null);
+	const [PSA, setPSA] = useState(null);
 	const [isCalculating, setIsCalculating] = useState(false);
 	const auth = getAuth();
 	const navigate = useNavigate();
@@ -57,11 +58,13 @@ const CardDetail = () => {
 						salePrice: cardPrices[selectedGrade],
 						pricePaid: parseFloat(pricePaid),
 						gmeMembership: document.getElementById('gamestop-pro').checked,
+						expeditedTurnaround: document.getElementById('psa-sub').checked,
 					},
 				}
 			);
 
 			setProfit(response.data.gmeProfit);
+			setPSA(response.data.psaProfit);
 		} catch (error) {
 			console.error('Error calculating profit:', error);
 			setError('Failed to calculate profit');
@@ -396,45 +399,47 @@ const CardDetail = () => {
 				{card.name}
 			</h1>
 			<div className={styles.mainContent}>
-				<div>
-					<img
-						src={card.images.large}
-						alt={card.name}
-						className={`${styles.cardImage} `}
-					/>
-					<button
-						className={`${styles.actionButton} ${
-							collectionState === 'added'
-								? styles.removeButton
+				<div className={styles.leftSide}>
+					<div>
+						<img
+							src={card.images.large}
+							alt={card.name}
+							className={`${styles.cardImage} `}
+						/>
+						<button
+							className={`${styles.actionButton} ${
+								collectionState === 'added'
+									? styles.removeButton
+									: collectionState === 'removed'
+									? styles.removedButton
+									: styles.addButton
+							}`}
+							style={{
+								backgroundColor:
+									typeColors[currentCardType]?.buttonColor || '#fb923c',
+								borderColor:
+									typeColors[currentCardType]?.borderColor || '#f97316',
+							}}
+							onClick={
+								user
+									? () => {
+											if (collectionState === 'added') {
+												removeFromCollection(userEmail, card);
+											} else {
+												addToCollection(userEmail, card);
+											}
+									  }
+									: () => handleLogin()
+							}>
+							{collectionState === 'added'
+								? 'Remove from collection'
 								: collectionState === 'removed'
-								? styles.removedButton
-								: styles.addButton
-						}`}
-						style={{
-							backgroundColor:
-								typeColors[currentCardType]?.buttonColor || '#fb923c',
-							borderColor:
-								typeColors[currentCardType]?.borderColor || '#f97316',
-						}}
-						onClick={
-							user
-								? () => {
-										if (collectionState === 'added') {
-											removeFromCollection(userEmail, card);
-										} else {
-											addToCollection(userEmail, card);
-										}
-								  }
-								: () => handleLogin()
-						}>
-						{collectionState === 'added'
-							? 'Remove from collection'
-							: collectionState === 'removed'
-							? 'Add to collection'
-							: user
-							? 'Add to collection'
-							: 'Log in to add to collection'}
-					</button>
+								? 'Add to collection'
+								: user
+								? 'Add to collection'
+								: 'Log in to add to collection'}
+						</button>
+					</div>
 				</div>
 
 				<div className={styles.cardDetails}>
@@ -484,7 +489,7 @@ const CardDetail = () => {
 							</button>
 						</div>
 					</div>
-
+					<p>NOTE: Expedited Turnaround only works for cards less than $500 </p>
 					<div className={styles.priceProfit}>
 						<div className={styles.sectionSpecial}>
 							<input
@@ -501,15 +506,7 @@ const CardDetail = () => {
 										id='psa-sub'
 										className={styles.checkbox}
 									/>
-									<label htmlFor='psa-sub'>PSA Subscription</label>
-								</div>
-								<div className={styles.checkboxContainer}>
-									<input
-										type='checkbox'
-										id='bulk-grading'
-										className={styles.checkbox}
-									/>
-									<label htmlFor='bulk-grading'>Bulk Grading</label>
+									<label htmlFor='psa-sub'>PSA Expedited Turnaround</label>
 								</div>
 								<div className={styles.checkboxContainer}>
 									<input
@@ -552,7 +549,19 @@ const CardDetail = () => {
 									</p>
 								</div>
 							)}
-							<p>PSA grading: [price]</p>
+							{PSA !== null && (
+								<div
+									className={styles.PSAResult}
+									style={{ textAlign: 'right', marginTop: '10px' }}>
+									<p
+										style={{
+											color: PSA >= 0 ? '#22c55e' : '#ef4444',
+											fontWeight: 'bold',
+										}}>
+										PSA Grading Profit: ${PSA.toFixed(2)}
+									</p>
+								</div>
+							)}
 						</div>
 					</div>
 				</div>
