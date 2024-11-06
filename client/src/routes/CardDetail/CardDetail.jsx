@@ -107,6 +107,8 @@ const CardDetail = () => {
 					if (fetchedGrade !== selectedGrade) setSelectedGrade(fetchedGrade);
 				} catch (error) {
 					console.error('Error updating grade:', error);
+				} finally {
+					setLoading(false);
 				}
 			}
 		};
