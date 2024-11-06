@@ -41,7 +41,7 @@ const CardDetail = () => {
 		psa9: null,
 		psa10: null,
 	});
-	const [selectedGrade, setSelectedGrade] = useState('ungraded');
+	const [selectedGrade, setSelectedGrade] = useState('');
 	const [profit, setProfit] = useState(null);
 	const [PSA, setPSA] = useState(null);
 	const [isCalculating, setIsCalculating] = useState(false);
@@ -84,16 +84,6 @@ const CardDetail = () => {
 					if (cardData.types && cardData.types.length > 0) {
 						setCurrentCardType(cardData.types[0]);
 					}
-
-					const userId = await getUserByEmail(userEmail);
-					if (!userId) throw new Error('User not found');
-
-					const cardDocRef = doc(db, 'users', userId, 'cards', cachedCard.id);
-					const cardSnapshot = await getDoc(cardDocRef);
-					const fetchedGrade = cardSnapshot.data()?.selectedGrade || 'ungraded';
-
-					// Only setSelectedGrade if it differs from the current state
-					if (fetchedGrade !== selectedGrade) setSelectedGrade(fetchedGrade);
 				}
 			} catch (err) {
 				setError(`Failed to fetch card details. Error: ${err}`);
@@ -102,6 +92,27 @@ const CardDetail = () => {
 
 		fetchCardDetail();
 	}, [id, getCachedData, setCachedData]);
+
+	useEffect(() => {
+		const updateGrade = async () => {
+			if (user && card) {
+				try {
+					const userId = await getUserByEmail(userEmail);
+					if (!userId) return;
+
+					const cardDocRef = doc(db, 'users', userId, 'cards', card.id);
+					const cardSnapshot = await getDoc(cardDocRef);
+					const fetchedGrade = cardSnapshot.data()?.selectedGrade || 'ungraded';
+
+					if (fetchedGrade !== selectedGrade) setSelectedGrade(fetchedGrade);
+				} catch (error) {
+					console.error('Error updating grade:', error);
+				}
+			}
+		};
+
+		updateGrade();
+	}, [user, card, userEmail]);
 
 	// Price fetching effect
 	useEffect(() => {
