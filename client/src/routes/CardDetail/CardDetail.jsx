@@ -41,7 +41,7 @@ const CardDetail = () => {
 		psa9: null,
 		psa10: null,
 	});
-	const [selectedGrade, setSelectedGrade] = useState('ungraded');
+	const [selectedGrade, setSelectedGrade] = useState('');
 	const [profit, setProfit] = useState(null);
 	const [PSA, setPSA] = useState(null);
 	const [isCalculating, setIsCalculating] = useState(false);
@@ -92,6 +92,29 @@ const CardDetail = () => {
 
 		fetchCardDetail();
 	}, [id, getCachedData, setCachedData]);
+
+	useEffect(() => {
+		const updateGrade = async () => {
+			if (user && card) {
+				try {
+					const userId = await getUserByEmail(userEmail);
+					if (!userId) return;
+
+					const cardDocRef = doc(db, 'users', userId, 'cards', card.id);
+					const cardSnapshot = await getDoc(cardDocRef);
+					const fetchedGrade = cardSnapshot.data()?.selectedGrade || 'ungraded';
+
+					if (fetchedGrade !== selectedGrade) setSelectedGrade(fetchedGrade);
+				} catch (error) {
+					console.error('Error updating grade:', error);
+				} finally {
+					setLoading(false);
+				}
+			}
+		};
+
+		updateGrade();
+	}, [user, card, userEmail]);
 
 	// Price fetching effect
 	useEffect(() => {
@@ -245,6 +268,8 @@ const CardDetail = () => {
 				types: cardData.types || [],
 				addedAt: new Date(),
 				lastUpdated: new Date(),
+				selectedPrice: cardPrices[selectedGrade] || 0,
+				selectedGrade: selectedGrade,
 			};
 
 			const cardDocRef = doc(db, 'users', userId, 'cards', cardData.id);
