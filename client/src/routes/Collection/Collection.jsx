@@ -5,12 +5,13 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Link } from 'react-router-dom';
 import styles from './Collection.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
+import CollectionCard from '../../components/CollectionCard/CollectionCard';
 import LoggedOutView from '../../components/LoggedOutView/LoggedOutView';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import cardSets from '../../util/cardSets.js';
 import cardRarities from '../../util/cardRarities.js';
 
-const Collection = () => { 
+const Collection = () => {
 	const [user, setUser] = useState(null);
 	const [cards, setCards] = useState([]);
 	const [filteredCards, setFilteredCards] = useState([]);
@@ -19,10 +20,10 @@ const Collection = () => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [loading, setLoading] = useState(true);
 	const [filters, setFilters] = useState({
-		rarity: '',  // rarity filter value
-		price: '',   // price range filter value
-		type: '',    // type filter value
-		set: ''      // set filter value
+		rarity: '', // rarity filter value
+		price: '', // price range filter value
+		type: '', // type filter value
+		set: '', // set filter value
 	});
 
 	// Listen for user auth state changes
@@ -37,7 +38,7 @@ const Collection = () => {
 	const handleInputChange = (e) => {
 		const value = e.target.value;
 		setSearchTerm(value);
-	
+
 		if (value.trim() !== '') {
 			const searchFiltered = cards.filter((card) =>
 				card.name.toLowerCase().includes(value.toLowerCase())
@@ -145,12 +146,16 @@ const Collection = () => {
 	// apply filters whenever filters change
 	useEffect(() => {
 		let filtered = [...cards];
-		
+
 		// filter by rarity
 		if (filters.rarity) {
-			filtered = filtered.filter((card) => card.rarity && card.rarity.toLowerCase() === filters.rarity.toLowerCase());
+			filtered = filtered.filter(
+				(card) =>
+					card.rarity &&
+					card.rarity.toLowerCase() === filters.rarity.toLowerCase()
+			);
 		}
-	
+
 		// filter by price range
 		if (filters.price) {
 			const [minPrice, maxPrice] = filters.price.split('-').map(Number);
@@ -159,20 +164,28 @@ const Collection = () => {
 				return cardPrice >= minPrice && cardPrice <= maxPrice;
 			});
 		}
-	
-		//filter by type 
+
+		//filter by type
 		if (filters.type) {
-			filtered = filtered.filter((card) =>
-				card.types && card.types.map(type => type.toLowerCase()).includes(filters.type.toLowerCase())
+			filtered = filtered.filter(
+				(card) =>
+					card.types &&
+					card.types
+						.map((type) => type.toLowerCase())
+						.includes(filters.type.toLowerCase())
 			);
 		}
-	
-		//filter by set name 
+
+		//filter by set name
 		if (filters.set) {
 			// make sure the card setName matches the selected set exactly
-			filtered = filtered.filter((card) => card.setName && card.setName.toLowerCase() === filters.set.toLowerCase());
+			filtered = filtered.filter(
+				(card) =>
+					card.setName &&
+					card.setName.toLowerCase() === filters.set.toLowerCase()
+			);
 		}
-	
+
 		setFilteredCards(filtered); // update the list of displayed cards based on filters
 	}, [filters, cards]);
 
@@ -273,12 +286,11 @@ const Collection = () => {
 
 						<div className={styles.filterContainer}>
 							<select
-								name="rarity"
+								name='rarity'
 								className={styles.filterSelect}
 								value={filters.rarity} // <-- Bind to filters.rarity
-								onChange={handleFilterChange}
-							>
-								<option value="">Rarity</option>
+								onChange={handleFilterChange}>
+								<option value=''>Rarity</option>
 								{cardRarities.map((rarity, index) => (
 									<option key={index} value={rarity}>
 										{rarity}
@@ -287,29 +299,27 @@ const Collection = () => {
 							</select>
 
 							<select
-								name="price"
+								name='price'
 								className={styles.filterSelect}
 								value={filters.price} // <-- Bind to filters.price
-								onChange={handleFilterChange}
-							>
-								<option value="">Price</option>
-								<option value="0-25">$ 0 - $ 25</option>
-								<option value="25-50">$ 25 - $ 50</option>
-								<option value="50-75">$ 50 - $ 75</option>
-								<option value="75-100">$ 75 - $ 100</option>
-								<option value="100-125">$ 100 - $ 125</option>
-								<option value="125-150">$ 125 - $ 150</option>
-								<option value="150-175">$ 150 - $ 175</option>
-								<option value="175-200">$ 175 - $ 200</option>
+								onChange={handleFilterChange}>
+								<option value=''>Price</option>
+								<option value='0-25'>$ 0 - $ 25</option>
+								<option value='25-50'>$ 25 - $ 50</option>
+								<option value='50-75'>$ 50 - $ 75</option>
+								<option value='75-100'>$ 75 - $ 100</option>
+								<option value='100-125'>$ 100 - $ 125</option>
+								<option value='125-150'>$ 125 - $ 150</option>
+								<option value='150-175'>$ 150 - $ 175</option>
+								<option value='175-200'>$ 175 - $ 200</option>
 							</select>
 
 							<select
-								name="type"
+								name='type'
 								className={styles.filterSelect}
 								value={filters.type} // <-- Bind to filters.type
-								onChange={handleFilterChange}
-							>
-								<option value="">Type</option>
+								onChange={handleFilterChange}>
+								<option value=''>Type</option>
 								<option value='Colorless'>Colorless</option>
 								<option value='Darkness'>Darkness</option>
 								<option value='Dragon'>Dragon</option>
@@ -324,12 +334,11 @@ const Collection = () => {
 							</select>
 
 							<select
-								name="set"
+								name='set'
 								className={styles.filterSelect}
 								value={filters.set} // <-- Bind to filters.set
-								onChange={handleFilterChange}
-							>
-								<option value="">Set</option>
+								onChange={handleFilterChange}>
+								<option value=''>Set</option>
 								{cardSets.map((set, index) => (
 									<option key={index} value={set}>
 										{set}
@@ -341,13 +350,11 @@ const Collection = () => {
 
 					<div className={styles.cardsGrid}>
 						{filteredCards.map((card, index) => (
-							<Link key={card.id} to={`/card-detail/${card.id}`}>
-								<img
-									// key={index}
-									src={card.image || ""}
-									alt={`Pokemon Card - ${card.name || 'Unknown'}`}
-									className={styles.cardImage}
-								/>
+							<Link
+								key={card.id}
+								to={`/card-detail/${card.id}`}
+								style={{ textDecoration: 'none' }}>
+								<CollectionCard card={card} />
 							</Link>
 						))}
 					</div>
