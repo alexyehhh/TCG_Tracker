@@ -1,28 +1,28 @@
 const typeColors = {
 	Colorless: {
-		buttonColor: '#d3d3d3',
+		buttonColor: '#2C2C2C',
 		borderColor: '#a9a9a9',
 		backgroundColor: '#f5f5f5',
 	},
 	Darkness: {
-		buttonColor: 'black',
-		borderColor: '#555555',
-		backgroundColor: '#555555',
+		buttonColor: '#000000',
+		borderColor: '#D4D4D4',
+		backgroundColor: '#666666',
 	},
 	Dragon: {
-		buttonColor: '#926a33',
-		borderColor: '#ca9c31',
-		backgroundColor: '#ddac30',
+		buttonColor: '#8B4513',
+		borderColor: '#B8860B',
+		backgroundColor: '#DAA520',
 	},
 	Lightning: {
-		buttonColor: '#fad643',
-		borderColor: '#ffd700',
-		backgroundColor: '#ffe97f',
+		buttonColor: '#F2B705',
+		borderColor: '#F29F05',
+		backgroundColor: '#FFF7D6',
 	},
 	Fairy: {
-		buttonColor: '#ff69b4',
-		borderColor: '#ff1493',
-		backgroundColor: '#ffb6c1',
+		buttonColor: '#E6007E',
+		borderColor: '#FF0066',
+		backgroundColor: '#FFE0E6',
 	},
 	Fighting: {
 		buttonColor: '#8b4513',
@@ -30,9 +30,9 @@ const typeColors = {
 		backgroundColor: '#f5f5dc',
 	},
 	Fire: {
-		buttonColor: '#ff7b00',
-		borderColor: '#ffa200',
-		backgroundColor: '#ffbe0b',
+		buttonColor: '#FF5400',
+		borderColor: '#FF8C00',
+		backgroundColor: '#FFB300',
 	},
 	Grass: {
 		buttonColor: '#228b22',
