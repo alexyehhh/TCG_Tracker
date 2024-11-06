@@ -25,6 +25,7 @@ const Collection = () => {
 		type: '', // type filter value
 		set: '', // set filter value
 	});
+	const [price, setPrice] = useState(0);
 
 	// Listen for user auth state changes
 	useEffect(() => {
@@ -98,13 +99,18 @@ const Collection = () => {
 			const querySnapshot = await getDocs(cardsRef);
 
 			const cardsList = [];
+			let totalValue = 0;
 			querySnapshot.forEach((doc) => {
 				const cardData = doc.data();
 				if (cardData.image) {
 					cardsList.push({ ...cardData, id: doc.id }); // add `id` from `doc.id`
 				}
+				console.log(cardData);
+				if (cardData.selectedPrice != 'N/A') {
+					totalValue += parseFloat(cardData.selectedPrice);
+				}
 			});
-
+			setPrice(totalValue.toFixed(2));
 			setCards(cardsList);
 			setCards(cardsList);
 			setHasCards(cardsList.length > 0);
@@ -261,6 +267,7 @@ const Collection = () => {
 					<h1 className={styles.title}>
 						{user?.displayName || 'Your'}'s Collection
 					</h1>
+					<div className={styles.priceValuation}>Total Value: ${price}</div>
 
 					<div className={styles.searchContainer}>
 						<div className={styles.searchBar}>
@@ -349,7 +356,7 @@ const Collection = () => {
 					</div>
 
 					<div className={styles.cardsGrid}>
-						{filteredCards.map((card, index) => (
+						{filteredCards.map((card) => (
 							<Link
 								key={card.id}
 								to={`/card-detail/${card.id}`}
