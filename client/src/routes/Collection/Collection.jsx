@@ -350,7 +350,10 @@ const Collection = () => {
 
 					<div className={styles.cardsGrid}>
 						{filteredCards.map((card, index) => (
-							<Link key={card.id} to={`/card-detail/${card.id}`}>
+							<Link
+								key={card.id}
+								to={`/card-detail/${card.id}`}
+								style={{ textDecoration: 'none' }}>
 								<CollectionCard card={card} />
 							</Link>
 						))}
