@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 // Cache duration configuration
 export const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds (can be adjusted)
 
@@ -40,15 +41,15 @@ export const cacheUtils = {
 
 // Custom hook for card caching
 export const useCardCache = (cardId) => {
-	// Helper function to check if cached data is still valid
+	// Check if cached data is still valid
 	const isValidCache = (cachedData) => {
 		if (!cachedData) return false;
 		const now = new Date().getTime();
 		return now - cachedData.timestamp < CACHE_DURATION;
 	};
 
-	// Helper function to get cached data
-	const getCachedData = () => {
+	// Memoized get function to avoid re-creation on every render
+	const getCachedData = useCallback(() => {
 		const cached = localStorage.getItem(`card_${cardId}`);
 		if (!cached) return null;
 
@@ -58,19 +59,22 @@ export const useCardCache = (cardId) => {
 			return null;
 		}
 		return parsedCache.data;
-	};
+	}, [cardId]);
 
-	// Helper function to set cached data
-	const setCachedData = (data) => {
-		const cacheData = {
-			data,
-			timestamp: new Date().getTime(),
-		};
-		localStorage.setItem(`card_${cardId}`, JSON.stringify(cacheData));
-	};
+	// Memoized set function
+	const setCachedData = useCallback(
+		(data) => {
+			const cacheData = {
+				data,
+				timestamp: new Date().getTime(),
+			};
+			localStorage.setItem(`card_${cardId}`, JSON.stringify(cacheData));
+		},
+		[cardId]
+	);
 
-	// Get cache metadata
-	const getCacheMetadata = () => {
+	// Memoized metadata retrieval
+	const getCacheMetadata = useCallback(() => {
 		const cached = localStorage.getItem(`card_${cardId}`);
 		if (!cached) return null;
 
@@ -84,7 +88,7 @@ export const useCardCache = (cardId) => {
 			remainingDays: days,
 			remainingHours: hours,
 		};
-	};
+	}, [cardId]);
 
 	return { getCachedData, setCachedData, getCacheMetadata };
 };

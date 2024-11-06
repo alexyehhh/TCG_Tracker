@@ -84,6 +84,16 @@ const CardDetail = () => {
 					if (cardData.types && cardData.types.length > 0) {
 						setCurrentCardType(cardData.types[0]);
 					}
+
+					const userId = await getUserByEmail(userEmail);
+					if (!userId) throw new Error('User not found');
+
+					const cardDocRef = doc(db, 'users', userId, 'cards', cachedCard.id);
+					const cardSnapshot = await getDoc(cardDocRef);
+					const fetchedGrade = cardSnapshot.data()?.selectedGrade || 'ungraded';
+
+					// Only setSelectedGrade if it differs from the current state
+					if (fetchedGrade !== selectedGrade) setSelectedGrade(fetchedGrade);
 				}
 			} catch (err) {
 				setError(`Failed to fetch card details. Error: ${err}`);
