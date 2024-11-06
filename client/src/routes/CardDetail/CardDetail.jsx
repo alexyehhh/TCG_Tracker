@@ -245,6 +245,8 @@ const CardDetail = () => {
 				types: cardData.types || [],
 				addedAt: new Date(),
 				lastUpdated: new Date(),
+				selectedPrice: cardPrices[selectedGrade] || 0,
+				selectedGrade: selectedGrade,
 			};
 
 			const cardDocRef = doc(db, 'users', userId, 'cards', cardData.id);
