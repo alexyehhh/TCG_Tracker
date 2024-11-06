@@ -30,7 +30,9 @@ const CollectionCard = ({ card, onClick }) => {
 				</p>
 				<p className={styles.priceText}>
 					Price: $
-					{card.selectedPrice ? Number(card.selectedPrice).toFixed(2) : 'N/A'}
+					{card.selectedPrice !== 'N/A'
+						? Number(card.selectedPrice).toFixed(2)
+						: 'N/A'}
 				</p>
 			</div>
 		</div>
