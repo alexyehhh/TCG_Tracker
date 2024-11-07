@@ -18,8 +18,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db } from '../../util/firebase';
 import typeColors from '../../util/typeColors';
 import PageLayout from '../../components/PageLayout/PageLayout';
-// import { useCardCache } from '../../util/cacheUtils';
-// import { usePriceCache } from '../../util/cacheUtils';
+import { getCachedPrice, setCachedPrice } from '../../util/cacheUtils';
 import { formatter } from '../../util/cardUtils';
 
 const CardDetail = () => {
@@ -112,6 +111,13 @@ const CardDetail = () => {
 		const fetchPrices = async () => {
 			if (!card?.name) return;
 
+			const cachedPrices = getCachedPrice(card.id, card.set.printedTotal);
+			if (cachedPrices) {
+				setCardPrices(cachedPrices);
+				setLoading(false);
+				return;
+			}
+
 			const fetchPriceForGrade = async (grade) => {
 				try {
 					const response = await axios.get(
@@ -133,7 +139,6 @@ const CardDetail = () => {
 			};
 
 			try {
-				// Fetch all prices concurrently
 				const [ungraded, psa8, psa9, psa10] = await Promise.all([
 					fetchPriceForGrade('ungraded'),
 					fetchPriceForGrade('PSA 8'),
@@ -141,12 +146,15 @@ const CardDetail = () => {
 					fetchPriceForGrade('PSA 10'),
 				]);
 
-				setCardPrices({
+				const fetchedPrices = {
 					ungraded,
 					psa8,
 					psa9,
 					psa10,
-				});
+				};
+
+				setCardPrices(fetchedPrices);
+				setCachedPrice(card.id, card.set.printedTotal, fetchedPrices);
 			} catch (error) {
 				console.error('Error fetching prices:', error);
 			} finally {
