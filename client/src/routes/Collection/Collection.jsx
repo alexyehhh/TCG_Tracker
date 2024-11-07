@@ -243,9 +243,14 @@ const Collection = () => {
 					Looks like you haven't added any cards yet. Start building your
 					collection by uploading your first card!
 				</p>
-				<Link to='/upload' className={styles.uploadButton}>
-					Upload Your First Card
-				</Link>
+				<div className={styles.notloggedInBtns}>
+					<Link to='/upload' className={styles.uploadButton}>
+						Upload Your First Card
+					</Link>
+					<Link to='/' className={styles.uploadButton}>
+						Search a Card
+					</Link>
+				</div>
 			</div>
 		</div>
 	);

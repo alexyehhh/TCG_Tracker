@@ -407,3 +407,10 @@
 	margin-top: none;
 	margin-bottom: 1rem;
 }
+
+.notloggedInBtns {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 2rem;
+}
