@@ -17,18 +17,18 @@ import {
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db } from '../../util/firebase';
 import typeColors from '../../util/typeColors';
-import { useCardCache } from '../../util/cacheUtils';
 import PageLayout from '../../components/PageLayout/PageLayout';
-import { usePriceCache } from '../../util/cacheUtils';
+// import { useCardCache } from '../../util/cacheUtils';
+// import { usePriceCache } from '../../util/cacheUtils';
 import { formatter } from '../../util/cardUtils';
 
 const CardDetail = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
 	const auth = getAuth();
-	const { getCachedData, setCachedData } = useCardCache(id);
 
 	const [card, setCard] = useState(null);
+	// const { getCachedData, setCachedData } = useCardCache(id, card?.set?.id);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [pricePaid, setPricePaid] = useState('');
@@ -62,29 +62,19 @@ const CardDetail = () => {
 	useEffect(() => {
 		const fetchCardDetail = async () => {
 			try {
-				// Check cache first
-				const cachedCard = getCachedData();
-				if (cachedCard) {
-					setCard(cachedCard);
-					if (cachedCard.types && cachedCard.types.length > 0) {
-						setCurrentCardType(cachedCard.types[0]);
+				const response = await axios.get(
+					`https://api.pokemontcg.io/v2/cards/${id}`,
+					{
+						headers: {
+							'X-Api-Key': import.meta.env.VITE_POKEMON_KEY,
+						},
 					}
-				} else {
-					const response = await axios.get(
-						`https://api.pokemontcg.io/v2/cards/${id}`,
-						{
-							headers: {
-								'X-Api-Key': import.meta.env.VITE_POKEMON_KEY,
-							},
-						}
-					);
-					const cardData = response.data.data;
-					setCard(cardData);
-					setCachedData(cardData);
+				);
+				const cardData = response.data.data;
+				setCard(cardData);
 
-					if (cardData.types && cardData.types.length > 0) {
-						setCurrentCardType(cardData.types[0]);
-					}
+				if (cardData.types && cardData.types.length > 0) {
+					setCurrentCardType(cardData.types[0]);
 				}
 			} catch (err) {
 				setError(`Failed to fetch card details. Error: ${err}`);
@@ -92,7 +82,7 @@ const CardDetail = () => {
 		};
 
 		fetchCardDetail();
-	}, [id, getCachedData, setCachedData]);
+	}, [id]);
 
 	useEffect(() => {
 		const updateGrade = async () => {
@@ -123,30 +113,19 @@ const CardDetail = () => {
 			if (!card?.name) return;
 
 			const fetchPriceForGrade = async (grade) => {
-				const { getCachedPrice, setCachedPrice } = usePriceCache(
-					card.name,
-					grade
-				);
-
-				// Check cache first
-				const cachedPrice = getCachedPrice();
-				if (cachedPrice !== null) {
-					return cachedPrice;
-				}
-
 				try {
 					const response = await axios.get(
 						`${import.meta.env.VITE_API_URL}/card-prices`,
 						{
 							params: {
 								name: card.name,
+								number: card.number,
+								total: card.set.printedTotal,
 								grade: grade === 'ungraded' ? '' : grade,
 							},
 						}
 					);
-					const price = response.data.averagePrice;
-					setCachedPrice(price);
-					return price;
+					return response.data.averagePrice;
 				} catch (error) {
 					console.error(`Error fetching ${grade} price:`, error);
 					return null;
@@ -176,7 +155,7 @@ const CardDetail = () => {
 		};
 
 		fetchPrices();
-	}, [card?.name]);
+	}, [card?.name, card?.number, card?.set?.printedTotal]);
 
 	// Collection check effect
 	useEffect(() => {
