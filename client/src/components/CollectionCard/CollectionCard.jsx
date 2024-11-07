@@ -1,6 +1,7 @@
 // CollectionCard.jsx
 import React from 'react';
 import styles from './CollectionCard.module.css';
+import { formatter } from '../../util/cardUtils';
 
 const GradeIcon = ({ grade }) => {
 	// Convert grade to display format
@@ -31,7 +32,7 @@ const CollectionCard = ({ card, onClick }) => {
 				<p className={styles.priceText}>
 					Price: $
 					{card.selectedPrice !== 'N/A'
-						? Number(card.selectedPrice).toFixed(2)
+						? formatter.format(Number(card.selectedPrice))
 						: 'N/A'}
 				</p>
 			</div>

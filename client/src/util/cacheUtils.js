@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 // Cache duration configuration
-export const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds (can be adjusted)
+export const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 
 // General cache utilities
 export const cacheUtils = {
@@ -37,6 +37,10 @@ export const cacheUtils = {
 		);
 		return { days, hours };
 	},
+
+	generatePriceCacheKey: (cardName, cardNumber, setTotal, grade) => {
+		return `price_${cardName}_${cardNumber}_${setTotal}_${grade}`;
+	},
 };
 
 // Custom hook for card caching
@@ -48,7 +52,6 @@ export const useCardCache = (cardId) => {
 		return now - cachedData.timestamp < CACHE_DURATION;
 	};
 
-	// Memoized get function to avoid re-creation on every render
 	const getCachedData = useCallback(() => {
 		const cached = localStorage.getItem(`card_${cardId}`);
 		if (!cached) return null;
@@ -61,7 +64,6 @@ export const useCardCache = (cardId) => {
 		return parsedCache.data;
 	}, [cardId]);
 
-	// Memoized set function
 	const setCachedData = useCallback(
 		(data) => {
 			const cacheData = {
@@ -73,7 +75,6 @@ export const useCardCache = (cardId) => {
 		[cardId]
 	);
 
-	// Memoized metadata retrieval
 	const getCacheMetadata = useCallback(() => {
 		const cached = localStorage.getItem(`card_${cardId}`);
 		if (!cached) return null;
@@ -94,8 +95,13 @@ export const useCardCache = (cardId) => {
 };
 
 // Custom hook for price caching
-export const usePriceCache = (cardName, grade) => {
-	const cacheKey = `price_${cardName}_${grade}`;
+export const usePriceCache = (cardName, cardNumber, setTotal, grade) => {
+	const cacheKey = cacheUtils.generatePriceCacheKey(
+		cardName,
+		cardNumber,
+		setTotal,
+		grade
+	);
 
 	const getCachedPrice = () => {
 		const cached = localStorage.getItem(cacheKey);

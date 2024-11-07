@@ -27,7 +27,9 @@ const Collection = () => {
 	});
 	const [price, setPrice] = useState(0);
 
-	const alphabeticalCards = cards.sort((a, b) => a.name.localeCompare(b.name));
+	const alphabeticalCards = cards.sort((a, b) => {
+		return b.addedAt.toDate() - a.addedAt.toDate();
+	});
 
 	// Listen for user auth state changes
 	useEffect(() => {
@@ -241,9 +243,14 @@ const Collection = () => {
 					Looks like you haven't added any cards yet. Start building your
 					collection by uploading your first card!
 				</p>
-				<Link to='/upload' className={styles.uploadButton}>
-					Upload Your First Card
-				</Link>
+				<div className={styles.notloggedInBtns}>
+					<Link to='/' className={styles.uploadButton}>
+						Search a Card
+					</Link>
+					<Link to='/upload' className={styles.uploadButton}>
+						Upload Your First Card
+					</Link>
+				</div>
 			</div>
 		</div>
 	);
