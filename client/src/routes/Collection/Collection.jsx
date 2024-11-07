@@ -244,11 +244,11 @@ const Collection = () => {
 					collection by uploading your first card!
 				</p>
 				<div className={styles.notloggedInBtns}>
-					<Link to='/upload' className={styles.uploadButton}>
-						Upload Your First Card
-					</Link>
 					<Link to='/' className={styles.uploadButton}>
 						Search a Card
+					</Link>
+					<Link to='/upload' className={styles.uploadButton}>
+						Upload Your First Card
 					</Link>
 				</div>
 			</div>
