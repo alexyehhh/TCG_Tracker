@@ -396,16 +396,14 @@
 	/* font-size: 1.5rem; */
 	font-weight: bold;
 	color: #581c87;
-
-	padding: 0.5rem 1rem;
-	margin-top: none;
 	border: 1px solid #581c87;
-	border-radius: 0.5rem;
 	background-color: white;
-	width: 200px;
+	border-radius: 0.5rem;
 	height: 40px;
 	text-align: center;
+	padding: 0.5rem 1rem;
 	display: flex;
 	justify-content: center;
+	margin-top: none;
 	margin-bottom: 1rem;
 }
