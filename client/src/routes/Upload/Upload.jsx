@@ -25,18 +25,28 @@ const UploadPage = () => {
 		setDragActive(false);
 
 		const droppedFiles = Array.from(e.dataTransfer.files);
-		setFiles((prevFiles) => [...prevFiles, ...droppedFiles]);
+		const previewFiles = droppedFiles.map(file => ({
+            file,
+            preview: URL.createObjectURL(file),
+        }));
+		setFiles((prevFiles) => [...prevFiles, ...previewFiles]);
 	};
 
 	const handleChange = (e) => {
 		const uploadedFiles = Array.from(e.target.files);
-		setFiles((prevFiles) => [...prevFiles, ...uploadedFiles]);
+		const previewFiles = uploadedFiles.map(file => ({
+            file,
+            preview: URL.createObjectURL(file),
+        }));
+		setFiles((prevFiles) => [...prevFiles, ...previewFiles]);
 	};
 
 	const removeFile = (indexToRemove) => {
-		setFiles((prevFiles) =>
-			prevFiles.filter((_, index) => index !== indexToRemove)
-		);
+		setFiles((prevFiles) => {
+            // revokes object URL to release memory
+            URL.revokeObjectURL(prevFiles[indexToRemove].preview);
+            return prevFiles.filter((_, index) => index !== indexToRemove);
+        });
 	};
 
 	// Add a card to user collection
@@ -98,9 +108,14 @@ const UploadPage = () => {
 					{files.length > 0 && (
 						<div className={styles.fileList}>
 							<h3 className={styles.fileListTitle}>Uploaded Files</h3>
-							{files.map((file, index) => (
+							{files.map((fileObj, index) => (
 								<div key={index} className={styles.fileItem}>
-									<span>{file.name}</span>
+									<img
+                                        src={fileObj.preview}
+                                        alt={`Preview ${index + 1}`}
+                                        className={styles.imagePreview}
+                                    />
+									<span>{fileObj.file.name}</span>
 									<button
 										onClick={() => removeFile(index)}
 										className={styles.removeButton}
