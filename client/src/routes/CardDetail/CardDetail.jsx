@@ -310,7 +310,9 @@ const CardDetail = () => {
 					{grade === 'ungraded' ? 'Ungraded' : `PSA ${grade.slice(3)}`}
 					<div className={styles.price}>
 						{cardPrices[grade]
-							? `$${formatter.format(Number(cardPrices[grade]))}`
+							? Number(cardPrices[grade]) > 0
+								? `$${formatter.format(Number(cardPrices[grade]))}`
+								: 'N/A'
 							: 'Loading...'}
 					</div>
 				</button>
