@@ -105,7 +105,7 @@ const Collection = () => {
 				if (cardData.image) {
 					cardsList.push({ ...cardData, id: doc.id }); // add `id` from `doc.id`
 				}
-				console.log(cardData);
+				// console.log(cardData);
 				if (cardData.selectedPrice != 'N/A') {
 					totalValue += parseFloat(cardData.selectedPrice);
 				}

@@ -24,10 +24,10 @@ const CollectionCard = ({ card, onClick }) => {
 				onClick={onClick}
 			/>
 			<div className={styles.cardInfo}>
-				<p className={styles.gradeText}>
+				<div className={styles.gradeText}>
 					<span>Grade:</span>
 					<GradeIcon grade={card.selectedGrade} />
-				</p>
+				</div>
 				<p className={styles.priceText}>
 					Price: $
 					{card.selectedPrice !== 'N/A'
