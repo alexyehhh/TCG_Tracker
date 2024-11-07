@@ -20,6 +20,7 @@ import typeColors from '../../util/typeColors';
 import { useCardCache } from '../../util/cacheUtils';
 import PageLayout from '../../components/PageLayout/PageLayout';
 import { usePriceCache } from '../../util/cacheUtils';
+import { formatter } from '../../util/cardUtils';
 
 const CardDetail = () => {
 	const { id } = useParams();
@@ -321,7 +322,9 @@ const CardDetail = () => {
 					}}>
 					{grade === 'ungraded' ? 'Ungraded' : `PSA ${grade.slice(3)}`}
 					<div className={styles.price}>
-						{cardPrices[grade] ? `$${cardPrices[grade]}` : 'Loading...'}
+						{cardPrices[grade]
+							? `$${formatter.format(Number(cardPrices[grade]))}`
+							: 'Loading...'}
 					</div>
 				</button>
 			))}
