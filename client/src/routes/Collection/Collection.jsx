@@ -27,6 +27,8 @@ const Collection = () => {
 	});
 	const [price, setPrice] = useState(0);
 
+	const alphabeticalCards = cards.sort((a, b) => a.name.localeCompare(b.name));
+
 	// Listen for user auth state changes
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -46,7 +48,7 @@ const Collection = () => {
 			);
 			setFilteredCards(searchFiltered);
 		} else {
-			setFilteredCards(cards); // reset to full list if search term is empty
+			setFilteredCards(alphabeticalCards); // reset to full list if search term is empty
 		}
 	};
 
@@ -58,7 +60,7 @@ const Collection = () => {
 			);
 			setFilteredCards(searchFiltered);
 		} else {
-			setFilteredCards(cards); // reset to full list if search term is empty
+			setFilteredCards(alphabeticalCards); // reset to full list if search term is empty
 		}
 	};
 
@@ -105,7 +107,7 @@ const Collection = () => {
 				if (cardData.image) {
 					cardsList.push({ ...cardData, id: doc.id }); // add `id` from `doc.id`
 				}
-				console.log(cardData);
+				// console.log(cardData);
 				if (cardData.selectedPrice != 'N/A') {
 					totalValue += parseFloat(cardData.selectedPrice);
 				}
@@ -151,7 +153,7 @@ const Collection = () => {
 
 	// apply filters whenever filters change
 	useEffect(() => {
-		let filtered = [...cards];
+		let filtered = [...alphabeticalCards];
 
 		// filter by rarity
 		if (filters.rarity) {
