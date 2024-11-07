@@ -27,7 +27,9 @@ const Collection = () => {
 	});
 	const [price, setPrice] = useState(0);
 
-	const alphabeticalCards = cards.sort((a, b) => a.name.localeCompare(b.name));
+	const alphabeticalCards = cards.sort((a, b) => {
+		return b.addedAt.toDate() - a.addedAt.toDate();
+	});
 
 	// Listen for user auth state changes
 	useEffect(() => {
