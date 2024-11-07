@@ -30,10 +30,12 @@ const CollectionCard = ({ card, onClick }) => {
 					<GradeIcon grade={card.selectedGrade} />
 				</div>
 				<p className={styles.priceText}>
-					Price: $
+					Price:
 					{card.selectedPrice !== 'N/A'
-						? formatter.format(Number(card.selectedPrice))
-						: 'N/A'}
+						? Number(card.selectedPrice) > 0
+							? ` $${formatter.format(Number(card.selectedPrice))}`
+							: ' N/A'
+						: ' N/A'}
 				</p>
 			</div>
 		</div>

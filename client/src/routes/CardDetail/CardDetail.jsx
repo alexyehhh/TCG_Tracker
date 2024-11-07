@@ -46,6 +46,10 @@ const CardDetail = () => {
 	const [PSA, setPSA] = useState(null);
 	const [isCalculating, setIsCalculating] = useState(false);
 
+	const handleBack = () => {
+		navigate(-1);
+	};
+
 	// Auth effect
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -310,7 +314,9 @@ const CardDetail = () => {
 					{grade === 'ungraded' ? 'Ungraded' : `PSA ${grade.slice(3)}`}
 					<div className={styles.price}>
 						{cardPrices[grade]
-							? `$${formatter.format(Number(cardPrices[grade]))}`
+							? Number(cardPrices[grade]) > 0
+								? `$${formatter.format(Number(cardPrices[grade]))}`
+								: 'N/A'
 							: 'Loading...'}
 					</div>
 				</button>
@@ -358,6 +364,21 @@ const CardDetail = () => {
 					backgroundColor:
 						typeColors[currentCardType]?.backgroundColor || '#fb923c',
 				}}>
+				<div className={styles.navbarLeft}>
+					<button onClick={handleBack} className={styles.backButton}>
+						<svg
+							className={styles.backIcon}
+							viewBox='0 0 1024 1024'
+							version='1.1'
+							xmlns='http://www.w3.org/2000/svg'>
+							<path
+								d='M853.333333 469.333333v85.333334H341.333333l234.666667 234.666666-60.586667 60.586667L177.493333 512l337.92-337.92L576 234.666667 341.333333 469.333333h512z'
+								fill=''
+							/>
+						</svg>
+						Back
+					</button>
+				</div>
 				<ul className={styles.navLinks}>
 					<li>
 						<Link to='/'>Search</Link>
@@ -369,6 +390,7 @@ const CardDetail = () => {
 						<Link to='/upload'>Upload</Link>
 					</li>
 				</ul>
+				<div className={styles.navbarRight}></div>
 			</nav>
 
 			<h1
