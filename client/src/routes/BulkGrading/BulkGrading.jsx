@@ -3,7 +3,7 @@ import { db } from '../../util/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Link } from 'react-router-dom';
-import styles from './Collection.module.css';
+import styles from './BulkGrading.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 import CollectionCard from '../../components/CollectionCard/CollectionCard';
 import LoggedOutView from '../../components/LoggedOutView/LoggedOutView';
@@ -282,10 +282,7 @@ const Collection = () => {
 					</ul>
 				</nav>
 				<div className={styles.mainContent}>
-					<h1 className={styles.title}>
-						{user?.displayName || 'Your'}'s Collection
-					</h1>
-					<div className={styles.priceValuation}>Total Value: ${price}</div>
+					<h1 className={styles.title}>Grading Collection</h1>
 
 					<div className={styles.searchContainer}>
 						<div className={styles.searchBar}>
@@ -379,7 +376,11 @@ const Collection = () => {
 								key={card.id}
 								to={`/card-detail/${card.id}`}
 								style={{ textDecoration: 'none' }}>
-								<CollectionCard card={card} />
+								<img
+									src={card.image || ''}
+									alt={`Pokemon Card - ${card.name || 'Unknown'}`}
+									className={styles.cardImage}
+								/>
 							</Link>
 						))}
 					</div>
