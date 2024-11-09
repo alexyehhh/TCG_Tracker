@@ -39,34 +39,42 @@ function PokemonCards() {
 	const { name: pokemonName, number: cardNumber } =
 		parseSearchQuery(searchQuery);
 
-	useEffect(() => {
-		const fetchCards = async () => {
-			try {
-				let query = `name:"${pokemonName}"`;
-
-				if (cardNumber) {
-					if (cardNumber.includes('TG')) {
-						query += ` (number:"${cardNumber}" OR number:"${
-							cardNumber.split('/')[0]
-						}")`;
+		useEffect(() => {
+			const fetchCards = async () => {
+				try {
+					let query;
+		
+					// check if the pokemon name ends with EX upper case or not
+					if (pokemonName.toLowerCase().endsWith(" ex")) {
+						// query that matches both EX and -EX suffixes
+						const baseName = pokemonName.slice(0, -3).trim(); // remove EX from the end of the name
+						query = `(name:"${baseName} EX" OR name:"${baseName}-EX")`;
 					} else {
-						query += ` number:"${cardNumber}"`;
+						// default query for other search terms
+						query = `name:"${pokemonName}"`;
 					}
+		
+					if (cardNumber) {
+						if (cardNumber.includes('TG')) {
+							query += ` (number:"${cardNumber}" OR number:"${cardNumber.split('/')[0]}")`;
+						} else {
+							query += ` number:"${cardNumber}"`;
+						}
+					}
+		
+					const response = await axios.get(
+						`https://api.pokemontcg.io/v2/cards?q=${query}`,
+						{
+							headers: { 'X-Api-Key': import.meta.env.VITE_POKEMON_KEY },
+						}
+					);
+					setCards(response.data.data);
+				} catch (err) {
+					setError(`Failed to fetch cards. Error: ${err}`);
+				} finally {
+					setLoading(false);
 				}
-
-				const response = await axios.get(
-					`https://api.pokemontcg.io/v2/cards?q=${query}`,
-					{
-						headers: { 'X-Api-Key': import.meta.env.VITE_POKEMON_KEY },
-					}
-				);
-				setCards(response.data.data);
-			} catch (err) {
-				setError(`Failed to fetch cards. Error: ${err}`);
-			} finally {
-				setLoading(false);
-			}
-		};
+			};
 
 		fetchCards();
 	}, [pokemonName, cardNumber]);
