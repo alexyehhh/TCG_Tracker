@@ -31,6 +31,9 @@ export default function LoggedOutView() {
 						<Link to='/collection'>Collection</Link>
 					</li>
 					<li>
+						<Link to='/bulk-grading'>Bulk Grading</Link>
+					</li>
+					<li>
 						<Link to='/upload'>Upload</Link>
 					</li>
 				</ul>

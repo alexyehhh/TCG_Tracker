@@ -7,6 +7,7 @@ import PokemonCards from './routes/PokemonCards/PokemonCards'; // http://localho
 import ForgotPassword from './routes/ForgotPassword/ForgotPassword'; // http://localhost:5173/forgot-password
 import Collection from './routes/Collection/Collection'; // http://localhost:5173/collection
 import Upload from './routes/Upload/Upload'; // http://localhost:5173/upload
+import BulkGrading from './routes/BulkGrading/BulkGrading'; // http://localhost:5173/bulk-grading
 
 function App() {
 	return (
@@ -21,6 +22,7 @@ function App() {
 					<Route path='/collection' element={<Collection />} />
 					<Route path='/card-detail/:id' element={<CardDetail />} />
 					<Route path='/pokemon-cards' element={<PokemonCards />} />
+					<Route path='/bulk-grading' element={<BulkGrading />} />
 				</Routes>
 			</div>
 		</Router>

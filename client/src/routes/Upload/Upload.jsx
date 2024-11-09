@@ -39,21 +39,6 @@ const UploadPage = () => {
 		);
 	};
 
-	// Add a card to user collection
-	const addCardToCollection = async (userId, cardData) => {
-		try {
-			const cardsCollectionRef = collection(db, 'users', userId, 'cards');
-			await addDoc(cardsCollectionRef, {
-				...cardData,
-				addedAt: new Date(),
-				lastUpdated: new Date(),
-			});
-		} catch (error) {
-			console.error('Error adding card:', error);
-			throw error;
-		}
-	};
-
 	return (
 		<div className={styles.container}>
 			<PokemonBackground />
@@ -64,6 +49,9 @@ const UploadPage = () => {
 					</li>
 					<li>
 						<Link to='/collection'>Collection</Link>
+					</li>
+					<li>
+						<Link to='/bulk-grading'>Bulk Grading</Link>
 					</li>
 					<li>
 						<Link to='/upload'>Upload</Link>

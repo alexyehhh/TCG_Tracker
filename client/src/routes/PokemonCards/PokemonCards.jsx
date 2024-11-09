@@ -24,7 +24,7 @@ function PokemonCards() {
 
 		parts.forEach((part) => {
 			if (!number && /^tg\d+/.test(part)) {
-				number = part.match(/tg\d+(\/\d+)?/i)[0]; 
+				number = part.match(/tg\d+(\/\d+)?/i)[0];
 			} else if (!number && /^\d+/.test(part)) {
 				number = part.match(/^\d+/)[0].replace(/^0+/, ''); // Remove leading zeros
 			} else {
@@ -46,7 +46,9 @@ function PokemonCards() {
 
 				if (cardNumber) {
 					if (cardNumber.includes('TG')) {
-						query += ` (number:"${cardNumber}" OR number:"${cardNumber.split('/')[0]}")`;
+						query += ` (number:"${cardNumber}" OR number:"${
+							cardNumber.split('/')[0]
+						}")`;
 					} else {
 						query += ` number:"${cardNumber}"`;
 					}
@@ -123,6 +125,9 @@ function PokemonCards() {
 					</li>
 					<li>
 						<Link to='/collection'>Collection</Link>
+					</li>
+					<li>
+						<Link to='/bulk-grading'>Bulk Grading</Link>
 					</li>
 					<li>
 						<Link to='/upload'>Upload</Link>
