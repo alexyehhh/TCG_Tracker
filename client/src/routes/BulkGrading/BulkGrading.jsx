@@ -5,11 +5,8 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './BulkGrading.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
-import CollectionCard from '../../components/CollectionCard/CollectionCard';
 import LoggedOutView from '../../components/LoggedOutView/LoggedOutView';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
-import cardSets from '../../util/cardSets.js';
-import cardRarities from '../../util/cardRarities.js';
 
 const Collection = () => {
 	const [gradingCost, setGradingCost] = useState(0);
@@ -37,6 +34,10 @@ const Collection = () => {
 	const alphabeticalCards = cards.sort((a, b) => {
 		return b.addedAt.toDate() - a.addedAt.toDate();
 	});
+
+	const calculateCosts = () => {
+		let gradingCost = 0;
+	};
 
 	// Listen for user auth state changes
 	useEffect(() => {
@@ -151,57 +152,9 @@ const Collection = () => {
 		loadUserCards();
 	}, [user]);
 
-	// handle filter change
-	const handleFilterChange = (e) => {
-		const { name, value } = e.target;
-		setFilters((prevFilters) => ({
-			...prevFilters,
-			[name]: value, // update the specific filter with the new value
-		}));
-	};
-
 	// apply filters whenever filters change
 	useEffect(() => {
 		let filtered = [...alphabeticalCards];
-
-		// filter by rarity
-		if (filters.rarity) {
-			filtered = filtered.filter(
-				(card) =>
-					card.rarity &&
-					card.rarity.toLowerCase() === filters.rarity.toLowerCase()
-			);
-		}
-
-		// filter by price range
-		if (filters.price) {
-			const [minPrice, maxPrice] = filters.price.split('-').map(Number);
-			filtered = filtered.filter((card) => {
-				const cardPrice = parseInt(card.price);
-				return cardPrice >= minPrice && cardPrice <= maxPrice;
-			});
-		}
-
-		//filter by type
-		if (filters.type) {
-			filtered = filtered.filter(
-				(card) =>
-					card.types &&
-					card.types
-						.map((type) => type.toLowerCase())
-						.includes(filters.type.toLowerCase())
-			);
-		}
-
-		//filter by set name
-		if (filters.set) {
-			// make sure the card setName matches the selected set exactly
-			filtered = filtered.filter(
-				(card) =>
-					card.setName &&
-					card.setName.toLowerCase() === filters.set.toLowerCase()
-			);
-		}
 
 		setFilteredCards(filtered); // update the list of displayed cards based on filters
 	}, [filters, cards]);
@@ -364,7 +317,11 @@ const Collection = () => {
 						<div className={styles.filterContainer}>
 							<div className={styles.priceValuation}>Remove Selected</div>
 							<div className={styles.priceValuation}>Clear Selected</div>
-							<div className={styles.priceValuation}>Calculate</div>
+							<button
+								className={styles.priceValuation}
+								onClick={calculateCosts}>
+								Calculate
+							</button>
 							<div className={styles.grading}>Grading cost: {gradingCost}</div>
 							<div className={styles.grading}>
 								Grading profit: {gradingProfit}
