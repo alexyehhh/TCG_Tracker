@@ -10,7 +10,7 @@ import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import axios from 'axios';
 
 const Collection = () => {
-	const [gradingCost, setGradingCost] = useState(0);
+	// const [gradingCost, setGradingCost] = useState(0);
 	const [gradingProfit, setGradingProfit] = useState(0);
 	const [user, setUser] = useState(null);
 	const [cards, setCards] = useState([]);
@@ -37,13 +37,14 @@ const Collection = () => {
 	});
 
 	const calculateCosts = async () => {
-		const lengthCards = filteredCards.length;
-		if (lengthCards < 20) {
-			return;
+		const selectedCards = filteredCards.filter((card) => card.sendBulk);
+		if (selectedCards.length < 20) {
+			// Throw a popup error
+			return Error('You must have at least 20 cards to grade');
 		}
 		let profit = 0;
 
-		for (const card of filteredCards) {
+		for (const card of selectedCards) {
 			const response = await axios.get(
 				`${import.meta.env.VITE_API_URL}/card-profit`,
 				{
@@ -54,9 +55,9 @@ const Collection = () => {
 					},
 				}
 			);
-			console.log(profit);
 			profit += response.data.gmeProfit;
 		}
+		console.log(profit);
 
 		setGradingProfit(profit.toFixed(2));
 	};
