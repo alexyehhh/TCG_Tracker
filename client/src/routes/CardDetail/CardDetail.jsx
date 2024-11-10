@@ -218,11 +218,14 @@ const CardDetail = () => {
 
 		setIsCalculating(true);
 		try {
+			const salePrice =
+				cardPrices[selectedGrade] !== 'N/A' ? cardPrices[selectedGrade] : 0;
+
 			const response = await axios.get(
 				`${import.meta.env.VITE_API_URL}/card-profit`,
 				{
 					params: {
-						salePrice: cardPrices[selectedGrade],
+						salePrice: salePrice,
 						pricePaid: parseFloat(pricePaid),
 						gmeMembership: document.getElementById('gamestop-pro').checked,
 						expeditedTurnaround: document.getElementById('psa-sub').checked,
@@ -262,6 +265,7 @@ const CardDetail = () => {
 				lastUpdated: new Date(),
 				selectedPrice: cardPrices[selectedGrade] || 0,
 				selectedGrade: selectedGrade,
+				pricePaid: pricePaid !== '' ? +pricePaid : 0,
 			};
 
 			const cardDocRef = doc(db, 'users', userId, 'cards', cardData.id);
