@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../../util/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './Collection.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 import CollectionCard from '../../components/CollectionCard/CollectionCard';
@@ -12,6 +12,7 @@ import cardSets from '../../util/cardSets.js';
 import cardRarities from '../../util/cardRarities.js';
 
 const Collection = () => {
+	const navigate = useNavigate();
 	const [user, setUser] = useState(null);
 	const [cards, setCards] = useState([]);
 	const [filteredCards, setFilteredCards] = useState([]);
@@ -25,11 +26,16 @@ const Collection = () => {
 		type: '', // type filter value
 		set: '', // set filter value
 	});
+
 	const [price, setPrice] = useState(0);
 
 	const alphabeticalCards = cards.sort((a, b) => {
 		return b.addedAt.toDate() - a.addedAt.toDate();
 	});
+
+	const sendBulk = () => {
+		navigate('/bulk-grading');
+	};
 
 	// Listen for user auth state changes
 	useEffect(() => {
@@ -285,7 +291,12 @@ const Collection = () => {
 					<h1 className={styles.title}>
 						{user?.displayName || 'Your'}'s Collection
 					</h1>
-					<div className={styles.priceValuation}>Total Value: ${price}</div>
+					<div className={styles.topIndicators}>
+						<div className={styles.priceValuation}>Total Value: ${price}</div>
+						<button className={styles.sendBulk} onClick={sendBulk}>
+							Send Bulk
+						</button>
+					</div>
 
 					<div className={styles.searchContainer}>
 						<div className={styles.searchBar}>
