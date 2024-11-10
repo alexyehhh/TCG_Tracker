@@ -22,6 +22,11 @@
 	z-index: 2;
 }
 
+.navbarLeft,
+.navbarRight {
+	flex: 1;
+}
+
 .navLinks {
 	max-width: 48rem;
 	margin: 0 auto;
@@ -33,12 +38,19 @@
 }
 
 .navLinks a {
-	color: white;
 	text-decoration: none;
+	color: white;
+	font-size: 16px;
+	font-weight: 400;
 }
 
 .navLinks a:hover {
 	color: #d8b4fe;
+}
+
+.navbarRight {
+	display: flex;
+	justify-content: flex-end;
 }
 
 .mainContent {
@@ -404,4 +416,33 @@
 
 .grading {
 	color: #581c87;
+}
+
+.backButton {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: 16px;
+	color: white;
+	padding: 0;
+}
+
+.backButton:hover {
+	color: #d8b4fe;
+}
+
+.backIcon {
+	width: 20px;
+	height: 20px;
+	vertical-align: middle;
+	fill: currentColor;
+	overflow: hidden;
+	transition: transform 0.5s ease;
+}
+
+.backButton:hover .backIcon {
+	transform: translateX(-5px);
 }

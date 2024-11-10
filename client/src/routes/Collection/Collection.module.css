@@ -460,3 +460,32 @@
 .cardContainer:hover {
 	transform: translateY(-2px);
 }
+
+.backButton {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: 16px;
+	color: white;
+	padding: 0;
+}
+
+.backButton:hover {
+	color: #d8b4fe;
+}
+
+.backIcon {
+	width: 20px;
+	height: 20px;
+	vertical-align: middle;
+	fill: currentColor;
+	overflow: hidden;
+	transition: transform 0.5s ease;
+}
+
+.backButton:hover .backIcon {
+	transform: translateX(5px);
+}
