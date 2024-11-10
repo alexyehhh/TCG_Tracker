@@ -4,13 +4,15 @@
 	align-items: center;
 	width: 260px;
 	margin: 0 auto;
-	padding: 0.75rem;
-	border-radius: 0.5rem;
+	position: relative;
 }
 
 .bulkCard {
-	background-color: #f3e8ff;
-	box-shadow: 0 0 0 1px rgba(107, 33, 168, 0.1);
+	/* background-color: #f3e8ff;
+	padding: 1rem;
+	margin: -1rem; */
+	border: 2px solid #f3e8ff;
+	border-radius: 1rem;
 }
 
 .cardImage {

@@ -44,21 +44,28 @@ const Collection = () => {
 	const handleCardClick = async (card) => {
 		try {
 			const userData = await getUserByEmail(user.email);
-
 			if (!userData) return;
 
 			const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
 			const newSelected = new Set(selectedCards);
+			const newSendBulk = !card.sendBulk;
 
 			if (selectedCards.has(card.id)) {
 				newSelected.delete(card.id);
-				await updateDoc(cardRef, { sendBulk: false });
 			} else {
 				newSelected.add(card.id);
-				await updateDoc(cardRef, { sendBulk: true });
 			}
 
+			// Update Firestore
+			await updateDoc(cardRef, { sendBulk: newSendBulk });
+
+			// Update local state
 			setSelectedCards(newSelected);
+			setCards(
+				cards.map((c) =>
+					c.id === card.id ? { ...c, sendBulk: newSendBulk } : c
+				)
+			);
 		} catch (error) {
 			console.error('Error updating card selection:', error);
 		}
@@ -141,20 +148,29 @@ const Collection = () => {
 
 			const cardsList = [];
 			let totalValue = 0;
+			const selectedCardIds = new Set();
+
 			querySnapshot.forEach((doc) => {
 				const cardData = doc.data();
 				if (cardData.image) {
-					cardsList.push({ ...cardData, id: doc.id }); // add `id` from `doc.id`
+					const card = { ...cardData, id: doc.id };
+					cardsList.push(card);
+
+					// If card was previously selected for bulk, add it to selectedCards
+					if (cardData.sendBulk) {
+						selectedCardIds.add(doc.id);
+					}
 				}
-				// console.log(cardData);
 				if (cardData.selectedPrice != 'N/A') {
 					totalValue += parseFloat(cardData.selectedPrice);
 				}
 			});
+
 			setPrice(totalValue.toFixed(2));
 			setCards(cardsList);
-			setCards(cardsList);
+			setFilteredCards(cardsList);
 			setHasCards(cardsList.length > 0);
+			setSelectedCards(selectedCardIds);
 			return cardsList;
 		} catch (error) {
 			console.error('Error fetching cards:', error);
@@ -427,6 +443,7 @@ const Collection = () => {
 								key={card.id}
 								card={card}
 								onClick={handleCardClick}
+								handleCardClick={handleCardClick}
 								isSelected={selectedCards.has(card.id)}
 							/>
 						))}

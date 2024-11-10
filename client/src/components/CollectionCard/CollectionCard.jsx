@@ -12,7 +12,7 @@ const GradeIcon = ({ grade }) => {
 	return <div className={styles.gradeIcon}>{getDisplayGrade(grade)}</div>;
 };
 
-const CollectionCard = ({ card, onClick, isSelected }) => {
+const CollectionCard = ({ card, onClick, isSelected, handleCardClick }) => {
 	const isEligibleForBulk =
 		card.selectedPrice !== 'N/A' &&
 		Number(card.selectedPrice) > 0 &&
