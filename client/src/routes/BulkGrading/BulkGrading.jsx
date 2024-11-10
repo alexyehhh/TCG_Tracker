@@ -346,7 +346,7 @@ const Collection = () => {
 							</button>
 							{/* <div className={styles.grading}>Grading cost: {gradingCost}</div> */}
 							<div className={styles.grading}>
-								Grading profit: {gradingProfit}
+								Grading profit: ${gradingProfit}
 							</div>
 						</div>
 					</div>
