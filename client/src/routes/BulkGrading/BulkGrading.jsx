@@ -318,7 +318,7 @@ const Collection = () => {
 							<div className={styles.priceValuation}>Remove Selected</div>
 							<div className={styles.priceValuation}>Clear Selected</div>
 							<button
-								className={styles.priceValuation}
+								className={styles.calculateCosts}
 								onClick={calculateCosts}>
 								Calculate
 							</button>
