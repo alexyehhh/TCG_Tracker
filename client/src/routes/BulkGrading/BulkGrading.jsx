@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../../util/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './BulkGrading.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 import CollectionCard from '../../components/CollectionCard/CollectionCard';
@@ -28,6 +28,11 @@ const Collection = () => {
 		set: '', // set filter value
 	});
 	const [price, setPrice] = useState(0);
+	const navigate = useNavigate();
+
+	const handleBack = () => {
+		navigate(-1);
+	};
 
 	const alphabeticalCards = cards.sort((a, b) => {
 		return b.addedAt.toDate() - a.addedAt.toDate();
@@ -206,6 +211,21 @@ const Collection = () => {
 			<div className={`${styles.container}`}>
 				<PokemonBackground color='#2f213e' />
 				<nav className={styles.navbar}>
+					<div className={styles.navbarLeft}>
+						<button onClick={handleBack} className={styles.backButton}>
+							<svg
+								className={styles.backIcon}
+								viewBox='0 0 1024 1024'
+								version='1.1'
+								xmlns='http://www.w3.org/2000/svg'>
+								<path
+									d='M853.333333 469.333333v85.333334H341.333333l234.666667 234.666666-60.586667 60.586667L177.493333 512l337.92-337.92L576 234.666667 341.333333 469.333333h512z'
+									fill=''
+								/>
+							</svg>
+							Back
+						</button>
+					</div>
 					<ul className={styles.navLinks}>
 						<li>
 							<Link to='/'>Search</Link>
@@ -220,6 +240,7 @@ const Collection = () => {
 							<Link to='/upload'>Upload</Link>
 						</li>
 					</ul>
+					<div className={styles.navbarRight}></div>
 				</nav>
 				<h1 className={styles.centerContent}>Loading cards...</h1>;
 			</div>
@@ -230,6 +251,21 @@ const Collection = () => {
 		<div className={styles.container} style={{ backgroundColor: '#fff4fc' }}>
 			<PokemonBackground color='#2f213e' />
 			<nav className={styles.navbar}>
+				<div className={styles.navbarLeft}>
+					<button onClick={handleBack} className={styles.backButton}>
+						<svg
+							className={styles.backIcon}
+							viewBox='0 0 1024 1024'
+							version='1.1'
+							xmlns='http://www.w3.org/2000/svg'>
+							<path
+								d='M853.333333 469.333333v85.333334H341.333333l234.666667 234.666666-60.586667 60.586667L177.493333 512l337.92-337.92L576 234.666667 341.333333 469.333333h512z'
+								fill=''
+							/>
+						</svg>
+						Back
+					</button>
+				</div>
 				<ul className={styles.navLinks}>
 					<li>
 						<Link to='/'>Search</Link>
@@ -244,6 +280,7 @@ const Collection = () => {
 						<Link to='/upload'>Upload</Link>
 					</li>
 				</ul>
+				<div className={styles.navbarRight}></div>
 			</nav>
 			<div className={`${styles.mainContent} ${styles.emptyState}`}>
 				<h1 className={styles.title}>Your Collection is Empty!</h1>
@@ -268,6 +305,21 @@ const Collection = () => {
 			<div className={styles.container} style={{ backgroundColor: '#fff4fc' }}>
 				<PokemonBackground color='#2f213e' />
 				<nav className={styles.navbar}>
+					<div className={styles.navbarLeft}>
+						<button onClick={handleBack} className={styles.backButton}>
+							<svg
+								className={styles.backIcon}
+								viewBox='0 0 1024 1024'
+								version='1.1'
+								xmlns='http://www.w3.org/2000/svg'>
+								<path
+									d='M853.333333 469.333333v85.333334H341.333333l234.666667 234.666666-60.586667 60.586667L177.493333 512l337.92-337.92L576 234.666667 341.333333 469.333333h512z'
+									fill=''
+								/>
+							</svg>
+							Back
+						</button>
+					</div>
 					<ul className={styles.navLinks}>
 						<li>
 							<Link to='/'>Search</Link>
@@ -282,6 +334,7 @@ const Collection = () => {
 							<Link to='/upload'>Upload</Link>
 						</li>
 					</ul>
+					<div className={styles.navbarRight}></div>
 				</nav>
 				<div className={styles.mainContent}>
 					<h1 className={styles.title}>To Grade Collection</h1>
