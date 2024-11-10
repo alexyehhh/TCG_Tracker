@@ -18,21 +18,6 @@ import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import cardSets from '../../util/cardSets.js';
 import cardRarities from '../../util/cardRarities.js';
 
-const RightArrow = () => {
-	return (
-		<svg
-			className={styles.rightArrow}
-			viewBox='0 0 1024 1024'
-			xmlns='http://www.w3.org/2000/svg'
-			aria-label='Right Arrow Icon'>
-			<path
-				d='M170.666667 469.333333v85.333334h512l-234.666667 234.666666 60.586667 60.586667L846.506667 512l-337.92-337.92L448 234.666667 682.666667 469.333333H170.666667z'
-				fill='currentColor'
-			/>
-		</svg>
-	);
-};
-
 const Collection = () => {
 	const navigate = useNavigate();
 	const [user, setUser] = useState(null);
@@ -354,11 +339,18 @@ const Collection = () => {
 						</li>
 					</ul>
 					<div className={styles.navbarRight}>
-						<button onClick={handleNext}>
-							<h4>
-								Go to bulk
-								<RightArrow />
-							</h4>
+						<button onClick={handleNext} className={styles.backButton}>
+							Go to bulk
+							<svg
+								className={styles.backIcon}
+								viewBox='0 0 1024 1024'
+								xmlns='http://www.w3.org/2000/svg'
+								aria-label='Right Arrow Icon'>
+								<path
+									d='M170.666667 469.333333v85.333334h512l-234.666667 234.666666 60.586667 60.586667L846.506667 512l-337.92-337.92L448 234.666667 682.666667 469.333333H170.666667z'
+									fill='currentColor'
+								/>
+							</svg>
 						</button>
 					</div>
 				</nav>
