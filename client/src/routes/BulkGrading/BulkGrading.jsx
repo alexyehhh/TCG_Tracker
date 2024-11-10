@@ -322,7 +322,7 @@ const Collection = () => {
 								onClick={calculateCosts}>
 								Calculate
 							</button>
-							<div className={styles.grading}>Grading cost: {gradingCost}</div>
+							{/* <div className={styles.grading}>Grading cost: {gradingCost}</div> */}
 							<div className={styles.grading}>
 								Grading profit: {gradingProfit}
 							</div>

@@ -97,6 +97,8 @@
 
 .filterContainer {
 	display: flex;
+	justify-content: center;
+	align-items: center;
 	gap: 1rem;
 	margin-left: 1rem;
 	z-index: 2;
@@ -314,11 +316,6 @@
 	opacity: 0.8;
 }
 
-.filterContainer {
-	display: flex;
-	gap: 1rem;
-}
-
 .filterSelect {
 	padding: 0.5rem 1.2rem;
 	border-radius: 0.5rem;
@@ -443,6 +440,10 @@
 
 .grading {
 	color: #581c87;
+	padding: 0.5rem 1rem;
+	border-radius: 0.5rem;
+	background-color: white;
+	border: 1px solid #f3e8ff;
 }
 
 .backButton {
