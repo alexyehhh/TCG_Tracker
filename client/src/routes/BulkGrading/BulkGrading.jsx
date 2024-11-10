@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../util/firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import {
+	collection,
+	query,
+	where,
+	getDocs,
+	doc,
+	updateDoc,
+} from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './BulkGrading.module.css';
@@ -182,6 +189,42 @@ const Collection = () => {
 		setFilteredCards(filtered); // update the list of displayed cards based on filters
 	}, [filters, cards]);
 
+	const clearAll = async () => {
+		try {
+			if (!user || !user.email) {
+				console.error('No user logged in');
+				return;
+			}
+
+			const userData = await getUserByEmail(user.email);
+			if (!userData) {
+				console.error('User data not found');
+				return;
+			}
+
+			const updatePromises = cards.map(async (card) => {
+				const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
+				return updateDoc(cardRef, { sendBulk: false });
+			});
+
+			await Promise.all(updatePromises);
+
+			const updatedCards = cards.map((card) => ({
+				...card,
+				sendBulk: false,
+			}));
+
+			setCards(updatedCards);
+			setFilteredCards(updatedCards);
+			setSelectedCards(new Set());
+
+			console.log('Successfully cleared all bulk selections');
+		} catch (error) {
+			console.error('Error clearing bulk selections:', error);
+			throw error;
+		}
+	};
+
 	if (loading && user) {
 		return (
 			<div className={`${styles.container}`}>
@@ -339,7 +382,9 @@ const Collection = () => {
 
 						<div className={styles.filterContainer}>
 							<div className={styles.priceValuation}>Remove Selected</div>
-							<div className={styles.priceValuation}>Clear Selected</div>
+							<button className={styles.clearAll} onClick={clearAll}>
+								Clear Selected
+							</button>
 							<button
 								className={styles.calculateCosts}
 								onClick={calculateCosts}>

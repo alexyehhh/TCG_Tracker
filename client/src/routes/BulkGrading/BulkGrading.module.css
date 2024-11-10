@@ -378,7 +378,6 @@
 }
 
 .priceValuation {
-	/* font-size: 1rem; */
 	font-weight: bold;
 	color: #581c87;
 	border: 1px solid #581c87;
@@ -473,4 +472,24 @@
 
 .backButton:hover .backIcon {
 	transform: translateX(-5px);
+}
+
+.clearAll {
+	font-weight: bold;
+	color: #581c87;
+	border: 1px solid #581c87;
+	background-color: white;
+	border-radius: 0.5rem;
+	height: 40px;
+	text-align: center;
+	padding: 1.75rem 1rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 0;
+}
+
+.clearAll:hover {
+	background-color: #f3e8ff;
+	cursor: pointer;
 }
