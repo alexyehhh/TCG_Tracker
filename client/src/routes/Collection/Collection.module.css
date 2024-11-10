@@ -393,7 +393,6 @@
 }
 
 .priceValuation {
-	/* font-size: 1.5rem; */
 	font-weight: bold;
 	color: #581c87;
 	border: 1px solid #581c87;
@@ -413,4 +412,51 @@
 	justify-content: center;
 	align-items: center;
 	gap: 2rem;
+}
+
+.topIndicators {
+	display: flex;
+	flex-direction: row;
+	gap: 20px;
+}
+
+.sendBulk {
+	font-weight: bold;
+	color: white;
+	border: 1px solid #581c87;
+	background-color: #64548c;
+	border-radius: 0.5rem;
+	height: 40px;
+	text-align: center;
+	padding: 0.5rem 1rem;
+	display: flex;
+	justify-content: center;
+	margin-top: none;
+	margin-bottom: 1rem;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sendBulk:hover {
+	background-color: #42275b;
+	cursor: pointer;
+}
+
+.selectedCard {
+	background-color: #e0f7fa;
+	border: 2px solid #00bcd4;
+	transform: translateY(-2px);
+	transition: all 0.2s ease-in-out;
+}
+
+.ineligibleCard {
+	opacity: 0.7;
+	cursor: not-allowed;
+}
+
+.cardContainer {
+	transition: all 0.2s ease-in-out;
+}
+
+.cardContainer:hover {
+	transform: translateY(-2px);
 }

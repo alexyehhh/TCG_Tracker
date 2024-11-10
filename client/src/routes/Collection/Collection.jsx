@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../util/firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import {
+	collection,
+	query,
+	where,
+	getDocs,
+	doc,
+	updateDoc,
+} from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './Collection.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 import CollectionCard from '../../components/CollectionCard/CollectionCard';
@@ -12,6 +19,7 @@ import cardSets from '../../util/cardSets.js';
 import cardRarities from '../../util/cardRarities.js';
 
 const Collection = () => {
+	const navigate = useNavigate();
 	const [user, setUser] = useState(null);
 	const [cards, setCards] = useState([]);
 	const [filteredCards, setFilteredCards] = useState([]);
@@ -19,17 +27,46 @@ const Collection = () => {
 	const [hasCards, setHasCards] = useState(false);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [loading, setLoading] = useState(true);
+	const [selectedCards, setSelectedCards] = useState(new Set());
 	const [filters, setFilters] = useState({
 		rarity: '', // rarity filter value
 		price: '', // price range filter value
 		type: '', // type filter value
 		set: '', // set filter value
 	});
+
 	const [price, setPrice] = useState(0);
 
 	const alphabeticalCards = cards.sort((a, b) => {
 		return b.addedAt.toDate() - a.addedAt.toDate();
 	});
+
+	const handleCardClick = async (card) => {
+		try {
+			const userData = await getUserByEmail(user.email);
+
+			if (!userData) return;
+
+			const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
+			const newSelected = new Set(selectedCards);
+
+			if (selectedCards.has(card.id)) {
+				newSelected.delete(card.id);
+				await updateDoc(cardRef, { sendBulk: false });
+			} else {
+				newSelected.add(card.id);
+				await updateDoc(cardRef, { sendBulk: true });
+			}
+
+			setSelectedCards(newSelected);
+		} catch (error) {
+			console.error('Error updating card selection:', error);
+		}
+	};
+
+	const sendBulk = () => {
+		navigate('/bulk-grading');
+	};
 
 	// Listen for user auth state changes
 	useEffect(() => {
@@ -285,7 +322,12 @@ const Collection = () => {
 					<h1 className={styles.title}>
 						{user?.displayName || 'Your'}'s Collection
 					</h1>
-					<div className={styles.priceValuation}>Total Value: ${price}</div>
+					<div className={styles.topIndicators}>
+						<div className={styles.priceValuation}>Total Value: ${price}</div>
+						<button className={styles.sendBulk} onClick={sendBulk}>
+							Send Bulk
+						</button>
+					</div>
 
 					<div className={styles.searchContainer}>
 						<div className={styles.searchBar}>
@@ -375,12 +417,18 @@ const Collection = () => {
 
 					<div className={styles.cardsGrid}>
 						{filteredCards.map((card) => (
-							<Link
+							// <Link
+							// 	key={card.id}
+							// 	to={`/card-detail/${card.id}`}
+							// 	style={{ textDecoration: 'none' }}>
+							// 	<CollectionCard card={card} />
+							// </Link>
+							<CollectionCard
 								key={card.id}
-								to={`/card-detail/${card.id}`}
-								style={{ textDecoration: 'none' }}>
-								<CollectionCard card={card} />
-							</Link>
+								card={card}
+								onClick={handleCardClick}
+								isSelected={selectedCards.has(card.id)}
+							/>
 						))}
 					</div>
 				</div>

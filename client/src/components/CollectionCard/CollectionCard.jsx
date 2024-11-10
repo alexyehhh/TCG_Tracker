@@ -1,28 +1,36 @@
-// CollectionCard.jsx
 import React from 'react';
 import styles from './CollectionCard.module.css';
 import { formatter } from '../../util/cardUtils';
 
 const GradeIcon = ({ grade }) => {
-	// Convert grade to display format
 	const getDisplayGrade = (grade) => {
 		const gradeUpper = grade.toUpperCase();
 		if (gradeUpper === 'UNGRADED') return 'U';
-		// Extract number from PSA grade (e.g., "PSA8" -> "8")
 		return gradeUpper.replace('PSA', '');
 	};
 
 	return <div className={styles.gradeIcon}>{getDisplayGrade(grade)}</div>;
 };
 
-const CollectionCard = ({ card, onClick }) => {
+const CollectionCard = ({ card, onClick, isSelected }) => {
+	const isEligibleForBulk =
+		card.selectedPrice !== 'N/A' &&
+		Number(card.selectedPrice) > 0 &&
+		Number(card.selectedPrice) < 500;
+
+	const cardStyles = `${styles.cardContainer} 
+        ${isSelected ? styles.selectedCard : ''} 
+        ${!isEligibleForBulk ? styles.ineligibleCard : ''}
+        ${card.sendBulk ? styles.bulkCard : ''}`;
+
 	return (
-		<div className={styles.cardContainer}>
+		<div
+			className={cardStyles}
+			onClick={() => isEligibleForBulk && onClick && onClick(card)}>
 			<img
 				src={card.image || ''}
 				alt={`Pokemon Card - ${card.name || 'Unknown'}`}
 				className={styles.cardImage}
-				onClick={onClick}
 			/>
 			<div className={styles.cardInfo}>
 				<div className={styles.gradeText}>
