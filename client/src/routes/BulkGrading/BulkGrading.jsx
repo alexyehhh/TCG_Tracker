@@ -7,6 +7,7 @@ import styles from './BulkGrading.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 import LoggedOutView from '../../components/LoggedOutView/LoggedOutView';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
+import axios from 'axios';
 
 const Collection = () => {
 	const [gradingCost, setGradingCost] = useState(0);
@@ -35,8 +36,29 @@ const Collection = () => {
 		return b.addedAt.toDate() - a.addedAt.toDate();
 	});
 
-	const calculateCosts = () => {
-		let gradingCost = 0;
+	const calculateCosts = async () => {
+		const lengthCards = filteredCards.length;
+		if (lengthCards < 20) {
+			return;
+		}
+		let profit = 0;
+
+		for (const card of filteredCards) {
+			const response = await axios.get(
+				`${import.meta.env.VITE_API_URL}/card-profit`,
+				{
+					params: {
+						salePrice: card.selectedPrice,
+						pricePaid: card.pricePaid,
+						// expeditedTurnaround: document.getElementById('psa-sub').checked,
+					},
+				}
+			);
+			console.log(profit);
+			profit += response.data.gmeProfit;
+		}
+
+		setGradingProfit(profit.toFixed(2));
 	};
 
 	// Listen for user auth state changes
