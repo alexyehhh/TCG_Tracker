@@ -15,14 +15,24 @@ const GradeIcon = ({ grade }) => {
 	return <div className={styles.gradeIcon}>{getDisplayGrade(grade)}</div>;
 };
 
-const CollectionCard = ({ card, onClick }) => {
+const CollectionCard = ({ card, onClick, isSelected }) => {
+	const isEligibleForBulk =
+		card.selectedPrice !== 'N/A' &&
+		Number(card.selectedPrice) > 0 &&
+		Number(card.selectedPrice) < 500;
+
+	const cardStyles = `${styles.cardContainer} 
+	  ${isSelected ? styles.selectedCard : ''} 
+	  ${!isEligibleForBulk ? styles.ineligibleCard : ''}`;
+
 	return (
-		<div className={styles.cardContainer}>
+		<div
+			className={cardStyles}
+			onClick={() => isEligibleForBulk && onClick && onClick(card)}>
 			<img
 				src={card.image || ''}
 				alt={`Pokemon Card - ${card.name || 'Unknown'}`}
 				className={styles.cardImage}
-				onClick={onClick}
 			/>
 			<div className={styles.cardInfo}>
 				<div className={styles.gradeText}>
