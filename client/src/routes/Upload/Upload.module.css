@@ -72,6 +72,16 @@
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.imagePreview {
+    width: 80px; 
+    height: 80px;
+    border-radius: 0.25rem;
+    margin-right: 1rem;
+    object-fit: cover;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .dropzone {
 	border: 2px dashed #ccc;
 	border-radius: 0.5rem;
