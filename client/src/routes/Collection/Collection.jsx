@@ -18,6 +18,21 @@ import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import cardSets from '../../util/cardSets.js';
 import cardRarities from '../../util/cardRarities.js';
 
+const RightArrow = () => {
+	return (
+		<svg
+			className={styles.rightArrow}
+			viewBox='0 0 1024 1024'
+			xmlns='http://www.w3.org/2000/svg'
+			aria-label='Right Arrow Icon'>
+			<path
+				d='M170.666667 469.333333v85.333334h512l-234.666667 234.666666 60.586667 60.586667L846.506667 512l-337.92-337.92L448 234.666667 682.666667 469.333333H170.666667z'
+				fill='currentColor'
+			/>
+		</svg>
+	);
+};
+
 const Collection = () => {
 	const navigate = useNavigate();
 	const [user, setUser] = useState(null);
@@ -72,6 +87,10 @@ const Collection = () => {
 	};
 
 	const sendBulk = () => {
+		navigate('/bulk-grading');
+	};
+
+	const handleNext = () => {
 		navigate('/bulk-grading');
 	};
 
@@ -319,6 +338,7 @@ const Collection = () => {
 			<div className={styles.container} style={{ backgroundColor: '#fff4fc' }}>
 				<PokemonBackground color='#2f213e' />
 				<nav className={styles.navbar}>
+					<div className={styles.navbarLeft}></div>
 					<ul className={styles.navLinks}>
 						<li>
 							<Link to='/'>Search</Link>
@@ -333,6 +353,14 @@ const Collection = () => {
 							<Link to='/upload'>Upload</Link>
 						</li>
 					</ul>
+					<div className={styles.navbarRight}>
+						<button onClick={handleNext}>
+							<h4>
+								Go to bulk
+								<RightArrow />
+							</h4>
+						</button>
+					</div>
 				</nav>
 				<div className={styles.mainContent}>
 					<h1 className={styles.title}>
