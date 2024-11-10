@@ -317,7 +317,7 @@ const Collection = () => {
 									fill=''
 								/>
 							</svg>
-							Back
+							Add more cards
 						</button>
 					</div>
 					<ul className={styles.navLinks}>
