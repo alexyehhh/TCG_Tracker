@@ -1,10 +1,16 @@
-/* CollectionCard.module.css */
 .cardContainer {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	width: 260px;
 	margin: 0 auto;
+	padding: 0.75rem;
+	border-radius: 0.5rem;
+}
+
+.bulkCard {
+	background-color: #f3e8ff;
+	box-shadow: 0 0 0 1px rgba(107, 33, 168, 0.1);
 }
 
 .cardImage {
@@ -61,4 +67,12 @@
 	padding: 0.8rem;
 	font-weight: bold;
 	margin-left: 0.25rem;
+}
+
+.selectedCard {
+	box-shadow: 0 0 0 2px #6b21a8;
+}
+
+.ineligibleCard {
+	opacity: 0.5;
 }
