@@ -58,13 +58,6 @@
 	text-align: center;
 }
 
-.searchContainer {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	margin-bottom: 2rem;
-}
-
 .searchWrapper {
 	position: relative;
 	flex: 1;
@@ -376,7 +369,7 @@
 }
 
 .priceValuation {
-	/* font-size: 1.5rem; */
+	/* font-size: 1rem; */
 	font-weight: bold;
 	color: #581c87;
 	border: 1px solid #581c87;
@@ -384,11 +377,11 @@
 	border-radius: 0.5rem;
 	height: 40px;
 	text-align: center;
-	padding: 0.5rem 1rem;
+	padding: 1.75rem 1rem;
 	display: flex;
 	justify-content: center;
-	margin-top: none;
-	margin-bottom: 1rem;
+	align-items: center;
+	margin: 0;
 }
 
 .notloggedInBtns {
@@ -409,9 +402,6 @@
 	z-index: 2;
 }
 
-/* .cardImage:hover {
-	transform: scale(1.05);
-	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 255, 255, 0.2);
-	z-index: 10;
-	cursor: pointer;
-} */
+.grading {
+	color: #581c87;
+}

@@ -12,6 +12,8 @@ import cardSets from '../../util/cardSets.js';
 import cardRarities from '../../util/cardRarities.js';
 
 const Collection = () => {
+	const [gradingCost, setGradingCost] = useState(0);
+	const [gradingProfit, setGradingProfit] = useState(0);
 	const [user, setUser] = useState(null);
 	const [cards, setCards] = useState([]);
 	const [filteredCards, setFilteredCards] = useState([]);
@@ -282,7 +284,7 @@ const Collection = () => {
 					</ul>
 				</nav>
 				<div className={styles.mainContent}>
-					<h1 className={styles.title}>Grading Collection</h1>
+					<h1 className={styles.title}>To Grade Collection</h1>
 
 					<div className={styles.searchContainer}>
 						<div className={styles.searchBar}>
@@ -307,82 +309,31 @@ const Collection = () => {
 						</div>
 
 						<div className={styles.filterContainer}>
-							<select
-								name='rarity'
-								className={styles.filterSelect}
-								value={filters.rarity} // <-- Bind to filters.rarity
-								onChange={handleFilterChange}>
-								<option value=''>Rarity</option>
-								{cardRarities.map((rarity, index) => (
-									<option key={index} value={rarity}>
-										{rarity}
-									</option>
-								))}
-							</select>
-
-							<select
-								name='price'
-								className={styles.filterSelect}
-								value={filters.price} // <-- Bind to filters.price
-								onChange={handleFilterChange}>
-								<option value=''>Price</option>
-								<option value='0-25'>$ 0 - $ 25</option>
-								<option value='25-50'>$ 25 - $ 50</option>
-								<option value='50-75'>$ 50 - $ 75</option>
-								<option value='75-100'>$ 75 - $ 100</option>
-								<option value='100-125'>$ 100 - $ 125</option>
-								<option value='125-150'>$ 125 - $ 150</option>
-								<option value='150-175'>$ 150 - $ 175</option>
-								<option value='175-200'>$ 175 - $ 200</option>
-							</select>
-
-							<select
-								name='type'
-								className={styles.filterSelect}
-								value={filters.type} // <-- Bind to filters.type
-								onChange={handleFilterChange}>
-								<option value=''>Type</option>
-								<option value='Colorless'>Colorless</option>
-								<option value='Darkness'>Darkness</option>
-								<option value='Dragon'>Dragon</option>
-								<option value='Fairy'>Fairy</option>
-								<option value='Fighting'>Fighting</option>
-								<option value='Fire'>Fire</option>
-								<option value='Grass'>Grass</option>
-								<option value='Lightning'>Lightning</option>
-								<option value='Metal'>Metal</option>
-								<option value='Psychic'>Psychic</option>
-								<option value='Water'>Water</option>
-							</select>
-
-							<select
-								name='set'
-								className={styles.filterSelect}
-								value={filters.set} // <-- Bind to filters.set
-								onChange={handleFilterChange}>
-								<option value=''>Set</option>
-								{cardSets.map((set, index) => (
-									<option key={index} value={set}>
-										{set}
-									</option>
-								))}
-							</select>
+							<div className={styles.priceValuation}>Remove Selected</div>
+							<div className={styles.priceValuation}>Clear Selected</div>
+							<div className={styles.priceValuation}>Calculate</div>
+							<div className={styles.grading}>Grading cost: {gradingCost}</div>
+							<div className={styles.grading}>
+								Grading profit: {gradingProfit}
+							</div>
 						</div>
 					</div>
 
 					<div className={styles.cardsGrid}>
-						{filteredCards.map((card) => (
-							<Link
-								key={card.id}
-								to={`/card-detail/${card.id}`}
-								style={{ textDecoration: 'none' }}>
-								<img
-									src={card.image || ''}
-									alt={`Pokemon Card - ${card.name || 'Unknown'}`}
-									className={styles.cardImage}
-								/>
-							</Link>
-						))}
+						{filteredCards
+							.filter((card) => card.sendBulk)
+							.map((card) => (
+								<Link
+									key={card.id}
+									to={`/card-detail/${card.id}`}
+									style={{ textDecoration: 'none' }}>
+									<img
+										src={card.image || ''}
+										alt={`Pokemon Card - ${card.name || 'Unknown'}`}
+										className={styles.cardImage}
+									/>
+								</Link>
+							))}
 					</div>
 				</div>
 			</div>
