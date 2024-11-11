@@ -35,6 +35,7 @@ const Collection = () => {
 	});
 	const [price, setPrice] = useState(0);
 	const navigate = useNavigate();
+	const [selectedCards, setSelectedCards] = useState(new Set()); // for tracking selected cards
 
 	const handleBack = () => {
 		navigate(-1);
@@ -226,6 +227,53 @@ const Collection = () => {
 		}
 	};
 
+	// handles checkbox change -> keeps track of state of checkbox
+	const handleCheckboxChange = (cardId) => {
+		setSelectedCards((prevSelected) => {
+			const updatedSelected = new Set(prevSelected);
+			if (updatedSelected.has(cardId)) {
+				updatedSelected.delete(cardId); // unselect if selected
+			} else {
+				updatedSelected.add(cardId); // select if not already selected
+			}
+			return updatedSelected;
+		});
+	};
+
+	// Handle removing selected cards
+	const handleRemoveSelected = async () => {
+		try {
+			if (!user || !user.email) {
+				console.error('No user logged in');
+				return;
+			}
+
+			const userData = await getUserByEmail(user.email);
+			if (!userData) {
+				console.error('User data not found');
+				return;
+			}
+
+			const removePromises = [...selectedCards].map(async (cardId) => {
+				const cardRef = doc(db, `users/${userData.id}/cards/${cardId}`);
+				await updateDoc(cardRef, { sendBulk: false }); // updating Firestore
+			});
+
+			await Promise.all(removePromises);
+
+			// filter out removed cards from the state
+			const updatedCards = cards.filter((card) => !selectedCards.has(card.id));
+			setCards(updatedCards);
+			setFilteredCards(updatedCards);
+			setSelectedCards(new Set()); // reset selected cards
+
+			console.log('Selected cards removed successfully');
+		} catch (error) {
+			console.error('Error removing selected cards:', error);
+		}
+	};
+
+
 	if (loading && user) {
 		return (
 			<div className={`${styles.container}`}>
@@ -382,9 +430,13 @@ const Collection = () => {
 						</div>
 
 						<div className={styles.filterContainer}>
-							<button className={styles.removeSelected}>Remove Selected</button>
+							<button
+								className={styles.removeSelected}
+								onClick={handleRemoveSelected}>
+								Remove Selected
+							</button>
 							<button className={styles.clearAll} onClick={clearAll}>
-								Clear Selected
+								Clear All
 							</button>
 							<button
 								className={styles.calculateCosts}
@@ -407,6 +459,9 @@ const Collection = () => {
 										type="checkbox"
 										className={styles.cardCheckbox}
 										id={`checkbox-${card.id}`}
+										checked={selectedCards.has(card.id)}
+										onChange={() => handleCheckboxChange(card.id)} // handles checkbox change
+
 									/>
 									<Link
 										key={card.id}
