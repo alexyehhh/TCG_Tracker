@@ -402,16 +402,23 @@ const Collection = () => {
 						{filteredCards
 							.filter((card) => card.sendBulk)
 							.map((card) => (
-								<Link
-									key={card.id}
-									to={`/card-detail/${card.id}`}
-									style={{ textDecoration: 'none' }}>
-									<img
-										src={card.image || ''}
-										alt={`Pokemon Card - ${card.name || 'Unknown'}`}
-										className={styles.cardImage}
+								<div key={card.id} className={styles.cardContainer}>
+									<input
+										type="checkbox"
+										className={styles.cardCheckbox}
+										id={`checkbox-${card.id}`}
 									/>
-								</Link>
+									<Link
+										key={card.id}
+										to={`/card-detail/${card.id}`}
+										style={{ textDecoration: 'none' }}>
+										<img
+											src={card.image || ''}
+											alt={`Pokemon Card - ${card.name || 'Unknown'}`}
+											className={styles.cardImage}
+										/>
+									</Link>
+								</div>
 							))}
 					</div>
 				</div>
