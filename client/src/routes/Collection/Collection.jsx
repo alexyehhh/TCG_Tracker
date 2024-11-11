@@ -463,7 +463,6 @@ const Collection = () => {
 								key={card.id}
 								card={card}
 								onClick={handleCardClick}
-								handleCardClick={handleCardClick}
 								isSelected={selectedCards.has(card.id)}
 							/>
 						))}
