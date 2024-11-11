@@ -22,6 +22,7 @@ const rarities = [
 	'Rare Shiny GX',
 	'Rare Ultra',
 	'Uncommon',
+	'N/A',
 ];
 
 export default rarities;
