@@ -193,6 +193,12 @@ const Collection = () => {
 
 	const clearAll = async () => {
 		try {
+			const confirmClear = window.confirm("Are you sure you want to remove all cards from the bulk collection?");
+			if (!confirmClear) {
+				// if the user cancels, abort
+				return;
+			}
+
 			if (!user || !user.email) {
 				console.error('No user logged in');
 				return;
