@@ -476,3 +476,27 @@
 	background-color: #f3e8ff;
 	cursor: pointer;
 }
+
+.cardContainer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cardCheckbox {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    transform: scale(1.5);
+    z-index: 5;
+    cursor: pointer;
+    accent-color: #581c87;
+    opacity: 0; /* by default: hide the checkbox */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.cardContainer:hover .cardCheckbox {
+    opacity: 1; /* shows the checkbox when hovering over the card */
+    transform: scale(1.6);
+}
