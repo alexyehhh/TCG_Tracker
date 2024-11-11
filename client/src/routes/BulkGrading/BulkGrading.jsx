@@ -15,9 +15,10 @@ import PokemonBackground from '../../components/PokemonBackground/PokemonBackgro
 import LoggedOutView from '../../components/LoggedOutView/LoggedOutView';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import NoBulkCardsView from '../../components/NoBulkCardsView/NoBulkCardsView';
+import EmptyCollectionView from '../../components/EmptyCollectionView/EmptyCollectionView';
 import axios from 'axios';
 
-const Collection = () => {
+const BulkGrading = () => {
 	// const [gradingCost, setGradingCost] = useState(0);
 	const [gradingProfit, setGradingProfit] = useState(0);
 	const [user, setUser] = useState(null);
@@ -193,7 +194,9 @@ const Collection = () => {
 
 	const clearAll = async () => {
 		try {
-			const confirmClear = window.confirm("Are you sure you want to remove all cards from the bulk collection?");
+			const confirmClear = window.confirm(
+				'Are you sure you want to remove all cards from the bulk collection?'
+			);
 			if (!confirmClear) {
 				// if the user cancels, abort
 				return;
@@ -279,7 +282,6 @@ const Collection = () => {
 		}
 	};
 
-
 	if (loading && user) {
 		return (
 			<div className={`${styles.container}`}>
@@ -320,59 +322,6 @@ const Collection = () => {
 			</div>
 		);
 	}
-
-	const EmptyCollectionView = () => (
-		<div className={styles.container} style={{ backgroundColor: '#fff4fc' }}>
-			<PokemonBackground color='#2f213e' />
-			<nav className={styles.navbar}>
-				<div className={styles.navbarLeft}>
-					<button onClick={handleBack} className={styles.backButton}>
-						<svg
-							className={styles.backIcon}
-							viewBox='0 0 1024 1024'
-							version='1.1'
-							xmlns='http://www.w3.org/2000/svg'>
-							<path
-								d='M853.333333 469.333333v85.333334H341.333333l234.666667 234.666666-60.586667 60.586667L177.493333 512l337.92-337.92L576 234.666667 341.333333 469.333333h512z'
-								fill=''
-							/>
-						</svg>
-						Back
-					</button>
-				</div>
-				<ul className={styles.navLinks}>
-					<li>
-						<Link to='/'>Search</Link>
-					</li>
-					<li>
-						<Link to='/collection'>Collection</Link>
-					</li>
-					<li>
-						<Link to='/bulk-grading'>Bulk Grading</Link>
-					</li>
-					<li>
-						<Link to='/upload'>Upload</Link>
-					</li>
-				</ul>
-				<div className={styles.navbarRight}></div>
-			</nav>
-			<div className={`${styles.mainContent} ${styles.emptyState}`}>
-				<h1 className={styles.title}>Your Collection is Empty!</h1>
-				<p className={styles.emptyMessage}>
-					Looks like you haven't added any cards yet. Start building your
-					collection by uploading your first card!
-				</p>
-				<div className={styles.notloggedInBtns}>
-					<Link to='/' className={styles.uploadButton}>
-						Search a Card
-					</Link>
-					<Link to='/upload' className={styles.uploadButton}>
-						Upload Your First Card
-					</Link>
-				</div>
-			</div>
-		</div>
-	);
 
 	const LoggedInView = () =>
 		hasCards ? (
@@ -435,7 +384,7 @@ const Collection = () => {
 							</button>
 						</div>
 
-						<div className={styles.filterContainer}>
+						<div className={styles.gradeButtons}>
 							<button
 								className={styles.removeSelected}
 								onClick={handleRemoveSelected}>
@@ -462,12 +411,11 @@ const Collection = () => {
 							.map((card) => (
 								<div key={card.id} className={styles.cardContainer}>
 									<input
-										type="checkbox"
+										type='checkbox'
 										className={styles.cardCheckbox}
 										id={`checkbox-${card.id}`}
 										checked={selectedCards.has(card.id)}
 										onChange={() => handleCheckboxChange(card.id)} // handles checkbox change
-
 									/>
 									<Link
 										key={card.id}
@@ -494,4 +442,4 @@ const Collection = () => {
 	return user ? <LoggedInView /> : <LoggedOutView />;
 };
 
-export default Collection;
+export default BulkGrading;
