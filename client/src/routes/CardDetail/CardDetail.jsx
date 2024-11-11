@@ -255,7 +255,7 @@ const CardDetail = () => {
 				image: cardData.images.large,
 				name: cardData.name,
 				number: cardData.number,
-				rarity: cardData.rarity,
+				rarity: cardData.rarity ? cardData.rarity : 'N/A',
 				setId: cardData.set.id,
 				setName: cardData.set.name,
 				setPrintedTotal: cardData.set.printedTotal,
