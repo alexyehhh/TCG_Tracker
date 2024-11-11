@@ -17,7 +17,7 @@ import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import NoBulkCardsView from '../../components/NoBulkCardsView/NoBulkCardsView';
 import axios from 'axios';
 
-const Collection = () => {
+const BulkGrading = () => {
 	// const [gradingCost, setGradingCost] = useState(0);
 	const [gradingProfit, setGradingProfit] = useState(0);
 	const [user, setUser] = useState(null);
@@ -193,7 +193,9 @@ const Collection = () => {
 
 	const clearAll = async () => {
 		try {
-			const confirmClear = window.confirm("Are you sure you want to remove all cards from the bulk collection?");
+			const confirmClear = window.confirm(
+				'Are you sure you want to remove all cards from the bulk collection?'
+			);
 			if (!confirmClear) {
 				// if the user cancels, abort
 				return;
@@ -278,7 +280,6 @@ const Collection = () => {
 			console.error('Error removing selected cards:', error);
 		}
 	};
-
 
 	if (loading && user) {
 		return (
@@ -435,7 +436,7 @@ const Collection = () => {
 							</button>
 						</div>
 
-						<div className={styles.filterContainer}>
+						<div className={styles.gradeButtons}>
 							<button
 								className={styles.removeSelected}
 								onClick={handleRemoveSelected}>
@@ -462,12 +463,11 @@ const Collection = () => {
 							.map((card) => (
 								<div key={card.id} className={styles.cardContainer}>
 									<input
-										type="checkbox"
+										type='checkbox'
 										className={styles.cardCheckbox}
 										id={`checkbox-${card.id}`}
 										checked={selectedCards.has(card.id)}
 										onChange={() => handleCheckboxChange(card.id)} // handles checkbox change
-
 									/>
 									<Link
 										key={card.id}
@@ -494,4 +494,4 @@ const Collection = () => {
 	return user ? <LoggedInView /> : <LoggedOutView />;
 };
 
-export default Collection;
+export default BulkGrading;
