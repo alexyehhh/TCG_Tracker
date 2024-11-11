@@ -14,6 +14,7 @@ import styles from './BulkGrading.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 import LoggedOutView from '../../components/LoggedOutView/LoggedOutView';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
+import NoBulkCardsView from '../../components/NoBulkCardsView/NoBulkCardsView';
 import axios from 'axios';
 
 const Collection = () => {
@@ -381,7 +382,7 @@ const Collection = () => {
 						</div>
 
 						<div className={styles.filterContainer}>
-							<div className={styles.priceValuation}>Remove Selected</div>
+							<button className={styles.removeSelected}>Remove Selected</button>
 							<button className={styles.clearAll} onClick={clearAll}>
 								Clear Selected
 							</button>
@@ -414,6 +415,9 @@ const Collection = () => {
 							))}
 					</div>
 				</div>
+				{filteredCards.filter((card) => card.sendBulk).length == 0 && (
+					<NoBulkCardsView />
+				)}
 			</div>
 		) : (
 			<EmptyCollectionView />
