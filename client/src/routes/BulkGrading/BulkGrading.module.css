@@ -378,7 +378,6 @@
 }
 
 .priceValuation {
-	/* font-size: 1rem; */
 	font-weight: bold;
 	color: #581c87;
 	border: 1px solid #581c87;
@@ -391,27 +390,6 @@
 	justify-content: center;
 	align-items: center;
 	margin: 0;
-}
-
-.calculateCosts {
-	font-weight: bold;
-	color: #581c87;
-	border: 1px solid #581c87;
-	background-color: white;
-	border-radius: 0.5rem;
-	height: 40px;
-	text-align: center;
-	padding: 1.75rem 1rem;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	margin: 0;
-	cursor: pointer;
-	transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.calculateCosts:hover {
-	background-color: #f3e8ff;
 }
 
 .notloggedInBtns {
@@ -473,4 +451,28 @@
 
 .backButton:hover .backIcon {
 	transform: translateX(-5px);
+}
+
+.clearAll,
+.removeSelected,
+.calculateCosts {
+	font-weight: bold;
+	color: #581c87;
+	border: 1px solid #581c87;
+	background-color: white;
+	border-radius: 0.5rem;
+	height: 40px;
+	text-align: center;
+	padding: 1.75rem 1rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 0;
+}
+
+.clearAll:hover,
+.removeSelected:hover,
+.calculateCosts:hover {
+	background-color: #f3e8ff;
+	cursor: pointer;
 }

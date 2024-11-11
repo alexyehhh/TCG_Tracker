@@ -1,0 +1,62 @@
+.container {
+	min-height: 100vh;
+	background-color: #fff4fc;
+	padding: 2rem;
+}
+
+.nav {
+	margin-bottom: 2rem;
+}
+
+.navList {
+	display: flex;
+	justify-content: center;
+	gap: 2rem;
+}
+
+.navItem {
+	color: #6b21a8;
+	text-decoration: none;
+}
+
+.navItem:hover {
+	color: #9b4dca;
+}
+
+.content {
+	max-width: 40rem;
+	margin: 0 auto;
+	text-align: center;
+}
+
+.heading {
+	font-size: 2.25rem;
+	font-weight: bold;
+	color: #6b21a8;
+	margin-bottom: 1.5rem;
+}
+
+.text {
+	font-size: 1.125rem;
+	color: #4a4a4a;
+	margin-bottom: 2rem;
+}
+
+.buttonContainer {
+	display: flex;
+	justify-content: center;
+	gap: 1rem;
+}
+
+.button {
+	padding: 0.75rem 1.5rem;
+	background-color: #6b21a8;
+	color: white;
+	border-radius: 0.375rem;
+	text-decoration: none;
+	transition: background-color 0.2s;
+}
+
+.button:hover {
+	background-color: #7c3aed;
+}
