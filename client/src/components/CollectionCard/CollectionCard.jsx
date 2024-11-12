@@ -1,16 +1,7 @@
 import React from 'react';
 import styles from './CollectionCard.module.css';
 import { formatter } from '../../util/cardUtils';
-
-const GradeIcon = ({ grade }) => {
-	const getDisplayGrade = (grade) => {
-		const gradeUpper = grade.toUpperCase();
-		if (gradeUpper === 'UNGRADED') return 'U';
-		return gradeUpper.replace('PSA', '');
-	};
-
-	return <div className={styles.gradeIcon}>{getDisplayGrade(grade)}</div>;
-};
+import GradeIcon from '../GradeIcon/GradeIcon';
 
 const CollectionCard = ({ card, onClick, isSelected }) => {
 	const isEligibleForBulk =

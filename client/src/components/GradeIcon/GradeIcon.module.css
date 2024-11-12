@@ -1,0 +1,14 @@
+.gradeIcon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.5rem;
+	height: 1.5rem;
+	border-radius: 50%;
+	background-color: #6b21a8;
+	color: white;
+	font-size: 0.875rem;
+	padding: 0.8rem;
+	font-weight: bold;
+	margin-left: 0.25rem;
+}
