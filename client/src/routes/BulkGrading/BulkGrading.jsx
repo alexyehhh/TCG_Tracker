@@ -49,8 +49,12 @@ const BulkGrading = () => {
 	const calculateCosts = async () => {
 		const selectedCards = filteredCards.filter((card) => card.sendBulk);
 		if (selectedCards.length < 20) {
-			// Throw a popup error
-			return Error('You must have at least 20 cards to grade');
+			const confirmClear = window.confirm(
+				'You need at least 20 cards to proceed.'
+			);
+			if (!confirmClear) {
+				return;
+			}
 		}
 		let profit = 0;
 
