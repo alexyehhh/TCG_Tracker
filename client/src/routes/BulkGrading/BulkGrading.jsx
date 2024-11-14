@@ -52,9 +52,7 @@ const BulkGrading = () => {
 			const confirmClear = window.confirm(
 				'You need at least 20 cards to proceed.'
 			);
-			if (!confirmClear) {
-				return;
-			}
+			return;
 		}
 		let profit = 0;
 
