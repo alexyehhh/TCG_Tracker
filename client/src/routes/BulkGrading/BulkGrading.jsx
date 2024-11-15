@@ -77,52 +77,6 @@ const BulkGrading = () => {
 		}
 	};
 
-	const clearBulkValues = async () => {
-		try {
-			if (!user || !user.email) {
-				console.log('No user logged in');
-				return;
-			}
-
-			const userData = await getUserByEmail(user.email);
-			if (!userData) {
-				console.log('User data not found');
-				return;
-			}
-
-			// This is the array of cards that have been selected for bulk grading
-			// We are updating all cards in this array to have `sendBulk: false`
-			const updatePromises = cards.map(async (card) => {
-				const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
-				return updateDoc(cardRef, { sendBulk: false });
-			});
-
-			// Wait for all the updates to complete
-			await Promise.all(updatePromises);
-			console.log('Successfully cleared all bulk selections when leaving page');
-		} catch (error) {
-			console.error('Error clearing bulk selections:', error);
-		}
-	};
-
-	useEffect(() => {
-		// Page refresh or close
-		const handleBeforeUnload = (e) => {
-			clearBulkValues();
-			e.preventDefault();
-			e.returnValue = '';
-		};
-
-		// Event listener for page refresh or close
-		window.addEventListener('beforeunload', handleBeforeUnload);
-
-		// Cleanup function for when component unmounts
-		return () => {
-			window.removeEventListener('beforeunload', handleBeforeUnload);
-			clearBulkValues();
-		};
-	}, [user, cards]);
-
 	// Listen for user auth state changes
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
