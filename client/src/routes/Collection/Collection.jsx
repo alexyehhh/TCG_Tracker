@@ -338,7 +338,7 @@ const Collection = () => {
 								onChange={handleInputChange}
 								onKeyDown={handleKeyDown}
 								className={styles.searchInput}
-								autoFocus
+								// autoFocus -> issue for rerender
 							/>
 							<button
 								onClick={handleSearchCollection}
