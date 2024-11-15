@@ -55,26 +55,26 @@ const BulkGrading = () => {
 			if (!confirmClear) {
 				return;
 			}
-			return;
-		}
-		let profit = 0;
+		} else {
+			let profit = 0;
 
-		for (const card of selectedCards) {
-			const response = await axios.get(
-				`${import.meta.env.VITE_API_URL}/card-profit`,
-				{
-					params: {
-						salePrice: card.selectedPrice,
-						pricePaid: card.pricePaid,
-						// expeditedTurnaround: document.getElementById('psa-sub').checked,
-					},
-				}
-			);
-			profit += response.data.gmeProfit;
-		}
-		console.log(profit);
+			for (const card of selectedCards) {
+				const response = await axios.get(
+					`${import.meta.env.VITE_API_URL}/card-profit`,
+					{
+						params: {
+							salePrice: card.selectedPrice,
+							pricePaid: card.pricePaid,
+							// expeditedTurnaround: document.getElementById('psa-sub').checked,
+						},
+					}
+				);
+				profit += response.data.gmeProfit;
+			}
+			console.log(profit);
 
-		setGradingProfit(profit.toFixed(2));
+			setGradingProfit(profit.toFixed(2));
+		}
 	};
 
 	const clearBulkValues = async () => {
