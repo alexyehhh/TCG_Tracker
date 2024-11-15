@@ -422,7 +422,7 @@ const BulkGrading = () => {
 								onChange={handleInputChange}
 								onKeyDown={handleKeyDown}
 								className={styles.searchInput}
-								autoFocus
+								// autoFocus
 							/>
 							<button
 								onClick={handleSearchCollection}
