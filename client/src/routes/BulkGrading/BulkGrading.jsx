@@ -21,6 +21,7 @@ import axios from 'axios';
 const BulkGrading = () => {
 	// const [gradingCost, setGradingCost] = useState(0);
 	const [gradingProfit, setGradingProfit] = useState(0);
+	const [gradingCost, setGradingCost] = useState(0);
 	const [user, setUser] = useState(null);
 	const [cards, setCards] = useState([]);
 	const [filteredCards, setFilteredCards] = useState([]);
@@ -47,33 +48,37 @@ const BulkGrading = () => {
 	});
 
 	const calculateCosts = async () => {
-		const selectedCards = filteredCards.filter((card) => card.sendBulk);
-		if (selectedCards.length < 20) {
+		const selectedCards = filteredCards.filter((card) => card.sendBulk); // get selected cards 
+		if (selectedCards.length < 20) { // if less than 20 cards selected
 			const confirmClear = window.confirm(
-				'You need at least 20 cards to proceed.'
+				'You need at least 20 cards to proceed.' // prompt user to select at least 20 cards
 			);
-			if (!confirmClear) {
-				return;
+			if (!confirmClear) { // if user cancels, return
+				return; 
 			}
 		} else {
-			let profit = 0;
+			let total_profit = 0; // initialize total profit
+			let total_cost = 0; // initialize total cost
 
-			for (const card of selectedCards) {
-				const response = await axios.get(
+			for (const card of selectedCards) { // loop through selected cards 
+				const response = await axios.get( // make request to server
 					`${import.meta.env.VITE_API_URL}/card-profit`,
 					{
 						params: {
-							salePrice: card.selectedPrice,
-							pricePaid: card.pricePaid,
-							// expeditedTurnaround: document.getElementById('psa-sub').checked,
+							salePrice: card.selectedPrice, // pass in selected price
+							pricePaid: card.pricePaid, // pass in price paid
 						},
 					}
 				);
-				profit += response.data.gmeProfit;
+				if(response.status === 200 && response.data){ // if response is successful
+					total_cost += response.data.bulkGradingCost; // add cost to total
+					total_profit += response.data.bulkGradingProfit; // add profit to total
+				}
 			}
-			console.log(profit);
-
-			setGradingProfit(profit.toFixed(2));
+			console.log(total_cost); // log total cost
+			console.log(total_profit); // log total profit
+			setGradingCost(total_cost.toFixed(2)); // set grading cost
+			setGradingProfit(total_profit.toFixed(2)); // set grading profit
 		}
 	};
 
@@ -405,8 +410,12 @@ const BulkGrading = () => {
 							</button>
 							{/* <div className={styles.grading}>Grading cost: {gradingCost}</div> */}
 							<div className={styles.grading}>
-								Grading profit: ${gradingProfit}
+								Bulk Grading Cost: ${gradingCost}
 							</div>
+							<div className={styles.grading}>
+								Bulk Grading Profit: ${gradingProfit}
+							</div>
+							
 						</div>
 					</div>
 
