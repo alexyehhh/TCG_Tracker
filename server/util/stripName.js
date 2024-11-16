@@ -4,7 +4,10 @@ async function cleanName(name) {
     let cleaned = "";
 
     for (let i = 0; i < lower.length; i++) {
-        if (!exclude.includes(lower[i])) {
+        // change wmax to whatever its reading vmax as
+        if (lower[i] === "wmax") {
+            cleaned += "vmax" + " ";
+        } else if (!exclude.includes(lower[i])) {
             cleaned += lower[i] + " ";
         }
     }
