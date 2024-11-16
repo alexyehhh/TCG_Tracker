@@ -7,3 +7,4 @@ node_modules/
 #ignore google vision cloud key 
 
 server/config/vision-key.json
+/config
