@@ -7,6 +7,7 @@ import {
 	getDocs,
 	doc,
 	updateDoc,
+	deleteDoc,
 } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Link, useNavigate } from 'react-router-dom';
@@ -209,6 +210,24 @@ const Collection = () => {
 			...prevFilters,
 			[name]: value, // update the specific filter with the new value
 		}));
+	};
+
+	const removeCard = async (cardId) => {
+		console.log(cardId);
+		try {
+			const userDoc = await getUserByEmail(user.email);
+			if (!userDoc) {
+				throw new Error('User not found');
+			}
+			const cardDocRef = doc(db, 'users', userDoc.id, 'cards', cardId);
+			await deleteDoc(cardDocRef);
+
+			const updatedCards = cards.filter((card) => card.id !== cardId);
+			setCards(updatedCards);
+			setFilteredCards(updatedCards);
+		} catch (error) {
+			console.error('Error removing cards:', error);
+		}
 	};
 
 	// apply filters whenever filters change
@@ -417,16 +436,11 @@ const Collection = () => {
 
 					<div className={styles.cardsGrid}>
 						{filteredCards.map((card) => (
-							// <Link
-							// 	key={card.id}
-							// 	to={`/card-detail/${card.id}`}
-							// 	style={{ textDecoration: 'none' }}>
-							// 	<CollectionCard card={card} />
-							// </Link>
 							<CollectionCard
 								key={card.id}
 								card={card}
 								onClick={handleCardClick}
+								removeCard={removeCard}
 								isSelected={selectedCards.has(card.id)}
 							/>
 						))}

@@ -7,6 +7,7 @@ import {
 	getDocs,
 	doc,
 	updateDoc,
+	deleteDoc,
 } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Link, useNavigate } from 'react-router-dom';
@@ -17,6 +18,7 @@ import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import NoBulkCardsView from '../../components/NoBulkCardsView/NoBulkCardsView';
 import EmptyCollectionView from '../../components/EmptyCollectionView/EmptyCollectionView';
 import axios from 'axios';
+import { X } from 'lucide-react';
 
 const BulkGrading = () => {
 	// const [gradingCost, setGradingCost] = useState(0);
@@ -38,6 +40,49 @@ const BulkGrading = () => {
 	const [price, setPrice] = useState(0);
 	const navigate = useNavigate();
 	const [selectedCards, setSelectedCards] = useState(new Set()); // for tracking selected cards
+	const [showRemoveConfirm, setShowRemoveConfirm] = useState(null); // Track which card is showing remove confirmation
+
+	// Handle removing a single card
+	const handleRemoveCard = async (cardId) => {
+		try {
+			if (!user || !user.email) {
+				console.error('No user logged in');
+				return;
+			}
+
+			const userData = await getUserByEmail(user.email);
+			if (!userData) {
+				console.error('User data not found');
+				return;
+			}
+
+			const cardRef = doc(db, `users/${userData.id}/cards/${cardId}`);
+			await deleteDoc(cardRef);
+
+			// Update local state
+			const updatedCards = cards.map((card) =>
+				card.id === cardId ? { ...card, sendBulk: false } : card
+			);
+			setCards(updatedCards);
+			setFilteredCards(updatedCards);
+			setShowRemoveConfirm(null);
+		} catch (error) {
+			console.error('Error removing card:', error);
+		}
+	};
+
+	const handleRemoveClick = (e, cardId) => {
+		e.preventDefault(); // Prevent navigation
+		if (showRemoveConfirm === cardId) {
+			handleRemoveCard(cardId);
+		} else {
+			setShowRemoveConfirm(cardId);
+		}
+	};
+
+	const handleMouseLeave = () => {
+		setShowRemoveConfirm(null);
+	};
 
 	const handleBack = () => {
 		navigate(-1);
@@ -48,20 +93,24 @@ const BulkGrading = () => {
 	});
 
 	const calculateCosts = async () => {
-		const selectedCards = filteredCards.filter((card) => card.sendBulk); // get selected cards 
-		if (selectedCards.length < 20) { // if less than 20 cards selected
+		const selectedCards = filteredCards.filter((card) => card.sendBulk); // get selected cards
+		if (selectedCards.length < 20) {
+			// if less than 20 cards selected
 			const confirmClear = window.confirm(
 				'You need at least 20 cards to proceed.' // prompt user to select at least 20 cards
 			);
-			if (!confirmClear) { // if user cancels, return
-				return; 
+			if (!confirmClear) {
+				// if user cancels, return
+				return;
 			}
 		} else {
 			let total_profit = 0; // initialize total profit
 			let total_cost = 0; // initialize total cost
 
-			for (const card of selectedCards) { // loop through selected cards 
-				const response = await axios.get( // make request to server
+			for (const card of selectedCards) {
+				// loop through selected cards
+				const response = await axios.get(
+					// make request to server
 					`${import.meta.env.VITE_API_URL}/card-profit`,
 					{
 						params: {
@@ -70,7 +119,8 @@ const BulkGrading = () => {
 						},
 					}
 				);
-				if(response.status === 200 && response.data){ // if response is successful
+				if (response.status === 200 && response.data) {
+					// if response is successful
 					total_cost += response.data.bulkGradingCost; // add cost to total
 					total_profit += response.data.bulkGradingProfit; // add profit to total
 				}
@@ -415,7 +465,6 @@ const BulkGrading = () => {
 							<div className={styles.grading}>
 								Bulk Grading Profit: ${gradingProfit}
 							</div>
-							
 						</div>
 					</div>
 
@@ -423,18 +472,34 @@ const BulkGrading = () => {
 						{filteredCards
 							.filter((card) => card.sendBulk)
 							.map((card) => (
-								<div key={card.id} className={styles.cardContainer}>
+								<div
+									key={card.id}
+									className={styles.cardContainer}
+									onMouseLeave={handleMouseLeave}>
 									<input
 										type='checkbox'
 										className={styles.cardCheckbox}
 										id={`checkbox-${card.id}`}
 										checked={selectedCards.has(card.id)}
-										onChange={() => handleCheckboxChange(card.id)} // handles checkbox change
+										onChange={() => handleCheckboxChange(card.id)}
 									/>
+									<button
+										onClick={(e) => handleRemoveClick(e, card.id)}
+										className={`${styles.removeButton} ${
+											showRemoveConfirm === card.id
+												? styles.removeButtonConfirm
+												: ''
+										}`}
+										aria-label='Remove card'>
+										<X size={16} />
+									</button>
 									<Link
 										key={card.id}
 										to={`/card-detail/${card.id}`}
-										style={{ textDecoration: 'none' }}>
+										style={{ textDecoration: 'none' }}
+										onClick={(e) =>
+											showRemoveConfirm === card.id && e.preventDefault()
+										}>
 										<img
 											src={card.image || ''}
 											alt={`Pokemon Card - ${card.name || 'Unknown'}`}
