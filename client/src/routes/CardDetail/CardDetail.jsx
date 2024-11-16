@@ -267,6 +267,7 @@ const CardDetail = () => {
 				selectedGrade: selectedGrade,
 				pricePaid: pricePaid !== '' ? +pricePaid : 0,
 				sendBulk: false,
+				ungradedPrice: cardPrices['ungraded'] || 0,
 			};
 
 			const cardDocRef = doc(db, 'users', userId, 'cards', cardData.id);

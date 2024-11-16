@@ -8,7 +8,8 @@ const CollectionCard = ({ card, onClick, isSelected }) => {
 	const isEligibleForBulk =
 		card.selectedPrice !== 'N/A' &&
 		Number(card.selectedPrice) > 0 &&
-		Number(card.selectedPrice) < 500;
+		Number(card.selectedPrice) < 500 &&
+		card.selectedGrade === 'ungraded';
 
 	const cardStyles = `${styles.cardContainer} 
         ${!isEligibleForBulk ? styles.ineligibleCard : ''}
