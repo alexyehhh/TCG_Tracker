@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './CollectionCard.module.css';
 import { formatter } from '../../util/cardUtils';
 import GradeIcon from '../GradeIcon/GradeIcon';
+import { Link } from 'react-router-dom';
 
 const CollectionCard = ({ card, onClick, isSelected }) => {
 	const isEligibleForBulk =
@@ -10,33 +11,39 @@ const CollectionCard = ({ card, onClick, isSelected }) => {
 		Number(card.selectedPrice) < 500;
 
 	const cardStyles = `${styles.cardContainer} 
-        ${isSelected ? styles.selectedCard : ''} 
         ${!isEligibleForBulk ? styles.ineligibleCard : ''}
         ${card.sendBulk ? styles.bulkCard : ''}`;
 
 	return (
-		<div
-			className={cardStyles}
-			onClick={() => isEligibleForBulk && onClick && onClick(card)}>
-			<img
-				src={card.image || ''}
-				alt={`Pokemon Card - ${card.name || 'Unknown'}`}
-				className={styles.cardImage}
+		<div className={cardStyles}>
+			<input
+				type='checkbox'
+				className={styles.cardCheckbox}
+				id={`checkbox-${card.id}`}
+				checked={isSelected}
+				onChange={() => isEligibleForBulk && onClick && onClick(card)}
 			/>
-			<div className={styles.cardInfo}>
-				<div className={styles.gradeText}>
-					<span>Grade:</span>
-					<GradeIcon grade={card.selectedGrade} />
+			<Link to={`/card/${card.id}`}>
+				<img
+					src={card.image || ''}
+					alt={`Pokemon Card - ${card.name || 'Unknown'}`}
+					className={styles.cardImage}
+				/>
+				<div className={styles.cardInfo}>
+					<div className={styles.gradeText}>
+						<span>Grade:</span>
+						<GradeIcon grade={card.selectedGrade} />
+					</div>
+					<p className={styles.priceText}>
+						Value:
+						{card.selectedPrice !== 'N/A'
+							? Number(card.selectedPrice) > 0
+								? ` $${formatter.format(Number(card.selectedPrice))}`
+								: ' N/A'
+							: ' N/A'}
+					</p>
 				</div>
-				<p className={styles.priceText}>
-					Value:
-					{card.selectedPrice !== 'N/A'
-						? Number(card.selectedPrice) > 0
-							? ` $${formatter.format(Number(card.selectedPrice))}`
-							: ' N/A'
-						: ' N/A'}
-				</p>
-			</div>
+			</Link>
 		</div>
 	);
 };
