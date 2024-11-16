@@ -22,11 +22,13 @@ router.get('/card-profit', async (req, res) => {
 	}
 
 	try {
-		// GME Profit Calculation
-		const gmeAdditionalFees = 15.99 + (gmeMembership ? 0 : 4.99);
-		const gmeProfit = salePrice - (pricePaid + gmeAdditionalFees);
+		// GameStop Profit Calculation
+		const gmeAdditionalFees = 15.99 + (gmeMembership ? 0 : 4.99); // If GME membership is not present, add $4.99 for shipping
+		const gmeProfit = salePrice - (pricePaid + gmeAdditionalFees); // Formula to calculate GME profit
 
 		// PSA Profit Calculation
+
+		// Determine PSA grading cost based on sale price
 		let psaGradingCost;
 		if (salePrice <= 500) {
 			psaGradingCost = expeditedTurnaround ? 39.99 : 24.99;
@@ -42,11 +44,27 @@ router.get('/card-profit', async (req, res) => {
 			psaGradingCost = 0; // Assuming no grading cost for cards over $10,000
 		}
 
+		// Formula to calculate PSA profit
 		const psaProfit = salePrice - (pricePaid + psaGradingCost);
+		
+		// Bulk Grading Cost/Profit Calculation
+		
+		// Determine bulk grading cost based on sale price
+		let bulkGradingCost;
+		if (salePrice <= 200){
+			bulkGradingCost = 14.99;
+		}
+		else if (salePrice <= 500){
+			bulkGradingCost = 18.99;
+		}
+
+		const bulkGradingProfit = salePrice - (pricePaid + bulkGradingCost); // Formula to calculate bulk grading profit
 
 		res.json({
 			gmeProfit: gmeProfit,
 			psaProfit: psaProfit,
+			bulkGradingProfit: bulkGradingProfit,
+			bulkGradingCost: bulkGradingCost,
 		});
 	} catch (error) {
 		console.error('Error fetching card profit:', error);

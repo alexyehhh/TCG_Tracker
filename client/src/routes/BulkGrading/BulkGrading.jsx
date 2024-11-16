@@ -21,6 +21,7 @@ import axios from 'axios';
 const BulkGrading = () => {
 	// const [gradingCost, setGradingCost] = useState(0);
 	const [gradingProfit, setGradingProfit] = useState(0);
+	const [gradingCost, setGradingCost] = useState(0);
 	const [user, setUser] = useState(null);
 	const [cards, setCards] = useState([]);
 	const [filteredCards, setFilteredCards] = useState([]);
@@ -47,81 +48,39 @@ const BulkGrading = () => {
 	});
 
 	const calculateCosts = async () => {
-		const selectedCards = filteredCards.filter((card) => card.sendBulk);
-		if (selectedCards.length < 20) {
+		const selectedCards = filteredCards.filter((card) => card.sendBulk); // get selected cards 
+		if (selectedCards.length < 20) { // if less than 20 cards selected
 			const confirmClear = window.confirm(
-				'You need at least 20 cards to proceed.'
+				'You need at least 20 cards to proceed.' // prompt user to select at least 20 cards
 			);
-			if (!confirmClear) {
-				return;
+			if (!confirmClear) { // if user cancels, return
+				return; 
 			}
 		} else {
-			let profit = 0;
+			let total_profit = 0; // initialize total profit
+			let total_cost = 0; // initialize total cost
 
-			for (const card of selectedCards) {
-				const response = await axios.get(
+			for (const card of selectedCards) { // loop through selected cards 
+				const response = await axios.get( // make request to server
 					`${import.meta.env.VITE_API_URL}/card-profit`,
 					{
 						params: {
-							salePrice: card.selectedPrice,
-							pricePaid: card.pricePaid,
-							// expeditedTurnaround: document.getElementById('psa-sub').checked,
+							salePrice: card.selectedPrice, // pass in selected price
+							pricePaid: card.pricePaid, // pass in price paid
 						},
 					}
 				);
-				profit += response.data.gmeProfit;
+				if(response.status === 200 && response.data){ // if response is successful
+					total_cost += response.data.bulkGradingCost; // add cost to total
+					total_profit += response.data.bulkGradingProfit; // add profit to total
+				}
 			}
-			console.log(profit);
-
-			setGradingProfit(profit.toFixed(2));
+			console.log(total_cost); // log total cost
+			console.log(total_profit); // log total profit
+			setGradingCost(total_cost.toFixed(2)); // set grading cost
+			setGradingProfit(total_profit.toFixed(2)); // set grading profit
 		}
 	};
-
-	const clearBulkValues = async () => {
-		try {
-			if (!user || !user.email) {
-				console.log('No user logged in');
-				return;
-			}
-
-			const userData = await getUserByEmail(user.email);
-			if (!userData) {
-				console.log('User data not found');
-				return;
-			}
-
-			// This is the array of cards that have been selected for bulk grading
-			// We are updating all cards in this array to have `sendBulk: false`
-			const updatePromises = cards.map(async (card) => {
-				const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
-				return updateDoc(cardRef, { sendBulk: false });
-			});
-
-			// Wait for all the updates to complete
-			await Promise.all(updatePromises);
-			console.log('Successfully cleared all bulk selections when leaving page');
-		} catch (error) {
-			console.error('Error clearing bulk selections:', error);
-		}
-	};
-
-	useEffect(() => {
-		// Page refresh or close
-		const handleBeforeUnload = (e) => {
-			clearBulkValues();
-			e.preventDefault();
-			e.returnValue = '';
-		};
-
-		// Event listener for page refresh or close
-		window.addEventListener('beforeunload', handleBeforeUnload);
-
-		// Cleanup function for when component unmounts
-		return () => {
-			window.removeEventListener('beforeunload', handleBeforeUnload);
-			clearBulkValues();
-		};
-	}, [user, cards]);
 
 	// Listen for user auth state changes
 	useEffect(() => {
@@ -451,8 +410,12 @@ const BulkGrading = () => {
 							</button>
 							{/* <div className={styles.grading}>Grading cost: {gradingCost}</div> */}
 							<div className={styles.grading}>
-								Grading profit: ${gradingProfit}
+								Bulk Grading Cost: ${gradingCost}
 							</div>
+							<div className={styles.grading}>
+								Bulk Grading Profit: ${gradingProfit}
+							</div>
+							
 						</div>
 					</div>
 

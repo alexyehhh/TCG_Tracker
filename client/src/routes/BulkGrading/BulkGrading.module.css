@@ -2,6 +2,7 @@
 	min-height: 100vh;
 	position: relative;
 	overflow: hidden;
+	z-index: 1;
 }
 
 .navbar {
@@ -220,11 +221,16 @@
 }
 
 .grading {
-	color: #581c87;
-	padding: 0.5rem 1rem;
-	border-radius: 0.5rem;
-	background-color: white;
-	border: 1px solid #581c87;
+    color: #581c87;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background-color: white;
+    border: 1px solid #581c87;
+    text-align: center; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+	height: 57px;
 }
 
 .backButton {
