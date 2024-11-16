@@ -12,7 +12,7 @@ const CollectionCard = ({ card, onClick, isSelected }) => {
 
 	const cardStyles = `${styles.cardContainer} 
         ${!isEligibleForBulk ? styles.ineligibleCard : ''}
-        ${card.sendBulk ? styles.bulkCard : ''}`;
+        `;
 
 	return (
 		<div className={cardStyles}>
@@ -23,7 +23,11 @@ const CollectionCard = ({ card, onClick, isSelected }) => {
 				checked={isSelected}
 				onChange={() => isEligibleForBulk && onClick && onClick(card)}
 			/>
-			<Link to={`/card/${card.id}`}>
+			<Link
+				to={`/card-detail/${card.id}`}
+				style={{ textDecoration: 'none' }}
+				className={styles.cardLink}
+				key={card.id}>
 				<img
 					src={card.image || ''}
 					alt={`Pokemon Card - ${card.name || 'Unknown'}`}
