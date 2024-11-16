@@ -3,6 +3,7 @@ const { ImageAnnotatorClient } = require('@google-cloud/vision');
 const pokemon = require('pokemontcgsdk');
 const multer = require('multer');
 const router = express.Router();
+const { cleanName } = require('../util/stripName.js');
 
 // Configure Google Cloud Vision
 const client = new ImageAnnotatorClient({
@@ -32,7 +33,7 @@ router.post('/api/recognizeCard', upload.single('file'), async (req, res) => {
         console.log("OCR Text:", ocrText);
 
         // Parse and search Pokémon TCG API
-        const name = ocrText.split('\n')[0]; // Assuming the name is the first line
+        const name = cleanName(ocrText.split('\n')); // Assuming the name is the first line
         const setNumberMatch = ocrText.match(/\d+\/\d+/);
         const setNumber = setNumberMatch ? setNumberMatch[0] : null;
 
@@ -40,7 +41,7 @@ router.post('/api/recognizeCard', upload.single('file'), async (req, res) => {
             console.log("Failed to parse card name or set number.");
             return res.status(400).json({ error: 'Could not parse card name or set number from image.' });
         }
-
+        
         console.log("Parsed Name:", name);
         console.log("Parsed Set Number:", setNumber);
 
