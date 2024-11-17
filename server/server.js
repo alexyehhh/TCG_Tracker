@@ -1,11 +1,11 @@
-const {
-	collection,
-	doc,
-	getDoc,
-	setDoc,
-	deleteDoc,
-} = require('firebase/firestore');
-const { db } = require('./firebase');
+// const {
+// 	collection,
+// 	doc,
+// 	getDoc,
+// 	setDoc,
+// 	deleteDoc,
+// } = require('firebase/firestore');
+// const { db } = require('./firebase');
 const express = require('express');
 require('dotenv').config();
 const app = express();
