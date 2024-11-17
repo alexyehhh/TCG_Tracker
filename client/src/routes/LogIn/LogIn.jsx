@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { auth, googleProvider, db } from '../../util/firebase';
-import { signInWithPopup, createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { auth, googleProvider } from '../../util/firebase';
+import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate, Link } from 'react-router-dom';
-import styles from './SignUp.module.css';
+import styles from './LogIn.module.css';
 import middleDivider from '../../assets/images/middleDivider.png';
 import { Eye, EyeOff } from 'lucide-react';
 
@@ -11,53 +10,35 @@ const SignIn = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
+	const [error, setError] = useState('');
 	const navigate = useNavigate();
 
-	// Create users document, ONLY IF THEY DONT HAVE ONE
-	const createDocument = async (user) => {
+	const handleGoogleSignIn = async () => {
 		try {
-			const userDocRef = doc(db, 'users', user.uid);
-			const userDoc = await getDoc(userDocRef);
-
-			if (!userDoc.exists()) {
-				await setDoc(userDocRef, {
-					email: user.email,
-					name: user.displayName || email.split('@')[0],
-					createdAt: new Date(),
-				});
-				console.log('New user document created');
-			} else {
-				console.log('User document already exists');
-			}
-		} catch (error) {
-			console.error('Error handling user document:', error.message);
-		}
-	};
-
-	const handleGoogleSignUp = async () => {
-		try {
-			const result = await signInWithPopup(auth, googleProvider);
-			console.log('Signed Up with google');
-			createDocument(result.user);
+			await signInWithPopup(auth, googleProvider);
+			console.log('Signed In with google');
 			navigate('/');
 		} catch (error) {
-			console.error('Google Sign-Up Error:', error.message);
+			setError('Failed to sign in with Google. Please try again.');
+			setTimeout(() => setError(''), 5000); // Clear error after 5 seconds
 		}
 	};
 
-	const handleSignup = async (e) => {
+	const handleLogin = async (e) => {
 		e.preventDefault();
 		try {
-			const userCredential = await createUserWithEmailAndPassword(
-				auth,
-				email,
-				password
-			);
-			createDocument(userCredential.user);
-			console.log('Signed Up with user and pass');
+			await signInWithEmailAndPassword(auth, email, password);
+			console.log('Signed In with user and pass');
 			navigate('/');
 		} catch (error) {
-			console.error('SignUp Error:', error.message);
+			let errorMessage = 'Invalid email or password. Please try again.';
+			if (error.code === 'auth/user-not-found') {
+				errorMessage = 'No account found with this email address.';
+			} else if (error.code === 'auth/wrong-password') {
+				errorMessage = 'Incorrect password. Please try again.';
+			}
+			setError(errorMessage);
+			setTimeout(() => setError(''), 5000); // Clear error after 5 seconds
 		}
 	};
 
@@ -71,6 +52,24 @@ const SignIn = () => {
 
 	return (
 		<div className={styles.container}>
+			{error && (
+				<div className={styles.errorAlert}>
+					<div className={styles.errorContent}>
+						<svg
+							viewBox='0 0 24 24'
+							className={styles.errorIcon}
+							fill='none'
+							stroke='currentColor'
+							strokeWidth='2'>
+							<circle cx='12' cy='12' r='10' />
+							<line x1='12' y1='8' x2='12' y2='12' />
+							<line x1='12' y1='16' x2='12' y2='16' />
+						</svg>
+						{error}
+					</div>
+				</div>
+			)}
+
 			<header>
 				<nav className={styles.navbar}>
 					<div className={styles.navbarLeft}>
@@ -102,16 +101,27 @@ const SignIn = () => {
 							<Link to='/upload'>Upload</Link>
 						</li>
 					</ul>
-					<div className={styles.navbarRight}></div>
+					<div className={styles.navbarRight}>
+						<a href='/signup' className={styles.signInBtn}>
+							<svg
+								className={styles.questionMark}
+								viewBox='0 0 1024 1024'
+								version='1.1'
+								xmlns='http://www.w3.org/2000/svg'>
+								<path d='M512 1024C229.23 1024 0 794.77 0 512S229.23 0 512 0s512 229.23 512 512-229.23 512-512 512z m-7.5-176c25.666 0 46.5-20.834 46.5-46.5S530.166 755 504.5 755 458 775.834 458 801.5s20.834 46.5 46.5 46.5z m200.251-453.21c2.579-48.654-14.936-95.375-49.535-131.57-37.071-38.987-89.507-61.327-143.77-61.22-51.47 0.108-99.823 20.192-136.141 56.602C338.986 295.012 319 343.343 319 394.789c0 21.373 17.3 38.665 38.683 38.665 21.382 0 38.682-17.292 38.682-38.665 0-63.583 51.792-115.35 115.296-115.458h0.214c32.988 0 64.794 13.533 87.251 37.161 19.771 20.73 29.764 47.043 28.367 74.216-1.182 23.306-2.364 45.324-71.67 114.6-43.303 43.283-82.63 86.566-87.895 140.16-2.042 21.266 13.431 40.277 34.707 42.317 1.29 0.108 2.578 0.215 3.868 0.215 19.664 0 36.533-14.929 38.468-34.906 2.47-25.455 26.862-54.453 65.545-93.119 76.29-76.256 91.549-115.458 94.235-165.186z' />
+							</svg>
+							Create an account
+						</a>
+					</div>
 				</nav>
 			</header>
 
 			<main className={styles.mainContent}>
-				<h1 className={styles.mainTitle}>Sign up</h1>
+				<h1 className={styles.mainTitle}>Log in</h1>
 
 				<div className={styles.formContainer}>
 					<div className={styles.leftSection}>
-						<form onSubmit={handleSignup} className={styles.loginForm}>
+						<form onSubmit={handleLogin} className={styles.loginForm}>
 							<div className={styles.inputGroup}>
 								<label htmlFor='email'>Email address</label>
 								<input
@@ -144,7 +154,7 @@ const SignIn = () => {
 							</div>
 
 							<button type='submit' className={styles.loginButton}>
-								Sign up
+								Log in
 							</button>
 						</form>
 					</div>
@@ -159,7 +169,7 @@ const SignIn = () => {
 
 					<div className={styles.rightSection}>
 						<button
-							onClick={handleGoogleSignUp}
+							onClick={handleGoogleSignIn}
 							className={styles.googleButton}>
 							<svg
 								viewBox='0 0 24 24'
@@ -191,14 +201,17 @@ const SignIn = () => {
 				</div>
 
 				<div className={styles.footer}>
+					<a href='/forgot-password' className={styles.cantLogin}>
+						Can't log in?
+					</a>
 					<p className={styles.recaptchaText}>
-						By Signing up, you agree to the{' '}
+						Secure Login with reCAPTCHA subject to Google{' '}
 						<a
 							href='https://policies.google.com/terms'
 							target='_blank'
 							rel='noopener noreferrer'
 							className={styles.underline}>
-							Terms of use
+							Terms
 						</a>{' '}
 						&{' '}
 						<a
@@ -206,7 +219,7 @@ const SignIn = () => {
 							target='_blank'
 							rel='noopener noreferrer'
 							className={styles.underline}>
-							Privacy Policy.
+							Privacy
 						</a>
 					</p>
 				</div>

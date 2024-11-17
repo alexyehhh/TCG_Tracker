@@ -3,3 +3,8 @@ node_modules/
 
 # Ignore .env file
 .env
+
+#ignore google vision cloud key 
+
+server/config/vision-key.json
+/config

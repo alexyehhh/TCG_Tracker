@@ -1,0 +1,295 @@
+.container {
+	min-height: 100vh;
+	position: relative;
+	overflow: hidden;
+	z-index: 1;
+}
+
+.navbar {
+	position: relative;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 25px 50px;
+	background: linear-gradient(
+		90deg,
+		#42275b 4.5%,
+		#1d1128 26.5%,
+		#1d1b20 53%,
+		#42275b 73.5%,
+		#2f213e 91.5%
+	);
+	box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+	z-index: 2;
+}
+
+.navLinks {
+	max-width: 48rem;
+	margin: 0 auto;
+	padding: 0 1rem;
+	display: flex;
+	justify-content: center;
+	gap: 2rem;
+	list-style: none;
+}
+
+.navLinks a {
+	color: white;
+	text-decoration: none;
+}
+
+.navLinks a:hover {
+	color: #d8b4fe;
+}
+
+.mainContent {
+	max-width: 72rem;
+	margin: 0 auto;
+	padding: 2rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	z-index: 2;
+}
+.title {
+	font-size: 2.25rem;
+	font-weight: bold;
+	margin-bottom: 1rem;
+	font-weight: 500;
+	color: #581c87;
+	text-align: center;
+}
+
+.searchInput {
+	min-height: 100%;
+	padding: 0.5rem 2.5rem 0.5rem 1rem;
+	border-radius: 0.5rem;
+	background-color: #f3e8ff;
+	border: none;
+}
+
+.searchInput:focus {
+	outline: none;
+}
+
+.filterContainer {
+	display: flex;
+	gap: 1rem;
+	margin-left: 1rem;
+	z-index: 2;
+}
+
+.filterSelect {
+	padding: 0.5rem 1rem;
+	border-radius: 0.5rem;
+	background-color: white;
+	border: 1px solid #f3e8ff;
+}
+
+.cardsGrid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 1.25rem;
+}
+
+.searchContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 2rem;
+	width: 100%;
+	z-index: 2;
+}
+
+.searchBar {
+	display: flex;
+	align-items: center;
+	background-color: #64548c;
+	border-radius: 9999px;
+	padding: 0.25rem 0.5rem;
+	min-width: 30%;
+	max-width: 500px;
+	transition: all 0.2s ease;
+	z-index: 2;
+}
+
+.searchBar:focus-within {
+	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+.searchInput {
+	flex: 1;
+	background: transparent;
+	border: none;
+	padding: 0.5rem 1rem;
+	color: white;
+	font-size: 0.875rem;
+	width: 100%;
+}
+
+.searchInput::placeholder {
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.searchInput:focus {
+	outline: none;
+}
+
+.searchButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border: none;
+	padding: 0.5rem;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.searchButton:hover {
+	opacity: 0.8;
+}
+
+.filterContainer {
+	display: flex;
+	gap: 1rem;
+}
+
+.filterSelect {
+	padding: 0.5rem 1.2rem;
+	border-radius: 0.5rem;
+	background-color: #ffffff;
+	border: 1px solid #64548c;
+	color: #64548c;
+	font-size: 0.875rem;
+	cursor: pointer;
+}
+
+.filterSelect:focus {
+	outline: none;
+	border-color: rgba(255, 255, 255, 0.2);
+}
+
+.magnifyingGlass {
+	height: 15px;
+}
+
+.emptyState {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 60vh;
+	text-align: center;
+	padding: 2rem;
+}
+
+.emptyMessage {
+	font-size: 1.2rem;
+	color: #666;
+	margin: 1.5rem 0;
+	max-width: 600px;
+}
+
+.uploadButton {
+	background-color: #42275b;
+	color: white;
+	padding: 1rem 2rem;
+	border-radius: 8px;
+	text-decoration: none;
+	font-weight: bold;
+	transition: background-color 0.3s;
+}
+
+.uploadButton:hover {
+	background-color: #2f213e;
+}
+
+.centerContent {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 200px;
+	border-radius: 10px;
+	margin: 2rem 0;
+	text-align: center;
+	color: #581c87;
+}
+
+.priceValuation {
+	font-weight: bold;
+	color: #581c87;
+	border: 1px solid #581c87;
+	background-color: white;
+	border-radius: 0.5rem;
+	height: 40px;
+	text-align: center;
+	padding: 0.5rem 1rem;
+	display: flex;
+	justify-content: center;
+	margin-top: none;
+	margin-bottom: 1rem;
+}
+
+.notloggedInBtns {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 2rem;
+}
+
+.topIndicators {
+	display: flex;
+	flex-direction: row;
+	gap: 20px;
+}
+
+.sendBulk {
+	font-weight: bold;
+	color: white;
+	border: 1px solid #581c87;
+	background-color: #64548c;
+	border-radius: 0.5rem;
+	height: 40px;
+	text-align: center;
+	padding: 0.5rem 1rem;
+	display: flex;
+	justify-content: center;
+	margin-top: none;
+	margin-bottom: 1rem;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sendBulk:hover {
+	background-color: #42275b;
+	cursor: pointer;
+}
+
+.backButton {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: 16px;
+	color: white;
+	padding: 0;
+}
+
+.backButton:hover {
+	color: #d8b4fe;
+}
+.backButton:hover .backIcon {
+	transform: translateX(5px);
+}
+
+.backIcon {
+	width: 20px;
+	height: 20px;
+	vertical-align: middle;
+	fill: currentColor;
+	overflow: hidden;
+	transition: transform 0.5s ease;
+}

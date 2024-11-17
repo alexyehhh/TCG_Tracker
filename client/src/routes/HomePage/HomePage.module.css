@@ -1,9 +1,17 @@
-/* Reset and Base Styles */
 * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
 	font-family: 'Poppins', sans-serif;
+}
+
+h4 {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: 'Poppins', sans-serif;
+	font-size: 16px;
+	font-weight: 500;
 }
 
 body {
@@ -17,9 +25,8 @@ body {
 	overflow: hidden;
 }
 
-/* Background Clip with Animation */
-/* Background Clip with Smooth Animation */
-.background-clip {
+/* Background Clip */
+.backgroundClip {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -74,7 +81,7 @@ body {
 }
 
 /* Content Wrapper */
-.content-wrapper {
+.contentWrapper {
 	position: relative;
 	z-index: 2;
 	min-height: 100vh;
@@ -89,51 +96,73 @@ body {
 	align-items: center;
 	padding: 20px 50px;
 	background-color: transparent;
+	background: rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(8px);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.navbar-left,
-.navbar-right {
+.navbarLeft,
+.navbarRight {
 	flex: 1;
 }
 
-.nav-links {
+.navLinks {
 	list-style-type: none;
 	display: flex;
 	gap: 30px;
 	justify-content: center;
-	font-weight: 700;
+	font-weight: 500;
 	font-size: 16px;
 }
 
-.nav-links a {
+.navLinks a {
 	text-decoration: none;
 	color: white;
 	font-size: 16px;
+	transition: color 0.4s ease;
 }
 
-.navbar-right {
+.navLinks a:hover {
+	text-decoration: none;
+	color: #989898;
+	font-size: 16px;
+}
+
+.navbarRight {
 	display: flex;
 	justify-content: flex-end;
 }
 
-.sign-in-btn {
-	background-color: rgba(255, 255, 255, 0.2);
+.signInBtn {
 	padding: 8px 16px;
+	background-color: transparent;
 	color: white;
 	border-radius: 20px;
 	font-size: 16px;
 	text-decoration: none;
-	transition: background-color 0.3s ease;
 	font-weight: 500;
+	border: none;
+	cursor: pointer;
 	font-size: 14px;
+	display: flex;
+	align-items: center;
+	transition: color 0.3s ease;
 }
 
-.sign-in-btn:hover {
-	background-color: rgba(255, 255, 255, 0.3);
+.signInBtn:hover {
+	color: #989898;
+}
+
+.rightArrow {
+	transition: transform 0.5s ease;
+}
+
+.signInBtn:hover .rightArrow {
+	transform: translateX(5px);
 }
 
 /* Main Content Container */
-.content-container {
+.contentContainer {
 	display: flex;
 	align-items: center;
 	justify-content: space-around;
@@ -143,12 +172,12 @@ body {
 }
 
 /* Left Content */
-.left-content {
+.leftContent {
 	font-style: normal;
 	max-width: 50%;
 }
 
-.left-content-title {
+.leftContentTitle {
 	font-size: 78px;
 	font-weight: 700;
 	color: #393939;
@@ -158,7 +187,7 @@ body {
 	mix-blend-mode: luminosity;
 }
 
-.left-content-subtitle {
+.leftContentSubtitle {
 	font-size: 18px;
 	font-weight: 400;
 	width: 500px;
@@ -180,51 +209,79 @@ p {
 	margin-bottom: 20px;
 }
 
-.search-bar {
+.searchBar {
 	display: flex;
 	overflow: hidden;
 	max-width: 500px;
-	height: 32px;
+	height: 42px; /* Increased height for better proportions */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	transition: all 0.3s ease;
 }
 
-.search-bar input {
+.searchBar:hover {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	transform: translateY(-1px);
+}
+
+.searchBar input {
 	flex: 1;
-	padding: 10px;
-	border: none;
-	border: 1px solid #565c65;
-	border-top-left-radius: 4px;
-	border-bottom-left-radius: 4px;
+	padding: 12px 16px;
+	border: 1px solid #e2e8f0;
+	border-right: none;
+	border-top-left-radius: 6px;
+	border-bottom-left-radius: 6px;
 	outline: none;
 	max-width: 450px;
+	font-size: 14px;
+	transition: all 0.3s ease;
 }
 
-.search-bar button {
+.searchBar input:focus {
+	border-color: #ec8414;
+	box-shadow: 0 0 0 1px rgba(236, 132, 20, 0.1);
+}
+
+.searchBar button {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	background-color: #ec8414;
-	border-top-right-radius: 4px;
-	border-bottom-right-radius: 4px;
-	border: none;
-	padding: 10px;
+	border-top-right-radius: 6px;
+	border-bottom-right-radius: 6px;
+	border: 1px solid #ec8414;
+	padding: 12px;
 	cursor: pointer;
 	width: 50px;
-	height: 32px;
+	height: 42px;
+	transition: all 0.3s ease;
+}
+
+.searchBar button:hover {
+	background-color: #d67711;
+	border-color: #d67711;
+}
+
+.searchBar button img {
+	width: 16px;
+	height: 16px;
+	opacity: 0.9;
+	transition: opacity 0.3s ease;
+}
+
+.searchBar button:hover img {
+	opacity: 1;
 }
 
 /* Right Content */
-.card-image {
+.cardImage {
 	max-width: 450px;
 	border-radius: 10px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Container for the card to define the 3D space */
-.right-content {
+.rightContent {
 	perspective: 1000px;
-	/* width: 300px;
-	height: 420px;
-	margin: 50px auto; */
 }
 
 /* Style the card itself */
@@ -246,11 +303,24 @@ p {
 }
 
 /* Hover effect to tilt/warp the card */
-.card-container:hover .card {
+.cardContainer:hover .card {
 	transform: rotateY(15deg) rotateX(10deg) scale(1.05);
 }
 
 /* Additional hover effects for lighting and shadow */
-.card-container:hover .card {
+.cardContainer:hover .card {
 	box-shadow: 0 20px 30px rgba(0, 0, 0, 0.4);
+}
+
+.rightArrow {
+	width: 1em;
+	height: 1em;
+	vertical-align: middle;
+	fill: currentColor;
+	overflow: hidden;
+	width: 1em;
+	height: 1em;
+	vertical-align: middle;
+	fill: currentColor;
+	overflow: hidden;
 }
