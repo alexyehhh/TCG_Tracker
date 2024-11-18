@@ -1,6 +1,7 @@
-// UploadPage.jsx
+// Upload.jsx
 import React, { useState } from 'react';
 import { Upload, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import styles from './Upload.module.css';
 import { Link } from 'react-router-dom';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
@@ -11,6 +12,7 @@ const UploadPage = () => {
 	const [files, setFiles] = useState([]);
 	const [matches, setMatches] = useState([]);
 	const [error, setError] = useState('');
+	const navigate = useNavigate(); // Use useNavigate to redirect to pokemoncards.jsx
 
 	const handleDrag = (e) => {
 		e.preventDefault();
@@ -63,15 +65,22 @@ const UploadPage = () => {
 	
 		try {
 			console.log("Starting upload...");
-			console.log("Form Data:", formData);
+			// console.log("Form Data:", formData);
+
 			const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/recognizeCard`, formData, {
 				headers: {
 					'Content-Type': 'multipart/form-data'
 				}
 			});
 			console.log("Server response:", response.data);
-			setMatches(response.data.matches);
+			// setMatches(response.data.matches);
+			const { matches, searchQuery } = response.data; 
 			setError('');
+			setMatches(matches || []);
+
+			// Redirect to PokemonCards page with search query
+			navigate(`/pokemon-cards?name=${encodeURIComponent(searchQuery)}`);
+
 		} catch (err) {
 			console.error("Error uploading image:", err.response ? err.response.data : err.message);
 			setError(err.response && err.response.data.error ? err.response.data.error : 'Failed to recognize card. Please try again.');
