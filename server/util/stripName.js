@@ -1,30 +1,23 @@
 const fs = require('fs');
 const path = require('path');  // For handling file paths
+const cardNames = require('./cards'); 
 
 async function wordExistsInFile(word) {
     try {
-        // Define the file path (adjust if necessary)
-        const filePath = path.join(__dirname, 'pnames.txt');  // Replace 'pnames.txt' with your file name
+        const lowerWord = word.toLowerCase();
         
-        // Read the file content
-        const data = await fs.promises.readFile(filePath, 'utf8');
-        
-        // Split the content into lines or words
-        const words = data.split('\n').map(line => line.trim().toLowerCase()); // Assuming each word is on a new line
-        
-        // Check if the word exists in the content (case-insensitive check)
-        if (words.includes(word)) {
-            // console.log(`The word "${word}" exists in the file.`);
+        // Ensure cardNames is an array and includes works
+        if (Array.isArray(cardNames) && cardNames.includes(lowerWord)) {
             return true;
         } else {
-            // console.log(`The word "${word}" does NOT exist in the file.`);
             return false;
         }
     } catch (err) {
-        console.error('Error reading file:', err);
+        console.error('Error checking word in file:', err);
         return false;
     }
 }
+
 
 async function cleanName(name) {
     try {
