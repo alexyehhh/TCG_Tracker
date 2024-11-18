@@ -1,22 +1,3 @@
-// async function cleanName(name) {
-//     const top = name.slice(0,2)
-//     console.log("Pre Parsed Text:", top)
-//     const exclude = ["stage", "stage1", "stage2", "basic", "evolves", "from", "hp"];
-//     const lower = top.map(x => x.toLowerCase());
-//     let cleaned = "";
-
-//     for (let i = 0; i < lower.length; i++) {
-//         // change wmax to whatever its reading vmax as
-//         if (lower[i] === "wax") {
-//             cleaned += "vmax" + " ";
-//         } else if (!exclude.includes(lower[i])) {
-//             cleaned += lower[i] + " ";
-//         }
-//     }
-
-//     return cleaned.trim();
-// }
-
 const fs = require('fs');
 const path = require('path');  // For handling file paths
 
