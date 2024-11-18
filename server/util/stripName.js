@@ -38,7 +38,7 @@ async function cleanName(name) {
         // const s = new Set(data.split('\n').map(line => line.trim().toLowerCase()));
 
         // Define the words to exclude
-        const exclude = new Set(["stage", "stage1", "stage2", "basic", "evolves"]);
+        const exclude = new Set(["stage", "stage1", "stage2", "basic", "evolves", "ability"]);
 
         // console.log(name)
 
