@@ -5,7 +5,7 @@ import GradeIcon from '../GradeIcon/GradeIcon';
 import { Link } from 'react-router-dom';
 import { X } from 'lucide-react';
 
-const CollectionCard = ({ card, onClick, removeCard, isSelected }) => {
+const CollectionCard = ({ card, onClick, removeCard, isSelected, showCheckbox }) => {
 	const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
 
 	const isEligibleForBulk =
@@ -27,19 +27,19 @@ const CollectionCard = ({ card, onClick, removeCard, isSelected }) => {
 		setShowRemoveConfirm(false);
 	};
 
-	const cardStyles = `${styles.cardContainer} 
-        ${!isEligibleForBulk ? styles.ineligibleCard : ''}
-    `;
+	const cardStyles = `${styles.cardContainer}`;
 
 	return (
 		<div className={cardStyles} onMouseLeave={handleMouseLeave}>
-			<input
-				type='checkbox'
-				className={styles.cardCheckbox}
-				id={`checkbox-${card.id}`}
-				checked={isSelected}
-				onChange={() => isEligibleForBulk && onClick && onClick(card)}
-			/>
+			{showCheckbox && (
+				<input
+					type='checkbox'
+					className={styles.cardCheckbox}
+					id={`checkbox-${card.id}`}
+					checked={isSelected}
+					onChange={() => isEligibleForBulk && onClick && onClick(card)}
+				/>
+			)}
 
 			<button
 				onClick={handleRemoveClick}

@@ -67,38 +67,4 @@ async function cleanName(name) {
     }
 }
 
-// Example of calling getName
-
-async function testCleanName() {
-    // const result = await cleanName(["Stage", 'VMAX Sylveon', "Evolves", "Charmander", "Basic", "fire dragon"])
-    const result = await cleanName([
-        'PikachuV',
-        'dolliv',
-        'smoliv',
-        '310',
-        'RAPID',
-        'STRIKE',
-        'Precious Touch',
-        'Attach an Energy card from your hand to I of your',
-        'Benched Pokémon. If you do, heal 120 damage from that',
-        'Pokémon.',
-        'Max Harmony',
-        '70+',
-        'This attack does 30 more damage for each different type',
-        'of Pokémon on your Bench.',
-        'weakness x2 resistance',
-        'illus. Ryota Murayama',
-        '? 211/203⭑',
-        'VMAX rule',
-        'retreat',
-        'When your Pokémon VMAX',
-        'is Knocked Out, your opponent takes 3 Prize cards.',
-        '02021 Pokémon/Nintendo/Creatures/GAME FREAK',
-        'Evolves'
-      ]);
-    console.log(result);  // Output should be "pikachu charmander" (if those names are in the 'pnames.txt' file)
-}
-
-testCleanName();
-
 module.exports = { cleanName };
