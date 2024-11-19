@@ -161,3 +161,34 @@
 	color: #404040;
 	transform: scale(1.1);
 }
+
+.buttonContainer {
+    display: flex;
+    justify-content: flex-end; /* Moves the button to the right */
+    margin-top: 1rem; /* Add spacing from the file list */
+}
+
+.uploadButton {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    color: #ffffff;
+    background-color: #d8b4fe;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.uploadButton:hover {
+    background-color: #581c87;
+    transform: scale(1.05);
+}
+
+.uploadButton:active {
+    background-color: #3b0e5c;
+    transform: scale(1);
+}
