@@ -132,6 +132,7 @@ const CardDetail = () => {
 								number: card.number,
 								total: card.set.printedTotal,
 								grade: grade === 'ungraded' ? '' : grade,
+								set: card.set.name,
 							},
 						}
 					);
