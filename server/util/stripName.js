@@ -1,70 +1,68 @@
 const fs = require('fs');
-const path = require('path');  // For handling file paths
-const cardNames = require('./cards'); 
+const path = require('path'); 
+const cardNames = require('./cards'); // load the list of valid Pokemon card names
 
+// function to check if a word exists in the cardNames list
 async function wordExistsInFile(word) {
     try {
-        const lowerWord = word.toLowerCase();
+        const lowerWord = word.toLowerCase(); // make lowercase
         
-        // Ensure cardNames is an array and includes works
+        // check if cardNames is an array and if it includes the specified word
         if (Array.isArray(cardNames) && cardNames.includes(lowerWord)) {
-            return true;
+            return true; // word exists in cardNames
         } else {
-            return false;
+            return false; // word does not exist in cardNames
         }
     } catch (err) {
         console.error('Error checking word in file:', err);
-        return false;
+        return false; // return false if there was an error
     }
 }
 
-
+// function to clean the card name from OCR text
 async function cleanName(name) {
     try {
-        // // Define the file path (adjust if necessary)
-        // const filePath = path.join(__dirname, 'pnames.txt');
-        
-        // // Read the file content
-        // const data = await fs.promises.readFile(filePath, 'utf8');
-        
-        // Create a Set from the file data (each line as an individual word)
-        // const s = new Set(data.split('\n').map(line => line.trim().toLowerCase()));
-
-        // Define the words to exclude
+        // set of words to exclude if they appear in the read line
         const exclude = new Set(["stage", "stage1", "stage2", "basic", "evolves", "ability"]);
 
-        // console.log(name)
+        let cleaned = ""; //empty string to store the cleaned name
 
-        // Process the input name array
-        let cleaned = "";
+        // process each line from the OCR text
         for (let word of name) {
-            const lowerWord = word.toLowerCase();
-            // console.log(lowerWord); // Debug log to see what word is being checked
-    
-            // Split lowerWord into individual words (if it contains spaces) and check for exclusion
-            const wordsInLowerWord = lowerWord.split(/\s+/); // Split by spaces or other whitespace
-    
-            // Check if any word in the lowerWord is in the exclude set
-            const isExcluded = wordsInLowerWord.some(w => exclude.has(w));
-    
-            // If none of the words in lowerWord are excluded and the word exists in the file, add to cleaned
-            for (let lowerWord of wordsInLowerWord) {
-                if (lowerWord.endsWith('v') && lowerWord !== 'smoliv' && lowerWord !== 'dolliv') {
-                    lowerWord = lowerWord.slice(0, -1); // Remove the last 'v'
+            const words = word.toLowerCase().split(/\s+/); // split the line into individual words
+
+            // filter out excluded words but keep other words in the line
+            let filteredWords = words.filter(word => !exclude.has(word));
+
+            // join the remaining words back into a single string for the line
+            let filteredWord = filteredWords.join(" ");
+
+            // check each word in the filtered line to see if it exists in cardNames
+            for (let word of filteredWords) {
+                // remove trailing 'v' if V card but not smoliv and dolliv
+                if (word.endsWith('v') && word !== 'smoliv' && word !== 'dolliv') {
+                    word = word.slice(0, -1); // remove the 'v' at the end
                 }
-    
-                // Now check for exclusions and word existence in file
-                if (!isExcluded && await wordExistsInFile(lowerWord)) {
-                    cleaned += lowerWord + " ";
+
+                // remove trailing 'ex' if ex is with pokemon name
+                if (word.endsWith('ex')) {
+                    word = word.slice(0, -2); // remove the 'ex' at the end
+                }
+
+                // add the word to cleaned if it exists in cardNames
+                if (await wordExistsInFile(word)) {
+                    cleaned += word + " "; // append the word to the cleaned name string
+                    break; // stop after finding the main name word
                 }
             }
         }
 
+        // trim extra spaces and split by whitespace and return the first matching word
         return cleaned.trim().split(/\s+/)[0];
     } catch (err) {
         console.error('Error reading file:', err);
-        return '';
+        return ''; // return an empty string if there was an error
     }
 }
 
-module.exports = { cleanName };
+module.exports = { cleanName }; // export the cleanName function
