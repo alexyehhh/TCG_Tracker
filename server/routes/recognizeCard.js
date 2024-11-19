@@ -34,18 +34,22 @@ router.post('/api/recognizeCard', upload.single('file'), async (req, res) => {
 
         // Parse and search Pokémon TCG API
         const name = await cleanName(ocrText.split('\n')); // Assuming the name is the first line
-        const setNumberMatch = ocrText.match(/\d+\/\d+/);
+        const setNumberMatch = ocrText.match(/([A-Z]{0,3}\d{1,3}\/[A-Z]*\d{1,3})/i);
         const setNumber = setNumberMatch ? setNumberMatch[0] : null;
+
+        console.log("Parsed Name:", name);
+        console.log("Parsed Set Number:", setNumber);
 
         if (!name || !setNumber) {
             console.log("Failed to parse card name or set number.");
             return res.status(400).json({ error: 'Could not parse card name or set number from image.' });
         }
-        
+       
         console.log("Parsed Name:", name);
         console.log("Parsed Set Number:", setNumber);
 
         const query = `name:"${name}" number:"${setNumber.split('/')[0]}"`; // Adjust query as needed
+        console.log("Debug - Query to TCG API:", query);
         const cards = await pokemon.card.all({ q: query }); 
 
         console.log("Cards found:", cards);
