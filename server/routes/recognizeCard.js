@@ -45,12 +45,25 @@ router.post('/api/recognizeCard', upload.single('file'), async (req, res) => {
         console.log("Parsed Name:", name);
         console.log("Parsed Set Number:", setNumber);
 
-        // Pokémon TCG API Query
-        const query = `name:"${name}" set.number:"${setNumber}"`;
-        const cards = await pokemon.card.all({ q: query });
-        console.log("Matches found:", cards);
+        const query = `name:"${name}" number:"${setNumber.split('/')[0]}"`; // Adjust query as needed
+        const cards = await pokemon.card.all({ q: query }); 
 
-        res.json({ matches: cards });
+        console.log("Cards found:", cards);
+
+        // no matches, 0 cards found
+        if (cards.length === 0) {
+            return res.status(200).json({
+                matches: [],
+                searchQuery: `${name} ${setNumber}`
+            });
+        }
+
+        const matchedCard = cards[0]; // Take the first match
+        res.json({
+            matches: cards, // Return all matches for debugging or future features
+            searchQuery: `${name} ${setNumber}` // Pass the query for fallback
+        });
+
     } catch (error) {
         console.error("Error processing card:", error);
         res.status(500).json({ error: 'Failed to recognize card.' });
