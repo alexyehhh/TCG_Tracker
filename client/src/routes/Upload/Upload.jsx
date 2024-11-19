@@ -133,7 +133,14 @@ const UploadPage = () => {
 									<X size={16} />
 								</button>
 							</div>
-							<button onClick={handleUpload} className={styles.uploadButton}>Process Card</button>
+							<div className={styles.buttonContainer}>
+								<button 
+									onClick={handleUpload} 
+									className={styles.uploadButton}
+								> 
+								Search for Card
+								</button>
+							</div>
 						</div>
 					)}
 
