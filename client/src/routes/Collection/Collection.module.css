@@ -245,7 +245,7 @@
 	gap: 20px;
 }
 
-.sendBulk {
+.bulkButtons {
 	font-weight: bold;
 	color: white;
 	border: 1px solid #581c87;
@@ -261,9 +261,14 @@
 	transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.sendBulk:hover {
-	background-color: #42275b;
+.bulkButtons:hover {
+	opacity: 0.7; /* Slightly reduces opacity when hovering */
 	cursor: pointer;
+}
+
+.bulkButtons:disabled {
+	cursor: not-allowed; /* Shows a "not-allowed" cursor */
+	opacity: 0.5; /* Optional: Grays out the button */
 }
 
 .backButton {

@@ -36,6 +36,8 @@ const Collection = () => {
 		type: '', // type filter value
 		set: '', // set filter value
 	});
+	const [showBulkEligible, setShowBulkEligible] = useState(false);
+	const [selectedCardCount, setSelectedCardCount] = useState(0);
 
 	const [price, setPrice] = useState(0);
 
@@ -47,35 +49,72 @@ const Collection = () => {
 		try {
 			const userData = await getUserByEmail(user.email);
 			if (!userData) return;
-
+	
 			const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
 			const newSelected = new Set(selectedCards);
 			const newSendBulk = !card.sendBulk;
-
+	
 			if (selectedCards.has(card.id)) {
 				newSelected.delete(card.id);
 			} else {
 				newSelected.add(card.id);
 			}
-
+	
 			// Update Firestore
 			await updateDoc(cardRef, { sendBulk: newSendBulk });
-
+	
 			// Update local state
 			setSelectedCards(newSelected);
-			setCards(
-				cards.map((c) =>
-					c.id === card.id ? { ...c, sendBulk: newSendBulk } : c
-				)
-			);
+			setSelectedCardCount(newSelected.size);
+	
+			// Respect the current filter
+			if (showBulkEligible) {
+				// Reapply the bulk eligible filter to maintain the filtered view
+				const bulkEligibleCards = cards.filter(
+					(card) =>
+						card.selectedPrice !== 'N/A' &&
+						Number(card.selectedPrice) > 0 &&
+						Number(card.selectedPrice) < 500 &&
+						card.selectedGrade === 'ungraded'
+				);
+				setFilteredCards(bulkEligibleCards);
+			} else {
+				// Show all cards if not in bulk eligible view
+				setFilteredCards(cards);
+			}
 		} catch (error) {
 			console.error('Error updating card selection:', error);
 		}
 	};
+	
 
-	const sendBulk = () => {
-		navigate('/bulk-grading');
+	// Function to toggle between showing all cards and only bulk eligible cards
+	const toggleBulkEligible = () => {
+		setShowBulkEligible((prev) => !prev);
+		if (!showBulkEligible) {
+			// Apply the bulk eligible filter
+			const bulkEligibleCards = cards.filter(
+				(card) =>
+					card.selectedPrice !== 'N/A' && 
+					Number(card.selectedPrice) > 0 &&
+					Number(card.selectedPrice) < 500 &&
+					card.selectedGrade === 'ungraded'
+			);
+			setFilteredCards(bulkEligibleCards); // Update the displayed cards
+		} else {
+			// Reset to show all cards
+			setFilteredCards(cards);
+		}
 	};
+	
+	const sendBulk = () => {
+	if (showBulkEligible) {
+		navigate('/bulk-grading'); // Navigate to the bulk grading page if eligible
+	} else {
+		console.warn('Send Bulk is disabled unless you are viewing eligible cards.');
+	}
+	};
+
 
 	const handleNext = () => {
 		navigate('/bulk-grading');
@@ -106,15 +145,23 @@ const Collection = () => {
 
 	// handle search
 	const handleSearchCollection = () => {
-		if (searchTerm.trim() !== '') {
-			const searchFiltered = cards.filter((card) =>
-				card.name.toLowerCase().includes(searchTerm.toLowerCase())
-			);
-			setFilteredCards(searchFiltered);
-		} else {
-			setFilteredCards(alphabeticalCards); // reset to full list if search term is empty
-		}
+		const searchFiltered = cards.filter((card) =>
+			card.name.toLowerCase().includes(searchTerm.toLowerCase())
+		);
+	
+		const finalFiltered = showBulkEligible
+			? searchFiltered.filter(
+					(card) =>
+						card.selectedPrice !== 'N/A' &&
+						Number(card.selectedPrice) > 0 &&
+						Number(card.selectedPrice) < 500 &&
+						card.selectedGrade === 'ungraded'
+			  )
+			: searchFiltered;
+	
+		setFilteredCards(finalFiltered);
 	};
+	
 
 	// user presses Enter key to search
 	const handleKeyDown = (event) => {
@@ -343,9 +390,17 @@ const Collection = () => {
 					</h1>
 					<div className={styles.topIndicators}>
 						<div className={styles.priceValuation}>Total Value: ${price}</div>
-						<button className={styles.sendBulk} onClick={sendBulk}>
+						<button onClick={toggleBulkEligible} className={styles.bulkButtons}>
+							{showBulkEligible ? 'Show All Cards' : 'Show Bulk Eligible Cards'}
+						</button>
+						<button
+							onClick={showBulkEligible && selectedCardCount >= 20 ? sendBulk : null}
+							className={styles.bulkButtons}
+							disabled={!showBulkEligible || selectedCardCount < 20}
+						>
 							Send Bulk
 						</button>
+
 					</div>
 
 					<div className={styles.searchContainer}>
@@ -442,6 +497,7 @@ const Collection = () => {
 								onClick={handleCardClick}
 								removeCard={removeCard}
 								isSelected={selectedCards.has(card.id)}
+								showCheckbox={showBulkEligible}
 							/>
 						))}
 					</div>
