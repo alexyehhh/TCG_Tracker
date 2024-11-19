@@ -33,7 +33,7 @@ router.post('/api/recognizeCard', upload.single('file'), async (req, res) => {
         console.log("OCR Text:", ocrText);
 
         // Parse and search Pokémon TCG API
-        const name = await cleanName(ocrText.split('\n').slice(0,4)); // Assuming the name is the first line
+        const name = await cleanName(ocrText.split('\n')); // Assuming the name is the first line
         const setNumberMatch = ocrText.match(/\d+\/\d+/);
         const setNumber = setNumberMatch ? setNumberMatch[0] : null;
 

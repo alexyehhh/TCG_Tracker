@@ -49,15 +49,18 @@ async function cleanName(name) {
     
             // If none of the words in lowerWord are excluded and the word exists in the file, add to cleaned
             for (let lowerWord of wordsInLowerWord) {
-                if (isExcluded) {
-                    break
-                } else if (await wordExistsInFile(lowerWord)) {
+                if (lowerWord.endsWith('v') && lowerWord !== 'smoliv' && lowerWord !== 'dolliv') {
+                    lowerWord = lowerWord.slice(0, -1); // Remove the last 'v'
+                }
+    
+                // Now check for exclusions and word existence in file
+                if (!isExcluded && await wordExistsInFile(lowerWord)) {
                     cleaned += lowerWord + " ";
                 }
             }
         }
 
-        return cleaned.trim();
+        return cleaned.trim().split(/\s+/)[0];
     } catch (err) {
         console.error('Error reading file:', err);
         return '';
@@ -66,36 +69,36 @@ async function cleanName(name) {
 
 // Example of calling getName
 
-// async function testCleanName() {
-//     // const result = await cleanName(["Stage", 'VMAX Sylveon', "Evolves", "Charmander", "Basic", "fire dragon"])
-//     const result = await cleanName([
-//         'VMAX Sylveon VMAX',
-//         'Evolves from Sylveon V',
-//         'Dynamax',
-//         '310',
-//         'RAPID',
-//         'STRIKE',
-//         'Precious Touch',
-//         'Attach an Energy card from your hand to I of your',
-//         'Benched Pokémon. If you do, heal 120 damage from that',
-//         'Pokémon.',
-//         'Max Harmony',
-//         '70+',
-//         'This attack does 30 more damage for each different type',
-//         'of Pokémon on your Bench.',
-//         'weakness x2 resistance',
-//         'illus. Ryota Murayama',
-//         '? 211/203⭑',
-//         'VMAX rule',
-//         'retreat',
-//         'When your Pokémon VMAX',
-//         'is Knocked Out, your opponent takes 3 Prize cards.',
-//         '02021 Pokémon/Nintendo/Creatures/GAME FREAK',
-//         'Evolves'
-//       ]);
-//     console.log(result);  // Output should be "pikachu charmander" (if those names are in the 'pnames.txt' file)
-// }
+async function testCleanName() {
+    // const result = await cleanName(["Stage", 'VMAX Sylveon', "Evolves", "Charmander", "Basic", "fire dragon"])
+    const result = await cleanName([
+        'PikachuV',
+        'dolliv',
+        'smoliv',
+        '310',
+        'RAPID',
+        'STRIKE',
+        'Precious Touch',
+        'Attach an Energy card from your hand to I of your',
+        'Benched Pokémon. If you do, heal 120 damage from that',
+        'Pokémon.',
+        'Max Harmony',
+        '70+',
+        'This attack does 30 more damage for each different type',
+        'of Pokémon on your Bench.',
+        'weakness x2 resistance',
+        'illus. Ryota Murayama',
+        '? 211/203⭑',
+        'VMAX rule',
+        'retreat',
+        'When your Pokémon VMAX',
+        'is Knocked Out, your opponent takes 3 Prize cards.',
+        '02021 Pokémon/Nintendo/Creatures/GAME FREAK',
+        'Evolves'
+      ]);
+    console.log(result);  // Output should be "pikachu charmander" (if those names are in the 'pnames.txt' file)
+}
 
-// testCleanName();
+testCleanName();
 
 module.exports = { cleanName };
