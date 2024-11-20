@@ -233,7 +233,7 @@
 	height: 57px;
 }
 
-.backButton {
+/* .backButton {
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -260,7 +260,7 @@
 
 .backButton:hover .backIcon {
 	transform: translateX(-5px);
-}
+} */
 
 .clearAll,
 .removeSelected,
