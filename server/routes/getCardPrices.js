@@ -12,6 +12,7 @@ router.get('/card-prices', async (req, res) => {
 	const cardSet = req.query.set;
 
 	console.log('Card total:', cardTotal);
+	console.log('Card number:', cardNumber);
 
 	if (!cardName) {
 		return res.status(400).json({ error: 'Card name is required' });
@@ -26,15 +27,17 @@ router.get('/card-prices', async (req, res) => {
 				cardGrade ? ` ${cardGrade}` : ''
 			}`;
 		} else {
-			searchQuery = `${cardName} ${cardSet} ${cardNumber}/${cardTotal} ${
+			searchQuery = `${cardName} ${cardSet} ${cardNumber}/0${cardTotal} ${
 				cardGrade ? ` ${cardGrade}` : ''
 			}`;
 		}
 
 		console.log('Search query:', searchQuery);
-		const ebayApiUrl = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(
-			searchQuery
-		)}&filter=conditionIds:{1000|1500}&limit=10`;
+		const ebayApiUrl =
+			'https://api.ebay.com/buy/browse/v1/item_summary/search?' +
+			`q=${encodeURIComponent(searchQuery)}` +
+			`&filter=conditionIds:{1000|1500}` +
+			`&limit=10`;
 
 		const response = await fetch(ebayApiUrl, {
 			method: 'GET',
