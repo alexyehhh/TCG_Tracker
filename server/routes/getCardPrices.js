@@ -31,7 +31,6 @@ router.get('/card-prices', async (req, res) => {
 		const ebayApiUrl =
 			'https://api.ebay.com/buy/browse/v1/item_summary/search?' +
 			`q=${encodeURIComponent(searchQuery)}` +
-			`&filter=conditionIds:{1000|1500}` +
 			`&limit=10`;
 
 		const response = await fetch(ebayApiUrl, {
