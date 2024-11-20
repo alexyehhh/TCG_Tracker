@@ -54,6 +54,11 @@ const typeColors = {
 		borderColor: '#4682b4',
 		backgroundColor: '#87CEFA',
 	},
+	Trainer: {
+        buttonColor: '#292933',
+		borderColor: '#474759',
+		backgroundColor: '#737380',
+    },
 };
 
 export default typeColors;

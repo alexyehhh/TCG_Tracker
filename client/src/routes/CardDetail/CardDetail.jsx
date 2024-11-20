@@ -75,9 +75,14 @@ const CardDetail = () => {
 				const cardData = response.data.data;
 				setCard(cardData);
 
-				if (cardData.types && cardData.types.length > 0) {
+				if (cardData.supertype === 'Trainer') {
+					setCurrentCardType('Trainer');
+				} else if (cardData.types && cardData.types.length > 0) {
 					setCurrentCardType(cardData.types[0]);
+				} else {
+					setCurrentCardType('Unknown'); // if none matches
 				}
+
 			} catch (err) {
 				setError(`Failed to fetch card details. Error: ${err}`);
 			}
