@@ -7,8 +7,8 @@ router.get('/card-prices', async (req, res) => {
 	console.log('Received price request:', req.query);
 	const cardName = req.query.name;
 	const cardGrade = req.query.grade;
-	const cardNumber = req.query.number;
-	const cardTotal = req.query.total;
+	const cardNumber = parseInt(req.query.number);
+	const cardTotal = parseInt(req.query.total);
 	const cardSet = req.query.set;
 
 	console.log('Card total:', cardTotal);
@@ -20,17 +20,12 @@ router.get('/card-prices', async (req, res) => {
 
 	try {
 		const token = await getValidToken();
-		let searchQuery;
+		const formattedTotal =
+			cardTotal < 100 && cardNumber > cardTotal ? `0${cardTotal}` : cardTotal;
 
-		if (cardTotal < 100 && cardNumber > cardTotal) {
-			searchQuery = `${cardName} ${cardSet} ${cardNumber}/0${cardTotal} ${
-				cardGrade ? ` ${cardGrade}` : ''
-			}`;
-		} else {
-			searchQuery = `${cardName} ${cardSet} ${cardNumber}/0${cardTotal} ${
-				cardGrade ? ` ${cardGrade}` : ''
-			}`;
-		}
+		let searchQuery = `${cardName} ${cardSet} ${cardNumber}/${formattedTotal} ${
+			cardGrade ? ` ${cardGrade}` : ''
+		}`;
 
 		console.log('Search query:', searchQuery);
 		const ebayApiUrl =
