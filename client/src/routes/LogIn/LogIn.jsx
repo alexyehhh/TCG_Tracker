@@ -13,32 +13,10 @@ const SignIn = () => {
 	const [error, setError] = useState('');
 	const navigate = useNavigate();
 
-	// Create users document, ONLY IF THEY DONT HAVE ONE
-	const createDocument = async (user) => {
-		try {
-			const userDocRef = doc(db, 'users', user.uid);
-			const userDoc = await getDoc(userDocRef);
-
-			if (!userDoc.exists()) {
-				await setDoc(userDocRef, {
-					email: user.email,
-					name: user.displayName || email.split('@')[0],
-					createdAt: new Date(),
-				});
-				console.log('New user document created');
-			} else {
-				console.log('User document already exists');
-			}
-		} catch (error) {
-			console.error('Error handling user document:', error.message);
-		}
-	};
-
 	const handleGoogleSignIn = async () => {
 		try {
 			await signInWithPopup(auth, googleProvider);
 			console.log('Signed In with google');
-			createDocument(result.user);
 			navigate('/');
 		} catch (error) {
 			setError('Failed to sign in with Google. Please try again.');
@@ -51,7 +29,6 @@ const SignIn = () => {
 		try {
 			await signInWithEmailAndPassword(auth, email, password);
 			console.log('Signed In with user and pass');
-			createDocument(result.user);
 			navigate('/');
 		} catch (error) {
 			let errorMessage = 'Invalid email or password. Please try again.';
