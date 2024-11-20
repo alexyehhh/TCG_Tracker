@@ -5,6 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import styles from './LogIn.module.css';
 import middleDivider from '../../assets/images/middleDivider.png';
 import { Eye, EyeOff } from 'lucide-react';
+import { createDocument } from '../../util/userFunctions';
 
 const SignIn = () => {
 	const [email, setEmail] = useState('');
@@ -15,7 +16,8 @@ const SignIn = () => {
 
 	const handleGoogleSignIn = async () => {
 		try {
-			await signInWithPopup(auth, googleProvider);
+			const result = await signInWithPopup(auth, googleProvider);
+			createDocument(result.user);
 			console.log('Signed In with google');
 			navigate('/');
 		} catch (error) {
