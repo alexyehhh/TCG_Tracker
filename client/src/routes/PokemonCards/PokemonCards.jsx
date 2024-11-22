@@ -92,7 +92,11 @@ function PokemonCards() {
 
 	const renderContent = () => {
 		if (loading) {
-			return <div className={styles.centerContent}><div className={styles.spinner}></div></div>;
+			return (
+				<div className={styles.centerContent}>
+					<div className={styles.spinner}></div>
+				</div>
+			);
 		}
 
 		if (error) {
@@ -150,6 +154,9 @@ function PokemonCards() {
 					</li>
 					<li>
 						<Link to='/upload'>Upload</Link>
+					</li>
+					<li>
+						<Link to='/help'>Help</Link>
 					</li>
 				</ul>
 			</nav>

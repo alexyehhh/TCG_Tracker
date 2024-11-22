@@ -340,6 +340,9 @@ const Collection = () => {
 						<li>
 							<Link to='/upload'>Upload</Link>
 						</li>
+						<li>
+							<Link to='/help'>Help</Link>
+						</li>
 					</ul>
 				</nav>
 				<h1 className={styles.centerContent}>Loading cards...</h1>;
@@ -365,6 +368,9 @@ const Collection = () => {
 						</li>
 						<li>
 							<Link to='/upload'>Upload</Link>
+						</li>
+						<li>
+							<Link to='/help'>Help</Link>
 						</li>
 					</ul>
 					<div className={styles.navbarRight}></div>
