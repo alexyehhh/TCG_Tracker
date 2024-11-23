@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../util/firebase';
+import axios from 'axios';
 import {
 	collection,
 	query,
@@ -25,6 +26,7 @@ const Collection = () => {
 	const [user, setUser] = useState(null);
 	const [cards, setCards] = useState([]);
 	const [filteredCards, setFilteredCards] = useState([]);
+	const [prices, setPrices] = useState([]);
 	const auth = getAuth();
 	const [hasCards, setHasCards] = useState(false);
 	const [searchTerm, setSearchTerm] = useState('');
@@ -193,45 +195,94 @@ const Collection = () => {
 		}
 	}
 
-	// fetch user's cards from Firestore and set within state
+	const fetchPrices = async (card) => {
+        if (!card?.name) return;
+
+        /*const cachedPrices = getCachedPrice(card.id, card.set.printedTotal);
+        if (cachedPrices) {
+            setCardPrices(cachedPrices);
+            setLoading(false);
+            return;
+        }*/
+
+        const fetchPriceForGrade = async (grade) => {
+            try {
+                const response = await axios.get(
+                    `${import.meta.env.VITE_API_URL}/card-prices`,
+                    {
+                        params: {
+                            name: card.name,
+                            number: card.number,
+                            total: card.setPrintedTotal,
+                            grade: grade === 'ungraded' ? '' : grade,
+							set: card.setName,
+                        },
+                    }
+                );
+                return response.data.averagePrice;
+            } catch (error) {
+                console.error(`Error fetching ${grade} price:`, error);
+                return null;
+            }
+        };
+
+        try {
+            const pricing = await fetchPriceForGrade(card.selectedGrade);
+
+            const fetchedPrices = {
+                name: card.name,
+                number: card.number,
+                pricing: pricing,
+            };
+
+            return fetchedPrices;
+        } catch (error) {
+            console.error('Error fetching prices:', error);
+        }
+    };
+
+ 		// fetch user's cards from Firestore and set within state
 	async function fetchUserCards(userId) {
-		try {
-			const cardsRef = collection(db, `users/${userId}/cards`);
-			const querySnapshot = await getDocs(cardsRef);
+        try {
+            const cardsRef = collection(db, `users/${userId}/cards`);
+            const querySnapshot = await getDocs(cardsRef);
 
-			const cardsList = [];
-			let totalValue = 0;
-			const selectedCardIds = new Set();
+            const cardsList = [];
+            const priceList = [];
+            let totalValue = 0;
+            const selectedCardIds = new Set();
 
-			querySnapshot.forEach((doc) => {
+            for (const doc of querySnapshot.docs) {
 				const cardData = doc.data();
 				if (cardData.image) {
 					const card = { ...cardData, id: doc.id };
 					cardsList.push(card);
-
-					// If card was previously selected for bulk, add it to selectedCards
-					if (cardData.sendBulk) {
-						selectedCardIds.add(doc.id);
-					}
+	
+					// Wait for the result of fetchPrices
+					const res = await fetchPrices(card);
+					priceList.push(res);
 				}
-				if (cardData.selectedPrice != 'N/A') {
-					totalValue += parseFloat(cardData.selectedPrice);
-				}
-			});
+                if (cardData.selectedPrice != 'N/A') {
+                    totalValue += parseFloat(cardData.selectedPrice);
+                }
 
-			setPrice(totalValue.toFixed(2));
-			setCards(cardsList);
-			setFilteredCards(cardsList);
-			setHasCards(cardsList.length > 0);
-			setSelectedCards(selectedCardIds);
-			return cardsList;
-		} catch (error) {
-			console.error('Error fetching cards:', error);
-			throw error;
-		} finally {
-			setLoading(false);
-		}
-	}
+            };
+
+            setPrice(totalValue.toFixed(2));
+            setCards(cardsList);
+            setFilteredCards(cardsList);
+            setHasCards(cardsList.length > 0);
+            setSelectedCards(selectedCardIds);
+			console.log(cardsList)
+			console.log(priceList)
+			setPrices(priceList)
+        } catch (error) {
+            console.error('Error fetching cards:', error);
+            throw error;
+        } finally {
+            setLoading(false);
+        }
+    }
 
 	useEffect(() => {
 		const loadUserCards = async () => {
