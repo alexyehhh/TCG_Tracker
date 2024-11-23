@@ -336,9 +336,8 @@ const Collection = () => {
 
 	const [allSelected, setAllSelected] = useState(false); // New state to track "Select All"
 
-	const handleSelectAll = () => {
-		if (!allSelected) {
-			// Select all bulk-eligible cards
+	const handleSelectAll = async () => {
+		try {
 			const bulkEligibleCards = filteredCards.filter(
 				(card) =>
 					card.selectedPrice !== 'N/A' &&
@@ -346,17 +345,46 @@ const Collection = () => {
 					Number(card.selectedPrice) < 500 &&
 					card.selectedGrade === 'ungraded'
 			);
-
-			const newSelectedCards = new Set(bulkEligibleCards.map((card) => card.id));
-			setSelectedCards(newSelectedCards);
-			setSelectedCardCount(newSelectedCards.size);
-		} else {
-			// Deselect all bulk-eligible cards
-			setSelectedCards(new Set());
-			setSelectedCardCount(0);
+	
+			if (!allSelected) {
+				// Select all bulk-eligible cards
+				const newSelectedCards = new Set(bulkEligibleCards.map((card) => card.id));
+				setSelectedCards(newSelectedCards);
+				setSelectedCardCount(newSelectedCards.size);
+	
+				// Update Firestore for each eligible card
+				const userData = await getUserByEmail(user.email);
+				if (!userData) return;
+	
+				const updatePromises = bulkEligibleCards.map((card) => {
+					const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
+					return updateDoc(cardRef, { sendBulk: true });
+				});
+	
+				await Promise.all(updatePromises);
+			} else {
+				// Deselect all bulk-eligible cards
+				setSelectedCards(new Set());
+				setSelectedCardCount(0);
+	
+				// Update Firestore to unselect cards
+				const userData = await getUserByEmail(user.email);
+				if (!userData) return;
+	
+				const updatePromises = bulkEligibleCards.map((card) => {
+					const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
+					return updateDoc(cardRef, { sendBulk: false });
+				});
+	
+				await Promise.all(updatePromises);
+			}
+	
+			setAllSelected(!allSelected); // Toggle state
+		} catch (error) {
+			console.error('Error selecting all cards:', error);
 		}
-		setAllSelected(!allSelected); // Toggle state
 	};
+	
 
 
 	// apply filters whenever filters change
