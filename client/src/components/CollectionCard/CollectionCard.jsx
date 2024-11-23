@@ -5,7 +5,14 @@ import GradeIcon from '../GradeIcon/GradeIcon';
 import { Link } from 'react-router-dom';
 import { X } from 'lucide-react';
 
-const CollectionCard = ({ card, onClick, removeCard, isSelected, showCheckbox }) => {
+const CollectionCard = ({
+	card,
+	onClick,
+	removeCard,
+	isSelected,
+	showCheckbox,
+	setBulkSelectedCount,
+}) => {
 	const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
 
 	const isEligibleForBulk =
@@ -37,7 +44,14 @@ const CollectionCard = ({ card, onClick, removeCard, isSelected, showCheckbox })
 					className={styles.cardCheckbox}
 					id={`checkbox-${card.id}`}
 					checked={isSelected}
-					onChange={() => isEligibleForBulk && onClick && onClick(card)}
+					onChange={(e) =>
+						isEligibleForBulk &&
+						onClick &&
+						onClick(card) &&
+						setBulkSelectedCount((prevCount) =>
+							e.target.checked ? prevCount + 1 : prevCount - 1
+						)
+					}
 				/>
 			)}
 
