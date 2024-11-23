@@ -281,7 +281,6 @@ const Collection = () => {
             setFilteredCards(cardsList);
             setHasCards(cardsList.length > 0);
             setSelectedCards(selectedCardIds);
-			console.log(cardsList)
 			console.log(priceList)
 			setPrices(priceList)
         } catch (error) {
