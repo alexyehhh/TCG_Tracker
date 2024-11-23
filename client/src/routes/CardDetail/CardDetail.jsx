@@ -82,7 +82,6 @@ const CardDetail = () => {
 				} else {
 					setCurrentCardType('Unknown'); // if none matches
 				}
-
 			} catch (err) {
 				setError(`Failed to fetch card details. Error: ${err}`);
 			}
@@ -403,6 +402,9 @@ const CardDetail = () => {
 					</li>
 					<li>
 						<Link to='/upload'>Upload</Link>
+					</li>
+					<li>
+						<Link to='/help'>Help</Link>
 					</li>
 				</ul>
 				<div className={styles.navbarRight}></div>
