@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { db } from '../../util/firebase';
 import axios from 'axios';
 import {
@@ -48,57 +48,57 @@ const Collection = () => {
 	});
 
 	const handleCardClick = async (card) => {
-        try {
-            const userData = await getUserByEmail(user.email);
-            if (!userData) return;
+		try {
+			const userData = await getUserByEmail(user.email);
+			if (!userData) return;
+	
+			const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
+			const newSelected = new Set(selectedCards);
+			const newSendBulk = !card.sendBulk;
+	
+			if (selectedCards.has(card.id)) {
+				newSelected.delete(card.id);
+			} else {
+				newSelected.add(card.id);
+			}
+	
+			// Update Firestore
+			await updateDoc(cardRef, { sendBulk: newSendBulk });
+	
+			// Update local state
+			setSelectedCards(newSelected);
+			setSelectedCardCount(newSelected.size);
+	
+			// Recalculate displayed value for bulk-eligible cards if active
+			if (showBulkEligible) {
+				const bulkEligibleCards = filteredCards.filter((card) =>
+					selectedCards.has(card.id)
+				);
+				const bulkValue = bulkEligibleCards.reduce(
+					(total, card) =>
+						selectedCards.has(card.id) ? total + Number(card.selectedPrice) : total,
+					0
+				);
+				setDisplayedValue(bulkValue.toFixed(2));
+			}
+	
+			// Respect the current filter
+			setFilteredCards(showBulkEligible ? filteredCards : cards);
+		} catch (error) {
+			console.error('Error updating card selection:', error);
+		}
+	};
+	
 
-            const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
-            const newSelected = new Set(selectedCards);
-            const newSendBulk = !card.sendBulk;
+	const [displayedValue, setDisplayedValue] = useState(price);
 
-            if (selectedCards.has(card.id)) {
-                newSelected.delete(card.id);
-            } else {
-                newSelected.add(card.id);
-            }
-
-            // Update Firestore
-            await updateDoc(cardRef, { sendBulk: newSendBulk });
-
-            // Update local state
-            setSelectedCards(newSelected);
-            setSelectedCardCount(newSelected.size);
-
-            // Update bulk-selected counter
-            const bulkEligibleCards = cards.filter(
-                (card) =>
-                    card.selectedPrice !== 'N/A' &&
-                    Number(card.selectedPrice) > 0 &&
-                    Number(card.selectedPrice) < 500 &&
-                    card.selectedGrade === 'ungraded'
-            );
-            const selectedBulkEligible = bulkEligibleCards.filter((card) =>
-                newSelected.has(card.id)
-            );
-            setBulkSelectedCount(selectedBulkEligible.length);
-
-            // Respect the current filter
-            if (showBulkEligible) {
-                setFilteredCards(bulkEligibleCards);
-            } else {
-                setFilteredCards(cards);
-            }
-        } catch (error) {
-            console.error('Error updating card selection:', error);
-        }
-    };
 
 	// Function to toggle between showing all cards and only bulk eligible cards
 	const toggleBulkEligible = () => {
 		setShowBulkEligible((prev) => !prev);
 	
 		if (!showBulkEligible) {
-			// Apply the bulk eligible filter
+			// Filter to show only bulk-eligible cards
 			const bulkEligibleCards = cards.filter(
 				(card) =>
 					card.selectedPrice !== 'N/A' &&
@@ -106,19 +106,34 @@ const Collection = () => {
 					Number(card.selectedPrice) < 500 &&
 					card.selectedGrade === 'ungraded'
 			);
+	
 			setFilteredCards(bulkEligibleCards);
 	
-			// Update selectedCardCount to include all bulk-eligible cards that are selected
-			const selectedBulkEligible = bulkEligibleCards.filter((card) => selectedCards.has(card.id));
+			// Calculate the value of bulk-eligible cards that are selected
+			const bulkValue = bulkEligibleCards.reduce(
+				(total, card) =>
+					selectedCards.has(card.id) ? total + Number(card.selectedPrice) : total,
+				0
+			);
+			setDisplayedValue(bulkValue.toFixed(2));
+	
+			// Update selectedCardCount
+			const selectedBulkEligible = bulkEligibleCards.filter((card) =>
+				selectedCards.has(card.id)
+			);
 			setSelectedCardCount(selectedBulkEligible.length);
 		} else {
 			// Reset to show all cards
 			setFilteredCards(cards);
 	
-			// Recalculate selectedCardCount for all cards
+			// Reset the displayed value to total collection value
+			setDisplayedValue(price);
+	
+			// Recalculate selectedCardCount
 			setSelectedCardCount(Array.from(selectedCards).length);
 		}
 	};
+	
 	
 
 	const sendBulk = () => {
@@ -471,134 +486,153 @@ const Collection = () => {
 		);
 	}
 
-	const LoggedInView = () =>
-		hasCards ? (
+	const LoggedInView = () => {
+		const displayedValue = useMemo(() => {
+			if (showBulkEligible) {
+				return Array.from(selectedCards).reduce((total, cardId) => {
+					const card = cards.find((c) => c.id === cardId && c.selectedPrice !== 'N/A');
+					return total + (card ? parseFloat(card.selectedPrice) : 0);
+				}, 0).toFixed(2);
+			}
+			return price; // Use total collection value when viewing all cards
+		}, [selectedCards, cards, showBulkEligible, price]);
+	
+		return hasCards ? (
 			<div className={styles.container} style={{ backgroundColor: '#fff4fc' }}>
-            <PokemonBackground color="#2f213e" />
-            <nav className={styles.navbar}>
+				<PokemonBackground color="#2f213e" />
+				<nav className={styles.navbar}>
 					<div className={styles.navbarLeft}></div>
 					<ul className={styles.navLinks}>
 						<li>
-							<Link to='/'>Search</Link>
+							<Link to="/">Search</Link>
 						</li>
 						<li>
-							<Link to='/collection'>Collection</Link>
+							<Link to="/collection">Collection</Link>
 						</li>
 						<li>
-							<Link to='/bulk-grading'>Bulk Grading</Link>
+							<Link to="/bulk-grading">Bulk Grading</Link>
 						</li>
 						<li>
-							<Link to='/upload'>Upload</Link>
+							<Link to="/upload">Upload</Link>
 						</li>
 					</ul>
 					<div className={styles.navbarRight}></div>
 				</nav>
-            <div className={styles.mainContent}>
-                <h1 className={styles.title}>
-                    {user?.displayName || 'Your'}'s Collection
-                </h1>
-                <div className={styles.topIndicators}>
-					<div className={styles.priceValuation}>Total Value: ${price}</div>
-					<button onClick={toggleBulkEligible} className={styles.bulkButtons}>
-						{showBulkEligible ? 'Show All Cards' : 'Show Bulk Eligible Cards'}
-					</button>
-					{showBulkEligible && (
-						<>
-							<button onClick={handleSelectAll} className={styles.bulkButtons}>
-								{allSelected ? 'Deselect All' : 'Select All'}
-							</button>
-							<div className={styles.priceValuation}>Selected for Bulk: {bulkSelectedCount}</div>
-						</>
-					)}
-					<button
-						onClick={showBulkEligible && selectedCardCount >= 20 ? sendBulk : null}
-						className={styles.bulkButtons}
-						disabled={!showBulkEligible || selectedCardCount < 20}
-					>
-						Send Bulk
-					</button>
-				</div>
-
-
-
-
+				<div className={styles.mainContent}>
+					<h1 className={styles.title}>
+						{user?.displayName || "Your"}'s Collection
+					</h1>
+					<div className={styles.topIndicators}>
+					<div className={styles.priceValuation}>
+						{showBulkEligible ? "Total Value of Selected Cards: " : "Total Value: "} 
+						${displayedValue}
+					</div>
+						<button onClick={toggleBulkEligible} className={styles.bulkButtons}>
+							{showBulkEligible ? "Show All Cards" : "Show Bulk Eligible Cards"}
+						</button>
+						{showBulkEligible && (
+							<>
+								<button
+									onClick={handleSelectAll}
+									className={styles.bulkButtons}
+								>
+									{allSelected ? "Deselect All" : "Select All"}
+								</button>
+								<div className={styles.priceValuation}>
+									Selected for Bulk: {bulkSelectedCount}
+								</div>
+							</>
+						)}
+						<button
+							onClick={showBulkEligible && selectedCardCount >= 20 ? sendBulk : null}
+							className={styles.bulkButtons}
+							disabled={!showBulkEligible || selectedCardCount < 20}
+						>
+							Send Bulk
+						</button>
+					</div>
+	
 					<div className={styles.searchContainer}>
 						<div className={styles.searchBar}>
 							<input
-								type='text'
-								placeholder='Search your collection...'
+								type="text"
+								placeholder="Search your collection..."
 								value={searchTerm}
 								onChange={handleInputChange}
 								onKeyDown={handleKeyDown}
 								className={styles.searchInput}
-								// autoFocus -> issue for rerender
 							/>
 							<button
 								onClick={handleSearchCollection}
-								className={styles.searchButton}>
+								className={styles.searchButton}
+							>
 								<img
 									src={magnifyingGlass}
-									alt='Search'
+									alt="Search"
 									className={styles.magnifyingGlass}
 								/>
 							</button>
 						</div>
-
+	
 						<div className={styles.filterContainer}>
 							<select
-								name='rarity'
+								name="rarity"
 								className={styles.filterSelect}
-								value={filters.rarity} // <-- Bind to filters.rarity
-								onChange={handleFilterChange}>
-								<option value=''>Rarity</option>
+								value={filters.rarity}
+								onChange={handleFilterChange}
+							>
+								<option value="">Rarity</option>
 								{cardRarities.map((rarity, index) => (
 									<option key={index} value={rarity}>
 										{rarity}
 									</option>
 								))}
 							</select>
-
+	
 							<select
-								name='price'
+								name="price"
 								className={styles.filterSelect}
-								value={filters.price} // <-- Bind to filters.price
-								onChange={handleFilterChange}>
-								<option value=''>Price</option>
-								<option value='0-25'>$ 0 - $ 25</option>
-								<option value='25-50'>$ 25 - $ 50</option>
-								<option value='50-75'>$ 50 - $ 75</option>
-								<option value='75-100'>$ 75 - $ 100</option>
-								<option value='100-125'>$ 100 - $ 125</option>
-								<option value='125-150'>$ 125 - $ 150</option>
-								<option value='150-175'>$ 150 - $ 175</option>
-								<option value='175-200'>$ 175 - $ 200</option>
+								value={filters.price}
+								onChange={handleFilterChange}
+							>
+								<option value="">Price</option>
+								<option value="0-25">$ 0 - $ 25</option>
+								<option value="25-50">$ 25 - $ 50</option>
+								<option value="50-75">$ 50 - $ 75</option>
+								<option value="75-100">$ 75 - $ 100</option>
+								<option value="100-125">$ 100 - $ 125</option>
+								<option value="125-150">$ 125 - $ 150</option>
+								<option value="150-175">$ 150 - $ 175</option>
+								<option value="175-200">$ 175 - $ 200</option>
 							</select>
-
+	
 							<select
-								name='type'
+								name="type"
 								className={styles.filterSelect}
-								value={filters.type} // <-- Bind to filters.type
-								onChange={handleFilterChange}>
-								<option value=''>Type</option>
-								<option value='Colorless'>Colorless</option>
-								<option value='Darkness'>Darkness</option>
-								<option value='Dragon'>Dragon</option>
-								<option value='Fairy'>Fairy</option>
-								<option value='Fighting'>Fighting</option>
-								<option value='Fire'>Fire</option>
-								<option value='Grass'>Grass</option>
-								<option value='Lightning'>Lightning</option>
-								<option value='Metal'>Metal</option>
-								<option value='Psychic'>Psychic</option>
-								<option value='Water'>Water</option>
+								value={filters.type}
+								onChange={handleFilterChange}
+							>
+								<option value="">Type</option>
+								<option value="Colorless">Colorless</option>
+								<option value="Darkness">Darkness</option>
+								<option value="Dragon">Dragon</option>
+								<option value="Fairy">Fairy</option>
+								<option value="Fighting">Fighting</option>
+								<option value="Fire">Fire</option>
+								<option value="Grass">Grass</option>
+								<option value="Lightning">Lightning</option>
+								<option value="Metal">Metal</option>
+								<option value="Psychic">Psychic</option>
+								<option value="Water">Water</option>
 							</select>
-
+	
 							<select
-								name='set'
+								name="set"
 								className={styles.filterSelect}
-								value={filters.set} // <-- Bind to filters.set
-								onChange={handleFilterChange}>
-								<option value=''>Set</option>
+								value={filters.set}
+								onChange={handleFilterChange}
+							>
+								<option value="">Set</option>
 								{cardSets.map((set, index) => (
 									<option key={index} value={set}>
 										{set}
@@ -607,7 +641,7 @@ const Collection = () => {
 							</select>
 						</div>
 					</div>
-
+	
 					<div className={styles.cardsGrid}>
 						{filteredCards.map((card) => (
 							<CollectionCard
@@ -625,6 +659,8 @@ const Collection = () => {
 		) : (
 			<EmptyCollectionView />
 		);
+	};
+	
 
 	return user ? <LoggedInView /> : <LoggedOutView />;
 };
