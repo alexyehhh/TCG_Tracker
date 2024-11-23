@@ -206,13 +206,6 @@ const Collection = () => {
 	const fetchPrices = async (card) => {
         if (!card?.name) return;
 
-        /*const cachedPrices = getCachedPrice(card.id, card.set.printedTotal);
-        if (cachedPrices) {
-            setCardPrices(cachedPrices);
-            setLoading(false);
-            return;
-        }*/
-
         const fetchPriceForGrade = async (grade) => {
             try {
                 const response = await axios.get(
