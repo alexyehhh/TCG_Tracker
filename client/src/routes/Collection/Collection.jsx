@@ -276,12 +276,18 @@ const Collection = () => {
 			}
 			const cardDocRef = doc(db, 'users', userDoc.id, 'cards', cardId);
 			await deleteDoc(cardDocRef);
-
+	
 			const updatedCards = cards.filter((card) => card.id !== cardId);
 			setCards(updatedCards);
 			setFilteredCards(updatedCards);
+	
+			// Recalculate the total value of the collection
+			const updatedTotalValue = updatedCards.reduce((total, card) => {
+				return total + (card.selectedPrice !== 'N/A' ? parseFloat(card.selectedPrice) : 0);
+			}, 0);
+			setPrice(updatedTotalValue.toFixed(2));
 		} catch (error) {
-			console.error('Error removing cards:', error);
+			console.error('Error removing card:', error);
 		}
 	};
 
