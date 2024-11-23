@@ -90,6 +90,7 @@ const Collection = () => {
 	// Function to toggle between showing all cards and only bulk eligible cards
 	const toggleBulkEligible = () => {
 		setShowBulkEligible((prev) => !prev);
+	
 		if (!showBulkEligible) {
 			// Apply the bulk eligible filter
 			const bulkEligibleCards = cards.filter(
@@ -99,12 +100,20 @@ const Collection = () => {
 					Number(card.selectedPrice) < 500 &&
 					card.selectedGrade === 'ungraded'
 			);
-			setFilteredCards(bulkEligibleCards); // Update the displayed cards
+			setFilteredCards(bulkEligibleCards);
+	
+			// Update selectedCardCount to include all bulk-eligible cards that are selected
+			const selectedBulkEligible = bulkEligibleCards.filter((card) => selectedCards.has(card.id));
+			setSelectedCardCount(selectedBulkEligible.length);
 		} else {
 			// Reset to show all cards
 			setFilteredCards(cards);
+	
+			// Recalculate selectedCardCount for all cards
+			setSelectedCardCount(Array.from(selectedCards).length);
 		}
 	};
+	
 
 	const sendBulk = () => {
 		if (showBulkEligible) {
