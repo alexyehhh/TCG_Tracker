@@ -48,46 +48,50 @@ const Collection = () => {
 	});
 
 	const handleCardClick = async (card) => {
-		try {
-			const userData = await getUserByEmail(user.email);
-			if (!userData) return;
+        try {
+            const userData = await getUserByEmail(user.email);
+            if (!userData) return;
 
-			const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
-			const newSelected = new Set(selectedCards);
-			const newSendBulk = !card.sendBulk;
+            const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
+            const newSelected = new Set(selectedCards);
+            const newSendBulk = !card.sendBulk;
 
-			if (selectedCards.has(card.id)) {
-				newSelected.delete(card.id);
-			} else {
-				newSelected.add(card.id);
-			}
+            if (selectedCards.has(card.id)) {
+                newSelected.delete(card.id);
+            } else {
+                newSelected.add(card.id);
+            }
 
-			// Update Firestore
-			await updateDoc(cardRef, { sendBulk: newSendBulk });
+            // Update Firestore
+            await updateDoc(cardRef, { sendBulk: newSendBulk });
 
-			// Update local state
-			setSelectedCards(newSelected);
-			setSelectedCardCount(newSelected.size);
+            // Update local state
+            setSelectedCards(newSelected);
+            setSelectedCardCount(newSelected.size);
 
-			// Respect the current filter
-			if (showBulkEligible) {
-				// Reapply the bulk eligible filter to maintain the filtered view
-				const bulkEligibleCards = cards.filter(
-					(card) =>
-						card.selectedPrice !== 'N/A' &&
-						Number(card.selectedPrice) > 0 &&
-						Number(card.selectedPrice) < 500 &&
-						card.selectedGrade === 'ungraded'
-				);
-				setFilteredCards(bulkEligibleCards);
-			} else {
-				// Show all cards if not in bulk eligible view
-				setFilteredCards(cards);
-			}
-		} catch (error) {
-			console.error('Error updating card selection:', error);
-		}
-	};
+            // Update bulk-selected counter
+            const bulkEligibleCards = cards.filter(
+                (card) =>
+                    card.selectedPrice !== 'N/A' &&
+                    Number(card.selectedPrice) > 0 &&
+                    Number(card.selectedPrice) < 500 &&
+                    card.selectedGrade === 'ungraded'
+            );
+            const selectedBulkEligible = bulkEligibleCards.filter((card) =>
+                newSelected.has(card.id)
+            );
+            setBulkSelectedCount(selectedBulkEligible.length);
+
+            // Respect the current filter
+            if (showBulkEligible) {
+                setFilteredCards(bulkEligibleCards);
+            } else {
+                setFilteredCards(cards);
+            }
+        } catch (error) {
+            console.error('Error updating card selection:', error);
+        }
+    };
 
 	// Function to toggle between showing all cards and only bulk eligible cards
 	const toggleBulkEligible = () => {
@@ -336,27 +340,64 @@ const Collection = () => {
 
 	const [allSelected, setAllSelected] = useState(false); // New state to track "Select All"
 
-	const handleSelectAll = () => {
-		if (!allSelected) {
-			// Select all bulk-eligible cards
-			const bulkEligibleCards = filteredCards.filter(
-				(card) =>
-					card.selectedPrice !== 'N/A' &&
-					Number(card.selectedPrice) > 0 &&
-					Number(card.selectedPrice) < 500 &&
-					card.selectedGrade === 'ungraded'
-			);
+	const handleSelectAll = async () => {
+        try {
+            const bulkEligibleCards = filteredCards.filter(
+                (card) =>
+                    card.selectedPrice !== 'N/A' &&
+                    Number(card.selectedPrice) > 0 &&
+                    Number(card.selectedPrice) < 500 &&
+                    card.selectedGrade === 'ungraded'
+            );
 
-			const newSelectedCards = new Set(bulkEligibleCards.map((card) => card.id));
-			setSelectedCards(newSelectedCards);
-			setSelectedCardCount(newSelectedCards.size);
-		} else {
-			// Deselect all bulk-eligible cards
-			setSelectedCards(new Set());
-			setSelectedCardCount(0);
-		}
-		setAllSelected(!allSelected); // Toggle state
-	};
+            if (!allSelected) {
+                // Select all bulk-eligible cards
+                const newSelectedCards = new Set(bulkEligibleCards.map((card) => card.id));
+                setSelectedCards(newSelectedCards);
+                setSelectedCardCount(newSelectedCards.size);
+
+                // Update Firestore for each eligible card
+                const userData = await getUserByEmail(user.email);
+                if (!userData) return;
+
+                const updatePromises = bulkEligibleCards.map((card) => {
+                    const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
+                    return updateDoc(cardRef, { sendBulk: true });
+                });
+
+                await Promise.all(updatePromises);
+
+                // Update bulk-selected counter
+                setBulkSelectedCount(newSelectedCards.size);
+            } else {
+                // Deselect all bulk-eligible cards
+                setSelectedCards(new Set());
+                setSelectedCardCount(0);
+
+                // Update Firestore to unselect cards
+                const userData = await getUserByEmail(user.email);
+                if (!userData) return;
+
+                const updatePromises = bulkEligibleCards.map((card) => {
+                    const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
+                    return updateDoc(cardRef, { sendBulk: false });
+                });
+
+                await Promise.all(updatePromises);
+
+                // Reset bulk-selected counter
+                setBulkSelectedCount(0);
+            }
+
+            setAllSelected(!allSelected); // Toggle state
+        } catch (error) {
+            console.error('Error selecting all cards:', error);
+        }
+    };
+	
+	const [bulkSelectedCount, setBulkSelectedCount] = useState(0); // New state for counter
+
+
 
 
 	// apply filters whenever filters change
@@ -433,8 +474,8 @@ const Collection = () => {
 	const LoggedInView = () =>
 		hasCards ? (
 			<div className={styles.container} style={{ backgroundColor: '#fff4fc' }}>
-				<PokemonBackground color='#2f213e' />
-				<nav className={styles.navbar}>
+            <PokemonBackground color="#2f213e" />
+            <nav className={styles.navbar}>
 					<div className={styles.navbarLeft}></div>
 					<ul className={styles.navLinks}>
 						<li>
@@ -452,28 +493,33 @@ const Collection = () => {
 					</ul>
 					<div className={styles.navbarRight}></div>
 				</nav>
-				<div className={styles.mainContent}>
-					<h1 className={styles.title}>
-						{user?.displayName || 'Your'}'s Collection
-					</h1>
-					<div className={styles.topIndicators}>
-				<div className={styles.priceValuation}>Total Value: ${price}</div>
-				<button onClick={toggleBulkEligible} className={styles.bulkButtons}>
-					{showBulkEligible ? 'Show All Cards' : 'Show Bulk Eligible Cards'}
-				</button>
-				{showBulkEligible && (
-					<button onClick={handleSelectAll} className={styles.bulkButtons}>
-						{allSelected ? 'Deselect All' : 'Select All'}
+            <div className={styles.mainContent}>
+                <h1 className={styles.title}>
+                    {user?.displayName || 'Your'}'s Collection
+                </h1>
+                <div className={styles.topIndicators}>
+					<div className={styles.priceValuation}>Total Value: ${price}</div>
+					<button onClick={toggleBulkEligible} className={styles.bulkButtons}>
+						{showBulkEligible ? 'Show All Cards' : 'Show Bulk Eligible Cards'}
 					</button>
-				)}
-				<button
-					onClick={showBulkEligible && selectedCardCount >= 20 ? sendBulk : null}
-					className={styles.bulkButtons}
-					disabled={!showBulkEligible || selectedCardCount < 20}
-				>
-					Send Bulk
-				</button>
-			</div>
+					{showBulkEligible && (
+						<>
+							<button onClick={handleSelectAll} className={styles.bulkButtons}>
+								{allSelected ? 'Deselect All' : 'Select All'}
+							</button>
+							<div className={styles.priceValuation}>Selected for Bulk: {bulkSelectedCount}</div>
+						</>
+					)}
+					<button
+						onClick={showBulkEligible && selectedCardCount >= 20 ? sendBulk : null}
+						className={styles.bulkButtons}
+						disabled={!showBulkEligible || selectedCardCount < 20}
+					>
+						Send Bulk
+					</button>
+				</div>
+
+
 
 
 					<div className={styles.searchContainer}>
