@@ -334,6 +334,31 @@ const Collection = () => {
 		}
 	};
 
+	const [allSelected, setAllSelected] = useState(false); // New state to track "Select All"
+
+	const handleSelectAll = () => {
+		if (!allSelected) {
+			// Select all bulk-eligible cards
+			const bulkEligibleCards = filteredCards.filter(
+				(card) =>
+					card.selectedPrice !== 'N/A' &&
+					Number(card.selectedPrice) > 0 &&
+					Number(card.selectedPrice) < 500 &&
+					card.selectedGrade === 'ungraded'
+			);
+
+			const newSelectedCards = new Set(bulkEligibleCards.map((card) => card.id));
+			setSelectedCards(newSelectedCards);
+			setSelectedCardCount(newSelectedCards.size);
+		} else {
+			// Deselect all bulk-eligible cards
+			setSelectedCards(new Set());
+			setSelectedCardCount(0);
+		}
+		setAllSelected(!allSelected); // Toggle state
+	};
+
+
 	// apply filters whenever filters change
 	useEffect(() => {
 		let filtered = [...alphabeticalCards];
@@ -432,19 +457,24 @@ const Collection = () => {
 						{user?.displayName || 'Your'}'s Collection
 					</h1>
 					<div className={styles.topIndicators}>
-						<div className={styles.priceValuation}>Total Value: ${price}</div>
-						<button onClick={toggleBulkEligible} className={styles.bulkButtons}>
-							{showBulkEligible ? 'Show All Cards' : 'Show Bulk Eligible Cards'}
-						</button>
-						<button
-							onClick={
-								showBulkEligible && selectedCardCount >= 20 ? sendBulk : null
-							}
-							className={styles.bulkButtons}
-							disabled={!showBulkEligible || selectedCardCount < 20}>
-							Send Bulk
-						</button>
-					</div>
+				<div className={styles.priceValuation}>Total Value: ${price}</div>
+				<button onClick={toggleBulkEligible} className={styles.bulkButtons}>
+					{showBulkEligible ? 'Show All Cards' : 'Show Bulk Eligible Cards'}
+				</button>
+				{showBulkEligible && (
+					<button onClick={handleSelectAll} className={styles.bulkButtons}>
+						{allSelected ? 'Deselect All' : 'Select All'}
+					</button>
+				)}
+				<button
+					onClick={showBulkEligible && selectedCardCount >= 20 ? sendBulk : null}
+					className={styles.bulkButtons}
+					disabled={!showBulkEligible || selectedCardCount < 20}
+				>
+					Send Bulk
+				</button>
+			</div>
+
 
 					<div className={styles.searchContainer}>
 						<div className={styles.searchBar}>
