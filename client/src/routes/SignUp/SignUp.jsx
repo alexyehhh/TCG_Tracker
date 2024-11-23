@@ -1,38 +1,17 @@
 import React, { useState } from 'react';
 import { auth, googleProvider, db } from '../../util/firebase';
 import { signInWithPopup, createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './SignUp.module.css';
 import middleDivider from '../../assets/images/middleDivider.png';
 import { Eye, EyeOff } from 'lucide-react';
+import { createDocument } from '../../util/userFunctions';
 
 const SignIn = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
 	const navigate = useNavigate();
-
-	// Create users document, ONLY IF THEY DONT HAVE ONE
-	const createDocument = async (user) => {
-		try {
-			const userDocRef = doc(db, 'users', user.uid);
-			const userDoc = await getDoc(userDocRef);
-
-			if (!userDoc.exists()) {
-				await setDoc(userDocRef, {
-					email: user.email,
-					name: user.displayName || email.split('@')[0],
-					createdAt: new Date(),
-				});
-				console.log('New user document created');
-			} else {
-				console.log('User document already exists');
-			}
-		} catch (error) {
-			console.error('Error handling user document:', error.message);
-		}
-	};
 
 	const handleGoogleSignUp = async () => {
 		try {

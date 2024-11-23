@@ -27,7 +27,6 @@ const CardDetail = () => {
 	const auth = getAuth();
 
 	const [card, setCard] = useState(null);
-	// const { getCachedData, setCachedData } = useCardCache(id, card?.set?.id);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [pricePaid, setPricePaid] = useState('');
@@ -76,9 +75,14 @@ const CardDetail = () => {
 				const cardData = response.data.data;
 				setCard(cardData);
 
-				if (cardData.types && cardData.types.length > 0) {
+				if (cardData.supertype === 'Trainer') {
+					setCurrentCardType('Trainer');
+				} else if (cardData.types && cardData.types.length > 0) {
 					setCurrentCardType(cardData.types[0]);
+				} else {
+					setCurrentCardType('Unknown'); // if none matches
 				}
+
 			} catch (err) {
 				setError(`Failed to fetch card details. Error: ${err}`);
 			}
@@ -116,6 +120,7 @@ const CardDetail = () => {
 			if (!card?.name) return;
 
 			const cachedPrices = getCachedPrice(card.id, card.set.printedTotal);
+
 			if (cachedPrices) {
 				setCardPrices(cachedPrices);
 				setLoading(false);

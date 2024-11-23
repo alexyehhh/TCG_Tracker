@@ -271,7 +271,7 @@
 	opacity: 0.5; /* Optional: Grays out the button */
 }
 
-.backButton {
+/* .backButton {
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -297,4 +297,4 @@
 	fill: currentColor;
 	overflow: hidden;
 	transition: transform 0.5s ease;
-}
+} */
