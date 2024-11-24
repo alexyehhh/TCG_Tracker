@@ -29,7 +29,7 @@ export default function Help() {
 
 	return (
 		<div className={styles.container} style={{}}>
-			<PokemonBackground color='#2f213e' />
+			<PokemonBackground color='#191143' />
 			<nav className={styles.navbar}>
 				<ul className={styles.navLinks}>
 					<li>
