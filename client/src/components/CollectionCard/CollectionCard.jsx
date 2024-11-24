@@ -25,6 +25,7 @@ const CollectionCard = ({
 		e.preventDefault(); // Prevent link navigation
 		if (showRemoveConfirm) {
 			removeCard(card.id);
+			setBulkSelectedCount((x) => x - 1);
 		} else {
 			setShowRemoveConfirm(true);
 		}
