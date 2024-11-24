@@ -20,6 +20,7 @@ import EmptyCollectionView from '../../components/EmptyCollectionView/EmptyColle
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import cardSets from '../../util/cardSets.js';
 import cardRarities from '../../util/cardRarities.js';
+import { getCachedPrice, setCachedPrice } from '../../util/cacheUtils';
 
 const Collection = () => {
 	const navigate = useNavigate();
@@ -206,6 +207,12 @@ const Collection = () => {
 	const fetchPrices = async (card) => {
         if (!card?.name) return;
 
+	const cachedPrices = getCachedPrice(card.id, card.setPrintedTotal);
+        if (cachedPrices) {
+            setLoading(false);
+            return cachedPrices;
+        }
+
         const fetchPriceForGrade = async (grade) => {
             try {
                 const response = await axios.get(
@@ -220,6 +227,7 @@ const Collection = () => {
                         },
                     }
                 );
+		setCachedPrice(card.id, card.setPrintedTotal, response.data.averagePrice);
                 return response.data.averagePrice;
             } catch (error) {
                 console.error(`Error fetching ${grade} price:`, error);
@@ -229,14 +237,7 @@ const Collection = () => {
 
         try {
             const pricing = await fetchPriceForGrade(card.selectedGrade);
-
-            const fetchedPrices = {
-                name: card.name,
-                number: card.number,
-                pricing: pricing,
-            };
-
-            return fetchedPrices;
+            return pricing;
         } catch (error) {
             console.error('Error fetching prices:', error);
         }
