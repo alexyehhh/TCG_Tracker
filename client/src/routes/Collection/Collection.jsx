@@ -433,11 +433,17 @@ const Collection = () => {
 
 		// filter by price range
 		if (filters.price) {
-			const [minPrice, maxPrice] = filters.price.split('-').map(Number);
-			filtered = filtered.filter((card) => {
-				const cardPrice = parseInt(card.price);
-				return cardPrice >= minPrice && cardPrice <= maxPrice;
-			});
+			if (filters.price === '500+') {
+				// handle case for prices above 500
+				filtered = filtered.filter((card) => Number(card.selectedPrice) > 500);
+			} else {
+				// handle price ranges
+				const [minPrice, maxPrice] = filters.price.split('-').map(Number);
+				filtered = filtered.filter((card) => {
+					const cardPrice = Number(card.selectedPrice || 0);
+					return cardPrice >= minPrice && cardPrice <= maxPrice;
+				});
+			}
 		}
 
 		//filter by type
@@ -616,6 +622,13 @@ const Collection = () => {
 								<option value='125-150'>$ 125 - $ 150</option>
 								<option value='150-175'>$ 150 - $ 175</option>
 								<option value='175-200'>$ 175 - $ 200</option>
+								<option value='200-250'>$ 200 - $ 250</option>
+								<option value='250-300'>$ 250 - $ 300</option>
+								<option value='300-350'>$ 300 - $ 350</option>
+								<option value='350-400'>$ 350 - $ 400</option>
+								<option value='400-450'>$ 400 - $ 450</option>
+								<option value='450-500'>$ 450 - $ 500</option>
+								<option value='500+'>$ 500+</option>
 							</select>
 
 							<select
