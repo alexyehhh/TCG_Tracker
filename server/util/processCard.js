@@ -28,13 +28,13 @@ async function processCard(fileBuffer) {
         const setNumberMatch = ocrText.match(/([A-Z]{0,3}\d{1,3}\/[A-Z]*\d{1,3})/i);
         const setNumber = setNumberMatch ? setNumberMatch[0] : null;
 
+        console.log("Parsed Name:", name);
+        console.log("Parsed Set Number:", setNumber);
+
         if (!name || !setNumber) {
             console.log("Failed to parse card name or set number.");
             return { error: 'Could not parse card name or set number from image.', status: 400 };
         }
-
-        console.log("Parsed Name:", name);
-        console.log("Parsed Set Number:", setNumber);
 
         const query = `name:"${name}" number:"${setNumber.split('/')[0]}"`; // Adjust query as needed
         const cards = await pokemon.card.all({ q: query });

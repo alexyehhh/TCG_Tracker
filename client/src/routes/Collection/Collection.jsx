@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { db } from '../../util/firebase';
+import axios from 'axios';
 import {
 	collection,
 	query,
@@ -25,6 +26,7 @@ const Collection = () => {
 	const [user, setUser] = useState(null);
 	const [cards, setCards] = useState([]);
 	const [filteredCards, setFilteredCards] = useState([]);
+	const [prices, setPrices] = useState([]);
 	const auth = getAuth();
 	const [hasCards, setHasCards] = useState(false);
 	const [searchTerm, setSearchTerm] = useState('');
@@ -38,8 +40,10 @@ const Collection = () => {
 	});
 	const [showBulkEligible, setShowBulkEligible] = useState(false);
 	const [selectedCardCount, setSelectedCardCount] = useState(0);
-
 	const [price, setPrice] = useState(0);
+	const [bulkSelectedCount, setBulkSelectedCount] = useState(0); // New state for counter
+	const [displayedValue, setDisplayedValue] = useState(price);
+	const [allSelected, setAllSelected] = useState(false); // New state to track "Select All"
 
 	const alphabeticalCards = cards.sort((a, b) => {
 		return b.addedAt.toDate() - a.addedAt.toDate();
@@ -49,72 +53,98 @@ const Collection = () => {
 		try {
 			const userData = await getUserByEmail(user.email);
 			if (!userData) return;
-	
+
 			const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
 			const newSelected = new Set(selectedCards);
 			const newSendBulk = !card.sendBulk;
-	
+
 			if (selectedCards.has(card.id)) {
 				newSelected.delete(card.id);
 			} else {
 				newSelected.add(card.id);
 			}
-	
+
 			// Update Firestore
 			await updateDoc(cardRef, { sendBulk: newSendBulk });
-	
+
 			// Update local state
 			setSelectedCards(newSelected);
 			setSelectedCardCount(newSelected.size);
-	
-			// Respect the current filter
+
+			// Recalculate displayed value for bulk-eligible cards if active
 			if (showBulkEligible) {
-				// Reapply the bulk eligible filter to maintain the filtered view
-				const bulkEligibleCards = cards.filter(
-					(card) =>
-						card.selectedPrice !== 'N/A' &&
-						Number(card.selectedPrice) > 0 &&
-						Number(card.selectedPrice) < 500 &&
-						card.selectedGrade === 'ungraded'
+				const bulkEligibleCards = filteredCards.filter((card) =>
+					selectedCards.has(card.id)
 				);
-				setFilteredCards(bulkEligibleCards);
-			} else {
-				// Show all cards if not in bulk eligible view
-				setFilteredCards(cards);
+				const bulkValue = bulkEligibleCards.reduce(
+					(total, card) =>
+						selectedCards.has(card.id)
+							? total + Number(card.selectedPrice)
+							: total,
+					0
+				);
+				setDisplayedValue(bulkValue.toFixed(2));
 			}
+
+			// Respect the current filter
+			setFilteredCards(showBulkEligible ? filteredCards : cards);
 		} catch (error) {
 			console.error('Error updating card selection:', error);
 		}
 	};
-	
 
 	// Function to toggle between showing all cards and only bulk eligible cards
 	const toggleBulkEligible = () => {
 		setShowBulkEligible((prev) => !prev);
+
 		if (!showBulkEligible) {
-			// Apply the bulk eligible filter
+			// Filter to show only bulk-eligible cards
 			const bulkEligibleCards = cards.filter(
 				(card) =>
-					card.selectedPrice !== 'N/A' && 
+					card.selectedPrice !== 'N/A' &&
 					Number(card.selectedPrice) > 0 &&
 					Number(card.selectedPrice) < 500 &&
 					card.selectedGrade === 'ungraded'
 			);
-			setFilteredCards(bulkEligibleCards); // Update the displayed cards
+
+			setFilteredCards(bulkEligibleCards);
+
+			// Calculate the value of bulk-eligible cards that are selected
+			const bulkValue = bulkEligibleCards.reduce(
+				(total, card) =>
+					selectedCards.has(card.id)
+						? total + Number(card.selectedPrice)
+						: total,
+				0
+			);
+			setDisplayedValue(bulkValue.toFixed(2));
+
+			// Update selectedCardCount
+			const selectedBulkEligible = bulkEligibleCards.filter((card) =>
+				selectedCards.has(card.id)
+			);
+			setSelectedCardCount(selectedBulkEligible.length);
 		} else {
 			// Reset to show all cards
 			setFilteredCards(cards);
+
+			// Reset the displayed value to total collection value
+			setDisplayedValue(price);
+
+			// Recalculate selectedCardCount
+			setSelectedCardCount(Array.from(selectedCards).length);
 		}
 	};
-	
-	const sendBulk = () => {
-	if (showBulkEligible) {
-		navigate('/bulk-grading'); // Navigate to the bulk grading page if eligible
-	} else {
-		console.warn('Send Bulk is disabled unless you are viewing eligible cards.');
-	}
-	};
 
+	const sendBulk = () => {
+		if (showBulkEligible) {
+			navigate('/bulk-grading'); // Navigate to the bulk grading page if eligible
+		} else {
+			console.warn(
+				'Send Bulk is disabled unless you are viewing eligible cards.'
+			);
+		}
+	};
 
 	const handleNext = () => {
 		navigate('/bulk-grading');
@@ -148,7 +178,7 @@ const Collection = () => {
 		const searchFiltered = cards.filter((card) =>
 			card.name.toLowerCase().includes(searchTerm.toLowerCase())
 		);
-	
+
 		const finalFiltered = showBulkEligible
 			? searchFiltered.filter(
 					(card) =>
@@ -158,10 +188,9 @@ const Collection = () => {
 						card.selectedGrade === 'ungraded'
 			  )
 			: searchFiltered;
-	
+
 		setFilteredCards(finalFiltered);
 	};
-	
 
 	// user presses Enter key to search
 	const handleKeyDown = (event) => {
@@ -193,6 +222,45 @@ const Collection = () => {
 		}
 	}
 
+	const fetchPrices = async (card) => {
+		if (!card?.name) return;
+
+		const fetchPriceForGrade = async (grade) => {
+			try {
+				const response = await axios.get(
+					`${import.meta.env.VITE_API_URL}/card-prices`,
+					{
+						params: {
+							name: card.name,
+							number: card.number,
+							total: card.setPrintedTotal,
+							grade: grade === 'ungraded' ? '' : grade,
+							set: card.setName,
+						},
+					}
+				);
+				return response.data.averagePrice;
+			} catch (error) {
+				console.error(`Error fetching ${grade} price:`, error);
+				return null;
+			}
+		};
+
+		try {
+			const pricing = await fetchPriceForGrade(card.selectedGrade);
+
+			const fetchedPrices = {
+				name: card.name,
+				number: card.number,
+				pricing: pricing,
+			};
+
+			return fetchedPrices;
+		} catch (error) {
+			console.error('Error fetching prices:', error);
+		}
+	};
+
 	// fetch user's cards from Firestore and set within state
 	async function fetchUserCards(userId) {
 		try {
@@ -200,31 +268,32 @@ const Collection = () => {
 			const querySnapshot = await getDocs(cardsRef);
 
 			const cardsList = [];
+			const priceList = [];
 			let totalValue = 0;
 			const selectedCardIds = new Set();
 
-			querySnapshot.forEach((doc) => {
+			for (const doc of querySnapshot.docs) {
 				const cardData = doc.data();
 				if (cardData.image) {
 					const card = { ...cardData, id: doc.id };
 					cardsList.push(card);
 
-					// If card was previously selected for bulk, add it to selectedCards
-					if (cardData.sendBulk) {
-						selectedCardIds.add(doc.id);
-					}
+					// Wait for the result of fetchPrices
+					const res = await fetchPrices(card);
+					priceList.push(res);
 				}
 				if (cardData.selectedPrice != 'N/A') {
 					totalValue += parseFloat(cardData.selectedPrice);
 				}
-			});
+			}
 
 			setPrice(totalValue.toFixed(2));
 			setCards(cardsList);
 			setFilteredCards(cardsList);
 			setHasCards(cardsList.length > 0);
 			setSelectedCards(selectedCardIds);
-			return cardsList;
+			console.log(priceList);
+			setPrices(priceList);
 		} catch (error) {
 			console.error('Error fetching cards:', error);
 			throw error;
@@ -260,7 +329,7 @@ const Collection = () => {
 	};
 
 	const removeCard = async (cardId) => {
-		console.log(cardId);
+		console.log('cardId of card being removed: ', cardId);
 		try {
 			const userDoc = await getUserByEmail(user.email);
 			if (!userDoc) {
@@ -271,9 +340,86 @@ const Collection = () => {
 
 			const updatedCards = cards.filter((card) => card.id !== cardId);
 			setCards(updatedCards);
-			setFilteredCards(updatedCards);
+
+			const updatedFilteredCards = showBulkEligible
+				? updatedCards.filter(
+						(card) =>
+							card.selectedPrice !== 'N/A' &&
+							Number(card.selectedPrice) > 0 &&
+							Number(card.selectedPrice) < 500 &&
+							card.selectedGrade === 'ungraded'
+				  )
+				: updatedCards;
+
+			setFilteredCards(updatedFilteredCards);
+
+			// Recalculate the total value of the collection
+			const updatedTotalValue = updatedCards.reduce((total, card) => {
+				return (
+					total +
+					(card.selectedPrice !== 'N/A' ? parseFloat(card.selectedPrice) : 0)
+				);
+			}, 0);
+			setPrice(updatedTotalValue.toFixed(2));
 		} catch (error) {
-			console.error('Error removing cards:', error);
+			console.error('Error removing card:', error);
+		}
+	};
+
+	const handleSelectAll = async () => {
+		try {
+			const bulkEligibleCards = filteredCards.filter(
+				(card) =>
+					card.selectedPrice !== 'N/A' &&
+					Number(card.selectedPrice) > 0 &&
+					Number(card.selectedPrice) < 500 &&
+					card.selectedGrade === 'ungraded'
+			);
+
+			if (!allSelected) {
+				// Select all bulk-eligible cards
+				const newSelectedCards = new Set(
+					bulkEligibleCards.map((card) => card.id)
+				);
+				setSelectedCards(newSelectedCards);
+				setSelectedCardCount(newSelectedCards.size);
+
+				// Update Firestore for each eligible card
+				const userData = await getUserByEmail(user.email);
+				if (!userData) return;
+
+				const updatePromises = bulkEligibleCards.map((card) => {
+					const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
+					return updateDoc(cardRef, { sendBulk: true });
+				});
+
+				await Promise.all(updatePromises);
+
+				// Update bulk-selected counter
+				// setBulkSelectedCount(newSelectedCards.size);
+			} else {
+				// Deselect all bulk-eligible cards
+				setSelectedCards(new Set());
+				setSelectedCardCount(0);
+
+				// Update Firestore to unselect cards
+				const userData = await getUserByEmail(user.email);
+				if (!userData) return;
+
+				const updatePromises = bulkEligibleCards.map((card) => {
+					const cardRef = doc(db, `users/${userData.id}/cards/${card.id}`);
+					return updateDoc(cardRef, { sendBulk: false });
+				});
+
+				await Promise.all(updatePromises);
+
+				// Reset bulk-selected counter
+				// setBulkSelectedCount(0);
+			}
+
+			setAllSelected(!allSelected); // Toggle state
+		} catch (error) {
+			console.error('Error selecting all cards:', error);
 		}
 	};
 
@@ -341,6 +487,9 @@ const Collection = () => {
 						<li>
 							<Link to='/upload'>Upload</Link>
 						</li>
+						<li>
+							<Link to='/help'>Help</Link>
+						</li>
 					</ul>
 				</nav>
 				<h1 className={styles.centerContent}>Loading cards...</h1>;
@@ -348,8 +497,22 @@ const Collection = () => {
 		);
 	}
 
-	const LoggedInView = () =>
-		hasCards ? (
+	const LoggedInView = () => {
+		const displayedValue = useMemo(() => {
+			if (showBulkEligible) {
+				return Array.from(selectedCards)
+					.reduce((total, cardId) => {
+						const card = cards.find(
+							(c) => c.id === cardId && c.selectedPrice !== 'N/A'
+						);
+						return total + (card ? parseFloat(card.selectedPrice) : 0);
+					}, 0)
+					.toFixed(2);
+			}
+			return price; // Use total collection value when viewing all cards
+		}, [selectedCards, cards, showBulkEligible, price]);
+
+		return hasCards ? (
 			<div className={styles.container} style={{ backgroundColor: '#fff4fc' }}>
 				<PokemonBackground color='#2f213e' />
 				<nav className={styles.navbar}>
@@ -367,40 +530,46 @@ const Collection = () => {
 						<li>
 							<Link to='/upload'>Upload</Link>
 						</li>
+						<li>
+							<Link to='/help'>Help</Link>
+						</li>
 					</ul>
-					<div className={styles.navbarRight}>
-						<button onClick={handleNext} className={styles.backButton}>
-							Go to bulk
-							<svg
-								className={styles.backIcon}
-								viewBox='0 0 1024 1024'
-								xmlns='http://www.w3.org/2000/svg'
-								aria-label='Right Arrow Icon'>
-								<path
-									d='M170.666667 469.333333v85.333334h512l-234.666667 234.666666 60.586667 60.586667L846.506667 512l-337.92-337.92L448 234.666667 682.666667 469.333333H170.666667z'
-									fill='currentColor'
-								/>
-							</svg>
-						</button>
-					</div>
+					<div className={styles.navbarRight}></div>
 				</nav>
 				<div className={styles.mainContent}>
 					<h1 className={styles.title}>
 						{user?.displayName || 'Your'}'s Collection
 					</h1>
 					<div className={styles.topIndicators}>
-						<div className={styles.priceValuation}>Total Value: ${price}</div>
+						<div className={styles.priceValuation}>
+							{showBulkEligible
+								? 'Total Value of Selected Cards: '
+								: 'Total Value: '}
+							${displayedValue}
+						</div>
 						<button onClick={toggleBulkEligible} className={styles.bulkButtons}>
 							{showBulkEligible ? 'Show All Cards' : 'Show Bulk Eligible Cards'}
 						</button>
+						{showBulkEligible && (
+							<>
+								<button
+									onClick={handleSelectAll}
+									className={styles.bulkButtons}>
+									{allSelected ? 'Deselect All' : 'Select All'}
+								</button>
+								<div className={styles.priceValuation}>
+									Selected for Bulk: {bulkSelectedCount}
+								</div>
+							</>
+						)}
 						<button
-							onClick={showBulkEligible && selectedCardCount >= 20 ? sendBulk : null}
+							onClick={
+								showBulkEligible && selectedCardCount >= 20 ? sendBulk : null
+							}
 							className={styles.bulkButtons}
-							disabled={!showBulkEligible || selectedCardCount < 20}
-						>
+							disabled={!showBulkEligible || selectedCardCount < 20}>
 							Send Bulk
 						</button>
-
 					</div>
 
 					<div className={styles.searchContainer}>
@@ -412,7 +581,6 @@ const Collection = () => {
 								onChange={handleInputChange}
 								onKeyDown={handleKeyDown}
 								className={styles.searchInput}
-								// autoFocus -> issue for rerender
 							/>
 							<button
 								onClick={handleSearchCollection}
@@ -429,7 +597,7 @@ const Collection = () => {
 							<select
 								name='rarity'
 								className={styles.filterSelect}
-								value={filters.rarity} // <-- Bind to filters.rarity
+								value={filters.rarity}
 								onChange={handleFilterChange}>
 								<option value=''>Rarity</option>
 								{cardRarities.map((rarity, index) => (
@@ -442,7 +610,7 @@ const Collection = () => {
 							<select
 								name='price'
 								className={styles.filterSelect}
-								value={filters.price} // <-- Bind to filters.price
+								value={filters.price}
 								onChange={handleFilterChange}>
 								<option value=''>Price</option>
 								<option value='0-25'>$ 0 - $ 25</option>
@@ -458,7 +626,7 @@ const Collection = () => {
 							<select
 								name='type'
 								className={styles.filterSelect}
-								value={filters.type} // <-- Bind to filters.type
+								value={filters.type}
 								onChange={handleFilterChange}>
 								<option value=''>Type</option>
 								<option value='Colorless'>Colorless</option>
@@ -477,7 +645,7 @@ const Collection = () => {
 							<select
 								name='set'
 								className={styles.filterSelect}
-								value={filters.set} // <-- Bind to filters.set
+								value={filters.set}
 								onChange={handleFilterChange}>
 								<option value=''>Set</option>
 								{cardSets.map((set, index) => (
@@ -498,6 +666,7 @@ const Collection = () => {
 								removeCard={removeCard}
 								isSelected={selectedCards.has(card.id)}
 								showCheckbox={showBulkEligible}
+								setBulkSelectedCount={setBulkSelectedCount}
 							/>
 						))}
 					</div>
@@ -506,6 +675,7 @@ const Collection = () => {
 		) : (
 			<EmptyCollectionView />
 		);
+	};
 
 	return user ? <LoggedInView /> : <LoggedOutView />;
 };

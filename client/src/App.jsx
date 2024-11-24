@@ -8,6 +8,7 @@ import ForgotPassword from './routes/ForgotPassword/ForgotPassword'; // http://l
 import Collection from './routes/Collection/Collection'; // http://localhost:5173/collection
 import Upload from './routes/Upload/Upload'; // http://localhost:5173/upload
 import BulkGrading from './routes/BulkGrading/BulkGrading'; // http://localhost:5173/bulk-grading
+import Help from './routes/Help/Help'; // http://localhost:5173/help
 
 function App() {
 	return (
@@ -23,6 +24,7 @@ function App() {
 					<Route path='/card-detail/:id' element={<CardDetail />} />
 					<Route path='/pokemon-cards' element={<PokemonCards />} />
 					<Route path='/bulk-grading' element={<BulkGrading />} />
+					<Route path='/help' element={<Help />} />
 				</Routes>
 			</div>
 		</Router>

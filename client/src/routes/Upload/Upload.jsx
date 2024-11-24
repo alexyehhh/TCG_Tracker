@@ -63,31 +63,41 @@ const UploadPage = () => {
 
 	const handleUpload = async () => {
 		if (!file) {
-			setError("Please select an image first.");
+			setError('Please select an image first.');
 			return;
 		}
-	
+
 		const formData = new FormData();
 		formData.append('file', file.file);
-	
+
 		try {
-			console.log("Starting upload...");
-			const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/recognizeCard`, formData, {
-				headers: {
-					'Content-Type': 'multipart/form-data'
+			console.log('Starting upload...');
+			const response = await axios.post(
+				`${import.meta.env.VITE_API_URL}/api/recognizeCard`,
+				formData,
+				{
+					headers: {
+						'Content-Type': 'multipart/form-data',
+					},
 				}
-			});
-			console.log("Server response:", response.data);
-			const { matches, searchQuery } = response.data; 
+			);
+			console.log('Server response:', response.data);
+			const { matches, searchQuery } = response.data;
 			setError('');
 			setMatches(matches || []);
 
 			// Redirect to PokemonCards page with search query
 			navigate(`/pokemon-cards?name=${encodeURIComponent(searchQuery)}`);
-
 		} catch (err) {
-			console.error("Error uploading image:", err.response ? err.response.data : err.message);
-			setError(err.response && err.response.data.error ? err.response.data.error : 'Failed to recognize card. Please try again.');
+			console.error(
+				'Error uploading image:',
+				err.response ? err.response.data : err.message
+			);
+			setError(
+				err.response && err.response.data.error
+					? err.response.data.error
+					: 'Failed to recognize card. Please try again.'
+			);
 		}
 	};
 
@@ -96,25 +106,39 @@ const UploadPage = () => {
 			<PokemonBackground />
 			<nav className={styles.navbar}>
 				<ul className={styles.navLinks}>
-					<li><Link to='/'>Search</Link></li>
-					<li><Link to='/collection'>Collection</Link></li>
-					<li><Link to='/bulk-grading'>Bulk Grading</Link></li>
-					<li><Link to='/upload'>Upload</Link></li>
+					<li>
+						<Link to='/'>Search</Link>
+					</li>
+					<li>
+						<Link to='/collection'>Collection</Link>
+					</li>
+					<li>
+						<Link to='/bulk-grading'>Bulk Grading</Link>
+					</li>
+					<li>
+						<Link to='/upload'>Upload</Link>
+					</li>
+					<li>
+						<Link to='/help'>Help</Link>
+					</li>
 				</ul>
 			</nav>
 
 			<main className={styles.main}>
 				<div className={styles.uploadContainer}>
 					<div
-						className={`${styles.dropzone} ${dragActive ? styles.dragActive : ''}`}
+						className={`${styles.dropzone} ${
+							dragActive ? styles.dragActive : ''
+						}`}
 						onDragEnter={handleDrag}
 						onDragLeave={handleDrag}
 						onDragOver={handleDrag}
-						onDrop={handleDrop}
-					>
+						onDrop={handleDrop}>
 						<Upload size={48} className={styles.uploadIcon} />
 						<h2 className={styles.uploadTitle}>Upload Pokemon Cards</h2>
-						<p className={styles.uploadText}>Drag and drop your file here or click to browse</p>
+						<p className={styles.uploadText}>
+							Drag and drop your file here or click to browse
+						</p>
 						<input
 							type='file'
 							className={styles.fileInput}
@@ -127,13 +151,24 @@ const UploadPage = () => {
 						<div className={styles.fileList}>
 							<h3 className={styles.fileListTitle}>Uploaded File</h3>
 							<div className={styles.fileItem}>
-								<img src={file.preview} alt="Preview" className={styles.imagePreview} />
+								<img
+									src={file.preview}
+									alt='Preview'
+									className={styles.imagePreview}
+								/>
 								<span>{file.file.name}</span>
-								<button onClick={removeFile} className={styles.removeButton} aria-label='Remove file'>
+								<button
+									onClick={removeFile}
+									className={styles.removeButton}
+									aria-label='Remove file'>
 									<X size={16} />
 								</button>
 							</div>
-							<button onClick={handleUpload} className={styles.uploadButton}>Process Card</button>
+							<div className={styles.buttonContainer}>
+								<button onClick={handleUpload} className={styles.uploadButton}>
+									Search for Card
+								</button>
+							</div>
 						</div>
 					)}
 
@@ -144,7 +179,9 @@ const UploadPage = () => {
 							<h3>Potential Matches</h3>
 							{matches.map((match, index) => (
 								<div key={index} className={styles.matchItem}>
-									<p>{match.name} - {match.set.name}</p>
+									<p>
+										{match.name} - {match.set.name}
+									</p>
 								</div>
 							))}
 						</div>
