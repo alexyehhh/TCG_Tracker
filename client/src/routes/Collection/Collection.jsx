@@ -73,21 +73,11 @@ const Collection = () => {
 
 			// Recalculate displayed value for bulk-eligible cards if active
 			if (showBulkEligible) {
-				const bulkEligibleCards = filteredCards.filter((card) =>
-					selectedCards.has(card.id)
-				);
-				const bulkValue = bulkEligibleCards.reduce(
-					(total, card) =>
-						selectedCards.has(card.id)
-							? total + Number(card.selectedPrice)
-							: total,
-					0
-				);
-				setDisplayedValue(bulkValue.toFixed(2));
+				const bulkEligibleCount = filteredCards.filter((card) =>
+					newSelected.has(card.id)
+				).length;
+				setBulkSelectedCount(bulkEligibleCount);
 			}
-
-			// Respect the current filter
-			setFilteredCards(showBulkEligible ? filteredCards : cards);
 		} catch (error) {
 			console.error('Error updating card selection:', error);
 		}
@@ -109,7 +99,13 @@ const Collection = () => {
 
 			setFilteredCards(bulkEligibleCards);
 
-			// Calculate the value of bulk-eligible cards that are selected
+			// Update bulk-selected count
+			const bulkEligibleCount = bulkEligibleCards.filter((card) =>
+				selectedCards.has(card.id)
+			).length;
+			setBulkSelectedCount(bulkEligibleCount);
+
+			// Update displayed value
 			const bulkValue = bulkEligibleCards.reduce(
 				(total, card) =>
 					selectedCards.has(card.id)
@@ -117,22 +113,14 @@ const Collection = () => {
 						: total,
 				0
 			);
+
 			setDisplayedValue(bulkValue.toFixed(2));
 
-			// Update selectedCardCount
-			const selectedBulkEligible = bulkEligibleCards.filter((card) =>
-				selectedCards.has(card.id)
-			);
-			setSelectedCardCount(selectedBulkEligible.length);
 		} else {
 			// Reset to show all cards
 			setFilteredCards(cards);
-
-			// Reset the displayed value to total collection value
+			setBulkSelectedCount(0);
 			setDisplayedValue(price);
-
-			// Recalculate selectedCardCount
-			setSelectedCardCount(Array.from(selectedCards).length);
 		}
 	};
 
@@ -383,6 +371,7 @@ const Collection = () => {
 				);
 				setSelectedCards(newSelectedCards);
 				setSelectedCardCount(newSelectedCards.size);
+				setBulkSelectedCount(bulkEligibleCards.length);
 
 				// Update Firestore for each eligible card
 				const userData = await getUserByEmail(user.email);
@@ -399,8 +388,14 @@ const Collection = () => {
 				// setBulkSelectedCount(newSelectedCards.size);
 			} else {
 				// Deselect all bulk-eligible cards
-				setSelectedCards(new Set());
-				setSelectedCardCount(0);
+				const remainingSelectedCards = new Set(
+					Array.from(selectedCards).filter(
+						(id) => !bulkEligibleCards.map((card) => card.id).includes(id)
+					)
+				);
+				setSelectedCards(remainingSelectedCards);
+				setSelectedCardCount(remainingSelectedCards.size);
+				setBulkSelectedCount(0);
 
 				// Update Firestore to unselect cards
 				const userData = await getUserByEmail(user.email);
