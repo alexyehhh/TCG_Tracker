@@ -25,7 +25,7 @@ async function processCard(fileBuffer) {
 
         // Parse and search Pokémon TCG API
         const name = await cleanName(ocrText.split('\n')); // Assuming the name is the first line
-        const setNumberMatch = ocrText.match(/\d+\/\d+/);
+        const setNumberMatch = ocrText.match(/([A-Z]{0,3}\d{1,3}\/[A-Z]*\d{1,3})/i);
         const setNumber = setNumberMatch ? setNumberMatch[0] : null;
 
         if (!name || !setNumber) {
