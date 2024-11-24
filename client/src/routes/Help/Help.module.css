@@ -1,0 +1,126 @@
+.container {
+	min-height: 100vh;
+	position: relative;
+	overflow: hidden;
+	z-index: 1;
+	background: linear-gradient(
+		90deg,
+		#8822c1 4.5%,
+		#cc5bfb 26.5%,
+		#aa3be4 53%,
+		#ce66fb 73.5%,
+		#aa3be4 91.5%
+	);
+}
+
+.navbar {
+	position: relative;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 25px 50px;
+	background: linear-gradient(
+		90deg,
+		#aa3be4 4.5%,
+		#cc5bfb 26.5%,
+		#8822c1 53%,
+		#ce66fb 73.5%,
+		#8538a9 91.5%
+	);
+	box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+	z-index: 2;
+}
+
+.navLinks {
+	max-width: 48rem;
+	margin: 0 auto;
+	padding: 0 1rem;
+	display: flex;
+	justify-content: center;
+	gap: 2rem;
+	list-style: none;
+}
+
+.navLinks a {
+	color: white;
+	text-decoration: none;
+}
+
+.navLinks a:hover {
+	color: #d8b4fe;
+}
+
+.cardImage {
+	width: 260px;
+	height: auto;
+	position: relative;
+	z-index: 2;
+	border-radius: 0.5rem;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+	background-color: white;
+}
+
+/* Logged out specific styles */
+.loggedOutContent {
+	flex: 1;
+	width: 100%;
+	max-width: 48rem;
+	margin: 0 auto;
+	padding: 2rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+/* FAQ Accordion Styles */
+.faqTitle {
+	font-size: 48px;
+	font-weight: 700;
+	color: white;
+	margin-bottom: 1.5rem;
+	text-align: center;
+}
+
+.faqAccordion {
+	width: 100%;
+	max-width: 600px;
+	margin: 0 auto;
+}
+
+.faqItem {
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	background-color: #f7f7f7;
+	margin-bottom: 0.5rem;
+}
+
+.faqQuestion {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem;
+	font-size: 18pxpx;
+	font-weight: 600;
+	color: #333;
+	cursor: pointer;
+	background-color: white;
+	border-radius: 8px;
+}
+
+.faqQuestion:hover {
+	background-color: #e0e0e0;
+}
+
+.arrow {
+	font-size: 1.25rem;
+	color: #8822c1;
+}
+
+.faqAnswer {
+	padding: 1rem;
+	background-color: #f0f0f0;
+	color: #555;
+	font-size: 0.9rem;
+	border-top: 1px solid #ddd;
+}

@@ -36,6 +36,9 @@ export default function LoggedOutView() {
 					<li>
 						<Link to='/upload'>Upload</Link>
 					</li>
+					<li>
+						<Link to='/help'>Help</Link>
+					</li>
 				</ul>
 			</nav>
 
