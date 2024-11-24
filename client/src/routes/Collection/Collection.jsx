@@ -329,7 +329,7 @@ const Collection = () => {
 	};
 
 	const removeCard = async (cardId) => {
-		console.log(cardId);
+		console.log('cardId of card being removed: ', cardId);
 		try {
 			const userDoc = await getUserByEmail(user.email);
 			if (!userDoc) {
@@ -338,23 +338,20 @@ const Collection = () => {
 			const cardDocRef = doc(db, 'users', userDoc.id, 'cards', cardId);
 			await deleteDoc(cardDocRef);
 
-			if (showBulkEligible) {
-				console.log('Show bulk eligible');
-				const bulkUpdatedCards = cards.filter(
-					(card) =>
-						card.id !== cardId &&
-						card.selectedPrice !== 'N/A' &&
-						Number(card.selectedPrice) > 0 &&
-						Number(card.selectedPrice) < 500 &&
-						card.selectedGrade === 'ungraded'
-				);
-				setFilteredCards(bulkUpdatedCards);
-				setCards(bulkUpdatedCards);
-			} else {
-				const updatedCards = cards.filter((card) => card.id !== cardId);
-				setFilteredCards(updatedCards);
-				setCards(updatedCards);
-			}
+			const updatedCards = cards.filter((card) => card.id !== cardId);
+			setCards(updatedCards);
+
+			const updatedFilteredCards = showBulkEligible
+				? updatedCards.filter(
+						(card) =>
+							card.selectedPrice !== 'N/A' &&
+							Number(card.selectedPrice) > 0 &&
+							Number(card.selectedPrice) < 500 &&
+							card.selectedGrade === 'ungraded'
+				  )
+				: updatedCards;
+
+			setFilteredCards(updatedFilteredCards);
 
 			// Recalculate the total value of the collection
 			const updatedTotalValue = updatedCards.reduce((total, card) => {
