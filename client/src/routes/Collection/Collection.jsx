@@ -329,7 +329,7 @@ const Collection = () => {
 	};
 
 	const removeCard = async (cardId) => {
-		console.log(cardId);
+		console.log('cardId of card being removed: ', cardId);
 		try {
 			const userDoc = await getUserByEmail(user.email);
 			if (!userDoc) {
@@ -340,7 +340,18 @@ const Collection = () => {
 
 			const updatedCards = cards.filter((card) => card.id !== cardId);
 			setCards(updatedCards);
-			setFilteredCards(updatedCards);
+
+			const updatedFilteredCards = showBulkEligible
+				? updatedCards.filter(
+						(card) =>
+							card.selectedPrice !== 'N/A' &&
+							Number(card.selectedPrice) > 0 &&
+							Number(card.selectedPrice) < 500 &&
+							card.selectedGrade === 'ungraded'
+				  )
+				: updatedCards;
+
+			setFilteredCards(updatedFilteredCards);
 
 			// Recalculate the total value of the collection
 			const updatedTotalValue = updatedCards.reduce((total, card) => {
