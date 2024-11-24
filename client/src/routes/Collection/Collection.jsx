@@ -338,9 +338,23 @@ const Collection = () => {
 			const cardDocRef = doc(db, 'users', userDoc.id, 'cards', cardId);
 			await deleteDoc(cardDocRef);
 
-			const updatedCards = cards.filter((card) => card.id !== cardId);
-			setCards(updatedCards);
-			setFilteredCards(updatedCards);
+			if (showBulkEligible) {
+				console.log('Show bulk eligible');
+				const bulkUpdatedCards = cards.filter(
+					(card) =>
+						card.id !== cardId &&
+						card.selectedPrice !== 'N/A' &&
+						Number(card.selectedPrice) > 0 &&
+						Number(card.selectedPrice) < 500 &&
+						card.selectedGrade === 'ungraded'
+				);
+				setFilteredCards(bulkUpdatedCards);
+				setCards(bulkUpdatedCards);
+			} else {
+				const updatedCards = cards.filter((card) => card.id !== cardId);
+				setFilteredCards(updatedCards);
+				setCards(updatedCards);
+			}
 
 			// Recalculate the total value of the collection
 			const updatedTotalValue = updatedCards.reduce((total, card) => {
