@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 const { getValidToken } = require('../util/ebayAuth.js');
 
 router.get('/card-prices', async (req, res) => {
-	// console.log('Received price request:', req.query);
+	console.log('Received price request:', req.query);
 
 	const cardName = req.query.name;
 	const cardGrade = req.query.grade;
@@ -12,8 +12,8 @@ router.get('/card-prices', async (req, res) => {
 	const cardTotal = req.query.total;
 	const cardSet = req.query.set;
 
-	// console.log('Card total:', cardTotal);
-	// console.log('Card number:', cardNumber);
+	console.log('Card total:', cardTotal);
+	console.log('Card number:', cardNumber);
 
 	if (!cardName) {
 		return res.status(400).json({ error: 'Card name is required' });
@@ -47,7 +47,7 @@ router.get('/card-prices', async (req, res) => {
 		}`;
 
 		// Search query for 10 most recent listings
-		// console.log('Search query:', searchQuery);
+		console.log('Search query:', searchQuery);
 
 		const ebayApiUrl =
 			'https://api.ebay.com/buy/browse/v1/item_summary/search?' +
@@ -125,11 +125,11 @@ router.get('/card-prices', async (req, res) => {
 					  ).toFixed(2)
 					: 'N/A';
 
-			// console.log(`\nMedian price: $${median.toFixed(2)}`);
-			// console.log(`Filtered average price: $${averagePrice}`);
-			// console.log(
-			// 	`Listings used: ${filteredPrices.length} out of ${prices.length}`
-			// );
+			console.log(`\nMedian price: $${median.toFixed(2)}`);
+			console.log(`Filtered average price: $${averagePrice}`);
+			console.log(
+				`Listings used: ${filteredPrices.length} out of ${prices.length}`
+			);
 
 			res.json({
 				cardName: cardName,
