@@ -1,14 +1,9 @@
-const express = require('express');
 const { ImageAnnotatorClient } = require('@google-cloud/vision');
 const pokemon = require('pokemontcgsdk');
 const multer = require('multer');
+const express = require('express');
 const router = express.Router();
-const { cleanName } = require('../util/stripName.js');
-
-// Configure Google Cloud Vision
-const client = new ImageAnnotatorClient({
-    keyFilename: './config/vision-key.json'
-});
+const { processCard } = require('../util/processCard');
 
 // Configure Pokémon TCG API
 pokemon.configure({ apiKey: process.env.POKEMON_KEY });
@@ -16,61 +11,27 @@ pokemon.configure({ apiKey: process.env.POKEMON_KEY });
 // Set up multer for handling file uploads
 const upload = multer({ storage: multer.memoryStorage() });
 
+// 1. Express request handler
 router.post('/api/recognizeCard', upload.single('file'), async (req, res) => {
     try {
-        console.log("Received file:", req.file);
-
-        // OCR processing
-        const [result] = await client.textDetection(req.file.buffer);
-        const detections = result.textAnnotations;
+        // console.log("Received file:", req.file);
         
-        if (!detections.length) {
-            console.log("No text detected in image.");
-            return res.status(400).json({ error: 'No text detected in the image.' });
+        // Call core logic for processing the card recognition
+        const result = await processCard(req.file.buffer);
+
+        // Return result to the client
+        if (result.error) {
+            return res.status(result.status).json({ error: result.error });
         }
 
-        const ocrText = detections[0].description;
-        console.log("OCR Text:", ocrText);
-
-        // Parse and search Pokémon TCG API
-        const name = await cleanName(ocrText.split('\n')); // Assuming the name is the first line
-        const setNumberMatch = ocrText.match(/([A-Z]{0,3}\d{1,3}\/[A-Z]*\d{1,3})/i);
-        const setNumber = setNumberMatch ? setNumberMatch[0] : null;
-
-        console.log("Parsed Name:", name);
-        console.log("Parsed Set Number:", setNumber);
-
-        if (!name || !setNumber) {
-            console.log("Failed to parse card name or set number.");
-            return res.status(400).json({ error: 'Could not parse card name or set number from image.' });
-        }
-       
-        console.log("Parsed Name:", name);
-        console.log("Parsed Set Number:", setNumber);
-
-        const query = `name:"${name}" number:"${setNumber.split('/')[0]}"`; // Adjust query as needed
-        console.log("Debug - Query to TCG API:", query);
-        const cards = await pokemon.card.all({ q: query }); 
-
-        console.log("Cards found:", cards);
-
-        // no matches, 0 cards found
-        if (cards.length === 0) {
-            return res.status(200).json({
-                matches: [],
-                searchQuery: `${name} ${setNumber}`
-            });
-        }
-
-        const matchedCard = cards[0]; // Take the first match
         res.json({
-            matches: cards, // Return all matches for debugging or future features
-            searchQuery: `${name} ${setNumber}` // Pass the query for fallback
+            matches: result.matches,
+            searchQuery: result.searchQuery
         });
 
     } catch (error) {
-        console.error("Error processing card:", error);
-        res.status(500).json({ error: 'Failed to recognize card.' });
+        console.error("Error in request handler:", error);
+        res.status(500).json({ error: 'Failed to process request.' });
     }
 });
 
