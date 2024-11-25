@@ -5,11 +5,11 @@
 	z-index: 1;
 	background: linear-gradient(
 		90deg,
-		#8822c1 4.5%,
-		#cc5bfb 26.5%,
-		#aa3be4 53%,
-		#ce66fb 73.5%,
-		#aa3be4 91.5%
+		#ffcad4 4.5%,
+		#ffe5d9 26.5%,
+		#d8e2dc 53%,
+		#bde0fe 73.5%,
+		#a2d2ff 91.5%
 	);
 }
 
@@ -21,11 +21,11 @@
 	padding: 25px 50px;
 	background: linear-gradient(
 		90deg,
-		#aa3be4 4.5%,
-		#cc5bfb 26.5%,
-		#8822c1 53%,
-		#ce66fb 73.5%,
-		#8538a9 91.5%
+		#d8e2dc 4.5%,
+		#bde0fe 26.5%,
+		#ffe5d9 53%,
+		#a2d2ff 73.5%,
+		#ffcad4 91.5%
 	);
 	box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 	z-index: 2;
@@ -42,7 +42,7 @@
 }
 
 .navLinks a {
-	color: white;
+	color: #191143;
 	text-decoration: none;
 }
 
@@ -77,7 +77,7 @@
 .faqTitle {
 	font-size: 48px;
 	font-weight: 700;
-	color: white;
+	color: #191143;
 	margin-bottom: 1.5rem;
 	text-align: center;
 }
@@ -102,7 +102,7 @@
 	padding: 1rem;
 	font-size: 18pxpx;
 	font-weight: 600;
-	color: #333;
+	color: #191143;
 	cursor: pointer;
 	background-color: white;
 	border-radius: 8px;
@@ -120,7 +120,7 @@
 .faqAnswer {
 	padding: 1rem;
 	background-color: #f0f0f0;
-	color: #555;
+	color: #191143;
 	font-size: 0.9rem;
 	border-top: 1px solid #ddd;
 }

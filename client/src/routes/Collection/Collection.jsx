@@ -73,21 +73,11 @@ const Collection = () => {
 
 			// Recalculate displayed value for bulk-eligible cards if active
 			if (showBulkEligible) {
-				const bulkEligibleCards = filteredCards.filter((card) =>
-					selectedCards.has(card.id)
-				);
-				const bulkValue = bulkEligibleCards.reduce(
-					(total, card) =>
-						selectedCards.has(card.id)
-							? total + Number(card.selectedPrice)
-							: total,
-					0
-				);
-				setDisplayedValue(bulkValue.toFixed(2));
+				const bulkEligibleCount = filteredCards.filter((card) =>
+					newSelected.has(card.id)
+				).length;
+				setBulkSelectedCount(bulkEligibleCount);
 			}
-
-			// Respect the current filter
-			setFilteredCards(showBulkEligible ? filteredCards : cards);
 		} catch (error) {
 			console.error('Error updating card selection:', error);
 		}
@@ -109,7 +99,13 @@ const Collection = () => {
 
 			setFilteredCards(bulkEligibleCards);
 
-			// Calculate the value of bulk-eligible cards that are selected
+			// Update bulk-selected count
+			const bulkEligibleCount = bulkEligibleCards.filter((card) =>
+				selectedCards.has(card.id)
+			).length;
+			setBulkSelectedCount(bulkEligibleCount);
+
+			// Update displayed value
 			const bulkValue = bulkEligibleCards.reduce(
 				(total, card) =>
 					selectedCards.has(card.id)
@@ -117,22 +113,14 @@ const Collection = () => {
 						: total,
 				0
 			);
+
 			setDisplayedValue(bulkValue.toFixed(2));
 
-			// Update selectedCardCount
-			const selectedBulkEligible = bulkEligibleCards.filter((card) =>
-				selectedCards.has(card.id)
-			);
-			setSelectedCardCount(selectedBulkEligible.length);
 		} else {
 			// Reset to show all cards
 			setFilteredCards(cards);
-
-			// Reset the displayed value to total collection value
+			setBulkSelectedCount(0);
 			setDisplayedValue(price);
-
-			// Recalculate selectedCardCount
-			setSelectedCardCount(Array.from(selectedCards).length);
 		}
 	};
 
@@ -383,6 +371,7 @@ const Collection = () => {
 				);
 				setSelectedCards(newSelectedCards);
 				setSelectedCardCount(newSelectedCards.size);
+				setBulkSelectedCount(bulkEligibleCards.length);
 
 				// Update Firestore for each eligible card
 				const userData = await getUserByEmail(user.email);
@@ -399,8 +388,14 @@ const Collection = () => {
 				// setBulkSelectedCount(newSelectedCards.size);
 			} else {
 				// Deselect all bulk-eligible cards
-				setSelectedCards(new Set());
-				setSelectedCardCount(0);
+				const remainingSelectedCards = new Set(
+					Array.from(selectedCards).filter(
+						(id) => !bulkEligibleCards.map((card) => card.id).includes(id)
+					)
+				);
+				setSelectedCards(remainingSelectedCards);
+				setSelectedCardCount(remainingSelectedCards.size);
+				setBulkSelectedCount(0);
 
 				// Update Firestore to unselect cards
 				const userData = await getUserByEmail(user.email);
@@ -438,11 +433,17 @@ const Collection = () => {
 
 		// filter by price range
 		if (filters.price) {
-			const [minPrice, maxPrice] = filters.price.split('-').map(Number);
-			filtered = filtered.filter((card) => {
-				const cardPrice = parseInt(card.price);
-				return cardPrice >= minPrice && cardPrice <= maxPrice;
-			});
+			if (filters.price === '500+') {
+				// handle case for prices above 500
+				filtered = filtered.filter((card) => Number(card.selectedPrice) > 500);
+			} else {
+				// handle price ranges
+				const [minPrice, maxPrice] = filters.price.split('-').map(Number);
+				filtered = filtered.filter((card) => {
+					const cardPrice = Number(card.selectedPrice || 0);
+					return cardPrice >= minPrice && cardPrice <= maxPrice;
+				});
+			}
 		}
 
 		//filter by type
@@ -621,6 +622,13 @@ const Collection = () => {
 								<option value='125-150'>$ 125 - $ 150</option>
 								<option value='150-175'>$ 150 - $ 175</option>
 								<option value='175-200'>$ 175 - $ 200</option>
+								<option value='200-250'>$ 200 - $ 250</option>
+								<option value='250-300'>$ 250 - $ 300</option>
+								<option value='300-350'>$ 300 - $ 350</option>
+								<option value='350-400'>$ 350 - $ 400</option>
+								<option value='400-450'>$ 400 - $ 450</option>
+								<option value='450-500'>$ 450 - $ 500</option>
+								<option value='500+'>$ 500+</option>
 							</select>
 
 							<select
