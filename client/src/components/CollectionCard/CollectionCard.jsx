@@ -58,14 +58,16 @@ const CollectionCard = ({
 				/>
 			)}
 
-			<button
-				onClick={handleRemoveClick}
-				className={`${styles.removeButton} ${
-					showRemoveConfirm ? styles.removeButtonConfirm : ''
-				}`}
-				aria-label='Remove card'>
-				<X size={16} />
-			</button>
+			{!showCheckbox && (
+				<button
+					onClick={handleRemoveClick}
+					className={`${styles.removeButton} ${
+						showRemoveConfirm ? styles.removeButtonConfirm : ''
+					}`}
+					aria-label='Remove card'>
+					<X size={16} />
+				</button>
+			)}
 
 			<Link
 				to={`/card-detail/${card.id}`}
