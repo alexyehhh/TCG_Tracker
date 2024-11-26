@@ -1,0 +1,9 @@
+Name: Metapod, ID: sm1-2, Search Query: metapod 2/149, Img: https://images.pokemontcg.io/sm1/2_hires.png
+Name: Shuckle, ID: xy10-1, Search Query: shuckle 1/124, Img: https://images.pokemontcg.io/xy10/1_hires.png
+Name: Alakazam, ID: base4-1, Search Query: kadabra 1/130, Img: https://images.pokemontcg.io/base4/1_hires.png
+Name: Altaria, ID: ex8-1, Search Query: altaria 1/107, Img: https://images.pokemontcg.io/ex8/1_hires.png
+Name: Charizard, ID: dp3-3, Search Query: charizard 3/132, Img: https://images.pokemontcg.io/dp3/3_hires.png
+Name: Weedle, ID: sm9-3, Search Query: weedle 3/181, Img: https://images.pokemontcg.io/sm9/3_hires.png
+Name: Alakazam, ID: base1-1, Search Query: kadabra 1/102, Img: https://images.pokemontcg.io/base1/1_hires.png
+Name: Magmar, ID: mcd19-3, Search Query: magmar 3/12, Img: https://images.pokemontcg.io/mcd19/3_hires.png
+Name: Ampharos, ID: ecard2-H1, Search Query: flaaffy H1/H32, Img: https://images.pokemontcg.io/ecard2/H1_hires.png
