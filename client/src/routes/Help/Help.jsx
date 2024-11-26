@@ -12,7 +12,7 @@ export default function Help() {
 	};
 
 	const questions = [
-		'How do I use this app?',
+		'What can I use this app for?',
 		'How do I upload my Pokemon card?',
 		'How can I store cards to my collection?',
 		'How can I store how much I paid for a card?',
@@ -20,12 +20,43 @@ export default function Help() {
 	];
 
 	const answers = [
-		'Instructions for using the app...',
-		'Steps to upload a Pokemon card...',
-		'Ways to store cards in your collection...',
-		'How to record purchase prices for cards...',
-		'Guidance on tracking collection prices...',
+		(
+			<ul>
+				<li>Search for Pokémon cards and view their current market value.</li>
+				<li>Assess whether it’s worthwhile to get your cards graded.</li>
+				<li>Add cards to a personal collection and track their value over time.</li>
+			</ul>
+		),
+		(
+			<ol>
+				<li>Navigate to the <strong>Upload</strong> tab in the top navigation bar.</li>
+				<li>Drag and drop an image of your card, or click to browse and select an image from your device.</li>
+				<li>After the upload is complete, click the <strong>Search for Card</strong> button.</li>
+				<li>Once processing is finished, the card results will be displayed. Select your card to view additional information.</li>
+			</ol>
+		),
+		(
+			<ol>
+				<li>Search for your card by name (with or without its number) or upload an image using the <strong>Upload</strong> feature.</li>
+				<li>Select the card from the search results.</li>
+				<li>Choose the card’s grade (default is ungraded).</li>
+				<li>Enter the price you paid for the card (optional; default is $0 if left blank).</li>
+				<li>Click the <strong>Add to Collection</strong> button located below the card image.</li>
+			</ol>
+		),
+		(
+			<p>
+				After locating your card through the search or upload feature, enter the purchase price in the field provided on the bottom right of the card details page. Click the <strong>Add to Collection</strong> button to save it.
+			</p>
+		),
+		(
+			<p>
+				Navigate to the <strong>Collection</strong> tab. The total value of your collection, based on the latest data, will be displayed at the top of the page.
+			</p>
+		),
 	];
+	
+	
 
 	return (
 		<div className={styles.container} style={{}}>
