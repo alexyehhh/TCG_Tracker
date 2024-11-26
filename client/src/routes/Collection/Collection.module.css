@@ -223,13 +223,20 @@
 	border: 1px solid #581c87;
 	background-color: white;
 	border-radius: 0.5rem;
-	height: 40px;
+	height: 50px;
 	text-align: center;
 	padding: 0.5rem 1rem;
 	display: flex;
 	justify-content: center;
+	align-items: center;
 	margin-top: none;
 	margin-bottom: 1rem;
+	min-width: 250px;
+    max-width: 100%;
+	box-sizing: border-box;
+	white-space: nowrap;
+    overflow: hidden; /* container doesn't overflow */
+    text-overflow: ellipsis;
 }
 
 .notloggedInBtns {
@@ -243,6 +250,7 @@
 	display: flex;
 	flex-direction: row;
 	gap: 20px;
+	align-items: center;
 }
 
 .bulkButtons {
@@ -251,14 +259,17 @@
 	border: 1px solid #581c87;
 	background-color: #64548c;
 	border-radius: 0.5rem;
-	height: 40px;
+	height: 50px;
 	text-align: center;
 	padding: 0.5rem 1rem;
 	display: flex;
 	justify-content: center;
+	align-items: center;
 	margin-top: none;
 	margin-bottom: 1rem;
 	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	width: 150px; /* fixed width */
+	box-sizing: border-box;
 }
 
 .bulkButtons:hover {
