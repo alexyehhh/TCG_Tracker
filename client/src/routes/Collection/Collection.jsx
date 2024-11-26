@@ -20,6 +20,7 @@ import EmptyCollectionView from '../../components/EmptyCollectionView/EmptyColle
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import cardSets from '../../util/cardSets.js';
 import cardRarities from '../../util/cardRarities.js';
+import {getCachedPrice, setCachedPrice} from '../../util/cacheUtils.js';
 
 const Collection = () => {
 	const navigate = useNavigate();
@@ -216,56 +217,59 @@ const Collection = () => {
 	}
 
 	const fetchPrices = async (card) => {
-		if (!card?.name) return;
+        if (!card?.name) return;
 
-		const fetchPriceForGrade = async (grade) => {
-			try {
-				const response = await axios.get(
-					`${import.meta.env.VITE_API_URL}/card-prices`,
-					{
-						params: {
-							name: card.name,
-							number: card.number,
-							total: card.setPrintedTotal,
-							grade: grade === 'ungraded' ? '' : grade,
-							set: card.setName,
-						},
-					}
-				);
-				return response.data.averagePrice;
-			} catch (error) {
-				console.error(`Error fetching ${grade} price:`, error);
-				return null;
+		const cachedPrices = getCachedPrice(card.id, card.setPrintedTotal);
+        if (cachedPrices) {
+            setLoading(false);
+			if(typeof cachedPrices === 'object'){
+				return cachedPrices[card.selectedGrade]
 			}
-		};
+            return cachedPrices;
+        }
 
-		try {
-			const pricing = await fetchPriceForGrade(card.selectedGrade);
+        const fetchPriceForGrade = async (grade) => {
+            try {
+                const response = await axios.get(
+                    `${import.meta.env.VITE_API_URL}/card-prices`,
+                    {
+                        params: {
+                            name: card.name,
+                            number: card.number,
+                            total: card.setPrintedTotal,
+                            grade: grade === 'ungraded' ? '' : grade,
+							set: card.setName,
+                        },
+                    }
+                );
+				setCachedPrice(card.id, card.setPrintedTotal, response.data.averagePrice);
+                return response.data.averagePrice;
+            } catch (error) {
+                console.error(`Error fetching ${grade} price:`, error);
+                return null;
+            }
+        };
 
-			const fetchedPrices = {
-				name: card.name,
-				number: card.number,
-				pricing: pricing,
-			};
+        try {
+            const pricing = await fetchPriceForGrade(card.selectedGrade);
+            return pricing;
+        } catch (error) {
+            console.error('Error fetching prices:', error);
+        }
+    };
 
-			return fetchedPrices;
-		} catch (error) {
-			console.error('Error fetching prices:', error);
-		}
-	};
-
-	// Fetch user's cards from Firestore and set within state
+ 		// fetch user's cards from Firestore and set within state
 	async function fetchUserCards(userId) {
-		try {
-			const cardsRef = collection(db, `users/${userId}/cards`);
-			const querySnapshot = await getDocs(cardsRef);
+        try {
+            const cardsRef = collection(db, `users/${userId}/cards`);
+            const querySnapshot = await getDocs(cardsRef);
 
-			const cardsList = [];
-			const priceList = [];
-			let totalValue = 0;
-			const selectedCardIds = new Set();
+            const cardsList = [];
+            const priceList = [];
+            let totalValue = 0;
+            const selectedCardIds = new Set();
 
-			for (const doc of querySnapshot.docs) {
+            for (const doc of querySnapshot.docs) {
 				const cardData = doc.data();
 				if (cardData.image) {
 					const card = { ...cardData, id: doc.id };
@@ -275,26 +279,26 @@ const Collection = () => {
 					const res = await fetchPrices(card);
 					priceList.push(res);
 				}
-				if (cardData.selectedPrice != 'N/A') {
-					totalValue += parseFloat(cardData.selectedPrice);
-				}
-			}
+                if (cardData.selectedPrice != 'N/A') {
+                    totalValue += parseFloat(cardData.selectedPrice);
+                }
 
-			setPrice(totalValue.toFixed(2));
-			setCards(cardsList);
-			setFilteredCards(cardsList);
-			setHasCards(cardsList.length > 0);
-			setSelectedCards(selectedCardIds);
+            };
+
+            setPrice(totalValue.toFixed(2));
+            setCards(cardsList);
+            setFilteredCards(cardsList);
+            setHasCards(cardsList.length > 0);
+            setSelectedCards(selectedCardIds);
 			console.log(priceList);
 			setPrices(priceList);
-		} catch (error) {
-			console.error('Error fetching cards:', error);
-			throw error;
-		} finally {
-			setLoading(false);
-		}
-	}
-
+        } catch (error) {
+            console.error('Error fetching cards:', error);
+            throw error;
+        } finally {
+            setLoading(false);
+        }
+    }
 	useEffect(() => {
 		const loadUserCards = async () => {
 			try {
@@ -708,5 +712,5 @@ const Collection = () => {
 
 	return user ? <LoggedInView /> : <LoggedOutView />;
 };
-
+	
 export default Collection;
