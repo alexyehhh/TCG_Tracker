@@ -557,14 +557,20 @@ const Collection = () => {
 								: 'Total Value: '}
 							${displayedValue}
 						</div>
-						<button onClick={toggleBulkEligible} className={styles.bulkButtons}>
+
+						<button 
+							onClick={toggleBulkEligible} 
+							className={styles.bulkButtons}
+							disabled={showGraph}>
 							{showBulkEligible ? 'Show All Cards' : 'Show Bulk Eligible Cards'}
 						</button>
+
 						{showBulkEligible && (
 							<>
 								<button
 									onClick={handleSelectAll}
-									className={styles.bulkButtons}>
+									className={styles.bulkButtons}
+									disabled={showGraph}>
 									{allSelected ? 'Deselect All' : 'Select All'}
 								</button>
 								<div className={styles.priceValuation}>
@@ -577,7 +583,7 @@ const Collection = () => {
 								showBulkEligible && selectedCardCount >= 20 ? sendBulk : null
 							}
 							className={styles.bulkButtons}
-							disabled={!showBulkEligible || selectedCardCount < 20}>
+							disabled={!showBulkEligible || selectedCardCount < 20 || showGraph}>
 							Send Bulk
 						</button>
 
