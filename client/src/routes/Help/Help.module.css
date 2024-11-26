@@ -82,6 +82,7 @@
 	text-align: center;
 }
 
+/* Updated FAQ Styles */
 .faqAccordion {
 	width: 100%;
 	max-width: 600px;
@@ -92,7 +93,7 @@
 	border: 1px solid #ccc;
 	border-radius: 8px;
 	background-color: #f7f7f7;
-	margin-bottom: 0.5rem;
+	margin-bottom: 0.75rem; /* Increased space for better visual separation */
 }
 
 .faqQuestion {
@@ -100,7 +101,7 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 1rem;
-	font-size: 18pxpx;
+	font-size: 18px; /* Ensure uniform font size */
 	font-weight: 600;
 	color: #191143;
 	cursor: pointer;
@@ -117,10 +118,49 @@
 	color: #8822c1;
 }
 
+/* FAQ Answer - Ensure Uniform Font Size */
 .faqAnswer {
-	padding: 1rem;
-	background-color: #f0f0f0;
-	color: #191143;
-	font-size: 0.9rem;
-	border-top: 1px solid #ddd;
+    padding: 1rem;
+    background-color: #f0f0f0;
+    color: #191143;
+    font-size: 1rem; /* Uniform font size */
+    line-height: 1.6; /* Improve readability */
+    border-top: 1px solid #ddd;
+    margin-bottom: 0; /* Remove unnecessary spacing */
+}
+
+/* Unordered List Styling (Bullet Points) */
+.faqAnswer ul {
+    padding-left: 1.5rem; /* Align bullet points */
+    margin: 0; /* Prevent extra margin */
+    font-size: 1rem; /* Same font size as other text */
+    line-height: 1.6;
+}
+
+.faqAnswer ul li {
+    margin-bottom: 0.5rem; /* Space between bullet points */
+}
+
+/* Ordered List Styling (Numbered Points) */
+.faqAnswer ol {
+    padding-left: 1.5rem; /* Align numbers */
+    margin: 0; /* Prevent extra margin */
+    font-size: 1rem; /* Same font size as other text */
+    line-height: 1.6;
+}
+
+.faqAnswer ol li {
+    margin-bottom: 0.5rem; /* Space between numbered points */
+}
+
+/* Adjust Text Without Lists */
+.faqAnswer p {
+    font-size: 1rem; /* Match size with lists */
+    line-height: 1.6;
+    margin: 0; /* Remove unnecessary margin */
+}
+
+/* Remove Extra Space at Bottom of Cards */
+.faqItem:last-child {
+    margin-bottom: 0; /* No extra space for the last item */
 }
