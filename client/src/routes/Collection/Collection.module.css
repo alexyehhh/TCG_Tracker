@@ -298,3 +298,12 @@
 	overflow: hidden;
 	transition: transform 0.5s ease;
 } */
+
+.graphPlaceholder {
+	text-align: center;
+	padding: 2rem;
+	background-color: #f3e8ff;
+	border-radius: 0.5rem;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	margin-top: 1rem;
+}

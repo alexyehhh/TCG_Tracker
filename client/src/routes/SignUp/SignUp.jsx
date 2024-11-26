@@ -80,6 +80,9 @@ const SignIn = () => {
 						<li>
 							<Link to='/upload'>Upload</Link>
 						</li>
+						<li>
+							<Link to='/help'>Help</Link>
+						</li>
 					</ul>
 					<div className={styles.navbarRight}></div>
 				</nav>

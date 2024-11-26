@@ -37,6 +37,8 @@ function PokemonCards() {
 
 	const { name: pokemonName, number: cardNumber } =
 		parseSearchQuery(searchQuery);
+	
+	const searchSet = query.get('set'); // get the set filter from the query string
 
 	const fetchCards = async (page) => {
 		try {
@@ -44,6 +46,10 @@ function PokemonCards() {
 			const offset = (page - 1) * cardsPerPage; // calculates the offset
 			let query;
 
+			if (searchSet){
+				//query by set name
+				query = `set.name:"${searchSet}"`;
+			} else if (pokemonName) {
 			// check if the pokemon name ends with EX upper case or not
 			if (pokemonName.toLowerCase().endsWith(' ex')) {
 				// query that matches both EX and -EX suffixes
@@ -63,13 +69,20 @@ function PokemonCards() {
 					query += ` number:"${cardNumber}"`;
 				}
 			}
-
+		}
 			const response = await axios.get(
 				`https://api.pokemontcg.io/v2/cards?q=${query}&pageSize=${cardsPerPage}&page=${page}`,
 				{
 					headers: { 'X-Api-Key': import.meta.env.VITE_POKEMON_KEY },
 				}
 			);
+
+			// Sort cards by their set number
+			const sortedCards = response.data.data.sort((a, b) => {
+				const numA = parseInt(a.number, 10);
+				const numB = parseInt(b.number, 10);
+				return numA - numB; // Sort in ascending order
+			});
 			setCards(response.data.data);
 			setTotalPages(Math.ceil(response.data.totalCount / cardsPerPage)); // Dynamically calculate total pages
 		} catch (err) {
@@ -92,7 +105,11 @@ function PokemonCards() {
 
 	const renderContent = () => {
 		if (loading) {
-			return <div className={styles.centerContent}><div className={styles.spinner}></div></div>;
+			return (
+				<div className={styles.centerContent}>
+					<div className={styles.spinner}></div>
+				</div>
+			);
 		}
 
 		if (error) {
@@ -151,10 +168,17 @@ function PokemonCards() {
 					<li>
 						<Link to='/upload'>Upload</Link>
 					</li>
+					<li>
+						<Link to='/help'>Help</Link>
+					</li>
 				</ul>
 			</nav>
 			<div className={styles.pokemonCards}>
-				{cards.length > 0 && <h1>Cards for {searchQuery}</h1>}
+				{searchSet ? (
+					<h1>Cards for {searchSet}</h1> // dynamically render the set name
+				) : (
+					<h1>Cards for {searchQuery}</h1> // Fallback to Pokémon name
+				)}
 				{renderContent()}
 				<div className={styles.pagination}>
 					{!loading && (

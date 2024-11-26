@@ -82,7 +82,6 @@ const CardDetail = () => {
 				} else {
 					setCurrentCardType('Unknown'); // if none matches
 				}
-
 			} catch (err) {
 				setError(`Failed to fetch card details. Error: ${err}`);
 			}
@@ -404,6 +403,9 @@ const CardDetail = () => {
 					<li>
 						<Link to='/upload'>Upload</Link>
 					</li>
+					<li>
+						<Link to='/help'>Help</Link>
+					</li>
 				</ul>
 				<div className={styles.navbarRight}></div>
 			</nav>
@@ -477,16 +479,7 @@ const CardDetail = () => {
 							))}
 						</div>
 						<div className={styles.typeContainer}>
-							<button
-								className={styles.actionButton}
-								style={{
-									backgroundColor:
-										typeColors[currentCardType]?.buttonColor || '#fb923c',
-									borderColor:
-										typeColors[currentCardType]?.borderColor || '#f97316',
-								}}>
-								See cards with this type
-							</button>
+							
 						</div>
 					</div>
 
@@ -501,7 +494,9 @@ const CardDetail = () => {
 										typeColors[currentCardType]?.buttonColor || '#fb923c',
 									borderColor:
 										typeColors[currentCardType]?.borderColor || '#f97316',
-								}}>
+								}}
+								onClick={() => navigate(`/pokemon-cards?set=${encodeURIComponent(card.set.name)}`)}
+							>
 								See cards from this set
 							</button>
 						</div>
