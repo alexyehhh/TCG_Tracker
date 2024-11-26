@@ -461,7 +461,7 @@ const BulkGrading = () => {
 										checked={selectedCards.has(card.id)}
 										onChange={() => handleCheckboxChange(card.id)}
 									/>
-									<button
+									{/* <button
 										onClick={(e) => handleRemoveClick(e, card.id)}
 										className={`${styles.removeButton} ${
 											showRemoveConfirm === card.id
@@ -470,7 +470,7 @@ const BulkGrading = () => {
 										}`}
 										aria-label='Remove card'>
 										<X size={16} />
-									</button>
+									</button> */}
 									<Link
 										key={card.id}
 										to={`/card-detail/${card.id}`}
