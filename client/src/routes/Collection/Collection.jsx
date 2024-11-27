@@ -9,6 +9,7 @@ import {
 	doc,
 	updateDoc,
 	deleteDoc,
+	getDoc,
 } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Link, useNavigate } from 'react-router-dom';
@@ -20,7 +21,7 @@ import EmptyCollectionView from '../../components/EmptyCollectionView/EmptyColle
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import cardSets from '../../util/cardSets.js';
 import cardRarities from '../../util/cardRarities.js';
-import {getCachedPrice, setCachedPrice} from '../../util/cacheUtils.js';
+import { getCachedPrice, setCachedPrice } from '../../util/cacheUtils.js';
 
 const Collection = () => {
 	const navigate = useNavigate();
@@ -121,7 +122,6 @@ const Collection = () => {
 			);
 
 			setDisplayedValue(bulkValue.toFixed(2));
-
 		} else {
 			// Reset to show all cards
 			setFilteredCards(cards);
@@ -217,59 +217,87 @@ const Collection = () => {
 	}
 
 	const fetchPrices = async (card) => {
-        if (!card?.name) return;
+		if (!card?.name) return;
 
 		const cachedPrices = getCachedPrice(card.id, card.setPrintedTotal);
-        if (cachedPrices) {
-            setLoading(false);
-			if(typeof cachedPrices === 'object'){
-				return cachedPrices[card.selectedGrade]
+		if (cachedPrices) {
+			setLoading(false);
+			if (typeof cachedPrices === 'object') {
+				return cachedPrices[card.selectedGrade];
 			}
-            return cachedPrices;
-        }
+			return cachedPrices;
+		}
 
-        const fetchPriceForGrade = async (grade) => {
-            try {
-                const response = await axios.get(
-                    `${import.meta.env.VITE_API_URL}/card-prices`,
-                    {
-                        params: {
-                            name: card.name,
-                            number: card.number,
-                            total: card.setPrintedTotal,
-                            grade: grade === 'ungraded' ? '' : grade,
+		async function updatePriceHistory(cardId, price) {
+			console.log('Updating price history for card', cardId);
+			try {
+				const currentDate = new Date().toISOString().slice(0, 10);
+
+				const userDoc = await getUserByEmail(user.email);
+
+				if (userDoc) {
+					const cardDocRef = doc(db, 'users', userDoc.id, 'cards', cardId);
+					const cardDoc = await getDoc(cardDocRef);
+
+					await updateDoc(cardDocRef, {
+						priceHistory: [
+							{ [currentDate]: price },
+							...(cardDoc.get('priceHistory') || []),
+						],
+					});
+				}
+			} catch (error) {
+				console.log('Error updating price history', error);
+			}
+		}
+
+		const fetchPriceForGrade = async (grade) => {
+			try {
+				const response = await axios.get(
+					`${import.meta.env.VITE_API_URL}/card-prices`,
+					{
+						params: {
+							name: card.name,
+							number: card.number,
+							total: card.setPrintedTotal,
+							grade: grade === 'ungraded' ? '' : grade,
 							set: card.setName,
-                        },
-                    }
-                );
-				setCachedPrice(card.id, card.setPrintedTotal, response.data.averagePrice);
-                return response.data.averagePrice;
-            } catch (error) {
-                console.error(`Error fetching ${grade} price:`, error);
-                return null;
-            }
-        };
+						},
+					}
+				);
+				setCachedPrice(
+					card.id,
+					card.setPrintedTotal,
+					response.data.averagePrice
+				);
+				updatePriceHistory(card.id, response.data.averagePrice);
+				return response.data.averagePrice;
+			} catch (error) {
+				console.error(`Error fetching ${grade} price:`, error);
+				return null;
+			}
+		};
 
-        try {
-            const pricing = await fetchPriceForGrade(card.selectedGrade);
-            return pricing;
-        } catch (error) {
-            console.error('Error fetching prices:', error);
-        }
-    };
+		try {
+			const pricing = await fetchPriceForGrade(card.selectedGrade);
+			return pricing;
+		} catch (error) {
+			console.error('Error fetching prices:', error);
+		}
+	};
 
- 		// fetch user's cards from Firestore and set within state
+	// fetch user's cards from Firestore and set within state
 	async function fetchUserCards(userId) {
-        try {
-            const cardsRef = collection(db, `users/${userId}/cards`);
-            const querySnapshot = await getDocs(cardsRef);
+		try {
+			const cardsRef = collection(db, `users/${userId}/cards`);
+			const querySnapshot = await getDocs(cardsRef);
 
-            const cardsList = [];
-            const priceList = [];
-            let totalValue = 0;
-            const selectedCardIds = new Set();
+			const cardsList = [];
+			const priceList = [];
+			let totalValue = 0;
+			const selectedCardIds = new Set();
 
-            for (const doc of querySnapshot.docs) {
+			for (const doc of querySnapshot.docs) {
 				const cardData = doc.data();
 				if (cardData.image) {
 					const card = { ...cardData, id: doc.id };
@@ -279,26 +307,25 @@ const Collection = () => {
 					const res = await fetchPrices(card);
 					priceList.push(res);
 				}
-                if (cardData.selectedPrice != 'N/A') {
-                    totalValue += parseFloat(cardData.selectedPrice);
-                }
+				if (cardData.selectedPrice != 'N/A') {
+					totalValue += parseFloat(cardData.selectedPrice);
+				}
+			}
 
-            };
-
-            setPrice(totalValue.toFixed(2));
-            setCards(cardsList);
-            setFilteredCards(cardsList);
-            setHasCards(cardsList.length > 0);
-            setSelectedCards(selectedCardIds);
+			setPrice(totalValue.toFixed(2));
+			setCards(cardsList);
+			setFilteredCards(cardsList);
+			setHasCards(cardsList.length > 0);
+			setSelectedCards(selectedCardIds);
 			console.log(priceList);
 			setPrices(priceList);
-        } catch (error) {
-            console.error('Error fetching cards:', error);
-            throw error;
-        } finally {
-            setLoading(false);
-        }
-    }
+		} catch (error) {
+			console.error('Error fetching cards:', error);
+			throw error;
+		} finally {
+			setLoading(false);
+		}
+	}
 	useEffect(() => {
 		const loadUserCards = async () => {
 			try {
@@ -558,8 +585,8 @@ const Collection = () => {
 							${displayedValue}
 						</div>
 
-						<button 
-							onClick={toggleBulkEligible} 
+						<button
+							onClick={toggleBulkEligible}
 							className={styles.bulkButtons}
 							disabled={showGraph}>
 							{showBulkEligible ? 'Show All Cards' : 'Show Bulk Eligible Cards'}
@@ -583,19 +610,21 @@ const Collection = () => {
 								showBulkEligible && selectedCardCount >= 20 ? sendBulk : null
 							}
 							className={styles.bulkButtons}
-							disabled={!showBulkEligible || selectedCardCount < 20 || showGraph}>
+							disabled={
+								!showBulkEligible || selectedCardCount < 20 || showGraph
+							}>
 							Send Bulk
 						</button>
 
 						<button
 							onClick={toggleGraphView}
 							className={`${styles.bulkButtons} ${
-								showGraph ? styles.toggleButtonActive : styles.toggleButtonInactive
-							}`}
-						>
+								showGraph
+									? styles.toggleButtonActive
+									: styles.toggleButtonInactive
+							}`}>
 							{showGraph ? 'Back to Collection' : 'View Graph'}
 						</button>
-
 					</div>
 
 					<div className={styles.searchContainer}>
@@ -718,5 +747,5 @@ const Collection = () => {
 
 	return user ? <LoggedInView /> : <LoggedOutView />;
 };
-	
+
 export default Collection;
