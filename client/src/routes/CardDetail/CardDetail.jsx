@@ -220,24 +220,47 @@ const CardDetail = () => {
 		if (!pricePaid || !cardPrices[selectedGrade]) {
 			return;
 		}
-
+	
+		const isGameStopProSelected = document.getElementById('gamestop-pro').checked;
+		const isExpeditedTurnaroundSelected = document.getElementById('psa-sub').checked;
+		const salePrice =
+			cardPrices[selectedGrade] !== 'N/A' ? cardPrices[selectedGrade] : 0;
+	
+		// Validate conditions
+		if (salePrice >= 500) {
+			if (isGameStopProSelected && isExpeditedTurnaroundSelected) {
+				setError(
+					'PSA Expedited Turnaround and GameStop Pro are not available for cards valued at $500 or more.'
+				);
+				return;
+			} else if (isGameStopProSelected) {
+				setError(
+					'GameStop Pro is not available for cards valued at $500 or more.'
+				);
+				return;
+			} else if (isExpeditedTurnaroundSelected) {
+				setError(
+					'PSA Expedited Turnaround is not available for cards valued at $500 or more.'
+				);
+				return;
+			}
+		}
+	
 		setIsCalculating(true);
+		setError(null); // Clear any previous error
 		try {
-			const salePrice =
-				cardPrices[selectedGrade] !== 'N/A' ? cardPrices[selectedGrade] : 0;
-
 			const response = await axios.get(
 				`${import.meta.env.VITE_API_URL}/card-profit`,
 				{
 					params: {
 						salePrice: salePrice,
 						pricePaid: parseFloat(pricePaid),
-						gmeMembership: document.getElementById('gamestop-pro').checked,
-						expeditedTurnaround: document.getElementById('psa-sub').checked,
+						gmeMembership: isGameStopProSelected,
+						expeditedTurnaround: isExpeditedTurnaroundSelected,
 					},
 				}
 			);
-
+	
 			setProfit(response.data.gmeProfit);
 			setPSA(response.data.psaProfit);
 		} catch (error) {
@@ -247,6 +270,8 @@ const CardDetail = () => {
 			setIsCalculating(false);
 		}
 	};
+	
+	
 
 	const addToCollection = async (userEmail, cardData) => {
 		try {
@@ -320,7 +345,7 @@ const CardDetail = () => {
 						color:
 							selectedGrade === grade
 								? 'white'
-								: typeColors[currentCardType]?.buttonColor || '#fb923c',
+								: typeColors[currentCardType]?.buttonColor || '#e36c19',
 					}}>
 					{grade === 'ungraded' ? 'Ungraded' : `PSA ${grade.slice(3)}`}
 					<div className={styles.price}>
@@ -366,14 +391,14 @@ const CardDetail = () => {
 			className={styles.container}
 			style={{
 				backgroundColor:
-					typeColors[currentCardType]?.backgroundColor || '#fb923c',
+					typeColors[currentCardType]?.backgroundColor || '#f7b681',
 			}}>
 			<PokemonBackground color='white' />
 			<nav
 				className={styles.navbar}
 				style={{
 					backgroundColor:
-						typeColors[currentCardType]?.backgroundColor || '#fb923c',
+						typeColors[currentCardType]?.backgroundColor || '#f7b681',
 				}}>
 				<div className={styles.navbarLeft}>
 					<button onClick={handleBack} className={styles.backButton}>
@@ -491,7 +516,7 @@ const CardDetail = () => {
 								className={styles.actionButton}
 								style={{
 									backgroundColor:
-										typeColors[currentCardType]?.buttonColor || '#fb923c',
+										typeColors[currentCardType]?.buttonColor || '#f97316',
 									borderColor:
 										typeColors[currentCardType]?.borderColor || '#f97316',
 								}}
@@ -501,7 +526,7 @@ const CardDetail = () => {
 							</button>
 						</div>
 					</div>
-					<p>NOTE: Expedited Turnaround only works for cards less than $500 </p>
+					<p>NOTE: PSA Expedited Turnaround and GameStop Pro only works for cards less than $500</p>
 					<div className={styles.priceProfit}>
 						<div className={styles.sectionSpecial}>
 							<input
