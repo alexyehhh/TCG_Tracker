@@ -220,32 +220,41 @@ const CardDetail = () => {
 		if (!pricePaid || !cardPrices[selectedGrade]) {
 			return;
 		}
-	
-		const isGameStopProSelected = document.getElementById('gamestop-pro').checked;
-		const isExpeditedTurnaroundSelected = document.getElementById('psa-sub').checked;
+
+		const isGameStopProSelected =
+			document.getElementById('gamestop-pro').checked;
+		const isExpeditedTurnaroundSelected =
+			document.getElementById('psa-sub').checked;
 		const salePrice =
 			cardPrices[selectedGrade] !== 'N/A' ? cardPrices[selectedGrade] : 0;
-	
+
 		// Validate conditions
 		if (salePrice >= 500) {
 			if (isGameStopProSelected && isExpeditedTurnaroundSelected) {
-				setError(
+				const confirmClear = window.confirm(
 					'PSA Expedited Turnaround and GameStop Pro are not available for cards valued at $500 or more.'
 				);
-				return;
+				if (!confirmClear) {
+					return;
+				}
 			} else if (isGameStopProSelected) {
-				setError(
+				const confirmClear = window.confirm(
 					'GameStop Pro is not available for cards valued at $500 or more.'
 				);
-				return;
+				if (!confirmClear) {
+					return;
+				}
 			} else if (isExpeditedTurnaroundSelected) {
-				setError(
+				const confirmClear = window.confirm(
 					'PSA Expedited Turnaround is not available for cards valued at $500 or more.'
 				);
-				return;
+				if (!confirmClear) {
+					return;
+				}
 			}
+			return;
 		}
-	
+
 		setIsCalculating(true);
 		setError(null); // Clear any previous error
 		try {
@@ -260,7 +269,7 @@ const CardDetail = () => {
 					},
 				}
 			);
-	
+
 			setProfit(response.data.gmeProfit);
 			setPSA(response.data.psaProfit);
 		} catch (error) {
@@ -270,8 +279,6 @@ const CardDetail = () => {
 			setIsCalculating(false);
 		}
 	};
-	
-	
 
 	const addToCollection = async (userEmail, cardData) => {
 		try {
@@ -503,9 +510,7 @@ const CardDetail = () => {
 								<TypeIcon key={type} type={type} />
 							))}
 						</div>
-						<div className={styles.typeContainer}>
-							
-						</div>
+						<div className={styles.typeContainer}></div>
 					</div>
 
 					<div className={styles.sectionCustom}>
@@ -520,13 +525,19 @@ const CardDetail = () => {
 									borderColor:
 										typeColors[currentCardType]?.borderColor || '#f97316',
 								}}
-								onClick={() => navigate(`/pokemon-cards?set=${encodeURIComponent(card.set.name)}`)}
-							>
+								onClick={() =>
+									navigate(
+										`/pokemon-cards?set=${encodeURIComponent(card.set.name)}`
+									)
+								}>
 								See cards from this set
 							</button>
 						</div>
 					</div>
-					<p>NOTE: PSA Expedited Turnaround and GameStop Pro only works for cards less than $500</p>
+					<p>
+						NOTE: PSA Expedited Turnaround and GameStop Pro only works for cards
+						less than $500
+					</p>
 					<div className={styles.priceProfit}>
 						<div className={styles.sectionSpecial}>
 							<input
