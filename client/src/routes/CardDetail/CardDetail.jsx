@@ -220,24 +220,47 @@ const CardDetail = () => {
 		if (!pricePaid || !cardPrices[selectedGrade]) {
 			return;
 		}
-
+	
+		const isGameStopProSelected = document.getElementById('gamestop-pro').checked;
+		const isExpeditedTurnaroundSelected = document.getElementById('psa-sub').checked;
+		const salePrice =
+			cardPrices[selectedGrade] !== 'N/A' ? cardPrices[selectedGrade] : 0;
+	
+		// Validate conditions
+		if (salePrice >= 500) {
+			if (isGameStopProSelected && isExpeditedTurnaroundSelected) {
+				setError(
+					'PSA Expedited Turnaround and GameStop Pro are not available for cards valued at $500 or more.'
+				);
+				return;
+			} else if (isGameStopProSelected) {
+				setError(
+					'GameStop Pro is not available for cards valued at $500 or more.'
+				);
+				return;
+			} else if (isExpeditedTurnaroundSelected) {
+				setError(
+					'PSA Expedited Turnaround is not available for cards valued at $500 or more.'
+				);
+				return;
+			}
+		}
+	
 		setIsCalculating(true);
+		setError(null); // Clear any previous error
 		try {
-			const salePrice =
-				cardPrices[selectedGrade] !== 'N/A' ? cardPrices[selectedGrade] : 0;
-
 			const response = await axios.get(
 				`${import.meta.env.VITE_API_URL}/card-profit`,
 				{
 					params: {
 						salePrice: salePrice,
 						pricePaid: parseFloat(pricePaid),
-						gmeMembership: document.getElementById('gamestop-pro').checked,
-						expeditedTurnaround: document.getElementById('psa-sub').checked,
+						gmeMembership: isGameStopProSelected,
+						expeditedTurnaround: isExpeditedTurnaroundSelected,
 					},
 				}
 			);
-
+	
 			setProfit(response.data.gmeProfit);
 			setPSA(response.data.psaProfit);
 		} catch (error) {
@@ -247,6 +270,8 @@ const CardDetail = () => {
 			setIsCalculating(false);
 		}
 	};
+	
+	
 
 	const addToCollection = async (userEmail, cardData) => {
 		try {
@@ -501,7 +526,7 @@ const CardDetail = () => {
 							</button>
 						</div>
 					</div>
-					<p>NOTE: Expedited Turnaround only works for cards less than $500 </p>
+					<p>NOTE: PSA Expedited Turnaround and GameStop Pro only works for cards less than $500</p>
 					<div className={styles.priceProfit}>
 						<div className={styles.sectionSpecial}>
 							<input
