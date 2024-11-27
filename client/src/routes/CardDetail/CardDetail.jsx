@@ -345,7 +345,7 @@ const CardDetail = () => {
 						color:
 							selectedGrade === grade
 								? 'white'
-								: typeColors[currentCardType]?.buttonColor || '#fb923c',
+								: typeColors[currentCardType]?.buttonColor || '#e36c19',
 					}}>
 					{grade === 'ungraded' ? 'Ungraded' : `PSA ${grade.slice(3)}`}
 					<div className={styles.price}>
@@ -391,14 +391,14 @@ const CardDetail = () => {
 			className={styles.container}
 			style={{
 				backgroundColor:
-					typeColors[currentCardType]?.backgroundColor || '#fb923c',
+					typeColors[currentCardType]?.backgroundColor || '#f7b681',
 			}}>
 			<PokemonBackground color='white' />
 			<nav
 				className={styles.navbar}
 				style={{
 					backgroundColor:
-						typeColors[currentCardType]?.backgroundColor || '#fb923c',
+						typeColors[currentCardType]?.backgroundColor || '#f7b681',
 				}}>
 				<div className={styles.navbarLeft}>
 					<button onClick={handleBack} className={styles.backButton}>
@@ -516,7 +516,7 @@ const CardDetail = () => {
 								className={styles.actionButton}
 								style={{
 									backgroundColor:
-										typeColors[currentCardType]?.buttonColor || '#fb923c',
+										typeColors[currentCardType]?.buttonColor || '#f97316',
 									borderColor:
 										typeColors[currentCardType]?.borderColor || '#f97316',
 								}}
