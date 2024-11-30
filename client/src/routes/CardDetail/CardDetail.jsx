@@ -13,6 +13,7 @@ import {
 	getDoc,
 	doc,
 	setDoc,
+	updateDoc,
 } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { db } from '../../util/firebase';
@@ -216,6 +217,30 @@ const CardDetail = () => {
 		}
 	};
 
+	async function updatePriceHistory(cardId, price) {
+		console.log('Updating price history for card', cardId);
+		try {
+			const currentDate = new Date().toISOString().slice(0, 10);
+
+			const userId = await getUserByEmail(user.email);
+
+			if (userId) {
+				const cardDocRef = doc(db, 'users', userId, 'cards', cardId);
+				const cardDoc = await getDoc(cardDocRef);
+
+				const existingPriceHistory = cardDoc.exists()
+					? cardDoc.data().priceHistory || []
+					: [];
+
+				await updateDoc(cardDocRef, {
+					priceHistory: [{ [currentDate]: price }, ...existingPriceHistory],
+				});
+			}
+		} catch (error) {
+			console.log('Error updating price history', error);
+		}
+	}
+
 	const calculateProfit = async () => {
 		if (!pricePaid || !cardPrices[selectedGrade]) {
 			return;
@@ -309,6 +334,7 @@ const CardDetail = () => {
 
 			const cardDocRef = doc(db, 'users', userId, 'cards', cardData.id);
 			await setDoc(cardDocRef, cardToAdd);
+			updatePriceHistory(cardData.id, cardPrices[selectedGrade]);
 			setCollectionState('added');
 		} catch (error) {
 			console.error('Error adding card to collection:', error);
