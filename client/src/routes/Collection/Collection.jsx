@@ -22,6 +22,7 @@ import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import cardSets from '../../util/cardSets.js';
 import cardRarities from '../../util/cardRarities.js';
 import { getCachedPrice, setCachedPrice } from '../../util/cacheUtils.js';
+import PriceHistoryGraph from '../../components/Graphs/GraphComponent.jsx';
 
 const Collection = () => {
 	const navigate = useNavigate();
@@ -47,6 +48,7 @@ const Collection = () => {
 	const [displayedValue, setDisplayedValue] = useState(price);
 	const [allSelected, setAllSelected] = useState(false); // New state to track "Select All"
 	const [showGraph, setShowGraph] = useState(false); // State for showing the graph, set to false
+	const [graphData, setGraphData] = useState([]);
 
 	const alphabeticalCards = cards.sort((a, b) => {
 		return b.addedAt.toDate() - a.addedAt.toDate();
@@ -219,14 +221,14 @@ const Collection = () => {
 	const fetchPrices = async (card) => {
 		if (!card?.name) return;
 
-		const cachedPrices = getCachedPrice(card.id, card.setPrintedTotal);
-		if (cachedPrices) {
-			setLoading(false);
-			if (typeof cachedPrices === 'object') {
-				return cachedPrices[card.selectedGrade];
-			}
-			return cachedPrices;
-		}
+		// const cachedPrices = getCachedPrice(card.id, card.setPrintedTotal);
+		// if (cachedPrices) {
+		// 	setLoading(false);
+		// 	if (typeof cachedPrices === 'object') {
+		// 		return cachedPrices[card.selectedGrade];
+		// 	}
+		// 	return cachedPrices;
+		// }
 
 		async function updatePriceHistory(cardId, price) {
 			console.log('Updating price history for card', cardId);
@@ -293,9 +295,10 @@ const Collection = () => {
 			const querySnapshot = await getDocs(cardsRef);
 
 			const cardsList = [];
-			const priceList = [];
+			// const priceList = [];
+			const totalPricesByDate = {};
 			let totalValue = 0;
-			const selectedCardIds = new Set();
+			// const selectedCardIds = new Set();
 
 			for (const doc of querySnapshot.docs) {
 				const cardData = doc.data();
@@ -303,22 +306,38 @@ const Collection = () => {
 					const card = { ...cardData, id: doc.id };
 					cardsList.push(card);
 
+					// add to totalValue if selectedPrice exists
+					if (cardData.selectedPrice != 'N/A') {
+						totalValue += parseFloat(cardData.selectedPrice);
+					}
+
+					// processing priceHistory:
+					const priceHistory = card.priceHistory || [];
+					for (const entry of priceHistory) {
+						const [date, price] = Object.entries(entry)[0];
+						const numericPrice = parseFloat(price);
+						if (!isNaN(numericPrice)) {
+							totalPricesByDate[date] = (totalPricesByDate[date] || 0) + numericPrice;
+						}
+					}
+
 					// Wait for the result of fetchPrices
-					const res = await fetchPrices(card);
-					priceList.push(res);
-				}
-				if (cardData.selectedPrice != 'N/A') {
-					totalValue += parseFloat(cardData.selectedPrice);
+					// const res = await fetchPrices(card);
+					// priceList.push(res);
 				}
 			}
-
 			setPrice(totalValue.toFixed(2));
+
+			// Convert totalsByDate into a sorted array of objects for the graph
+			const graphDataArray = Object.entries(totalPricesByDate)
+            .map(([date, total]) => ({ date, total }))
+            .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+			setGraphData(graphDataArray); // Update state for graph data
 			setCards(cardsList);
 			setFilteredCards(cardsList);
 			setHasCards(cardsList.length > 0);
-			setSelectedCards(selectedCardIds);
-			console.log(priceList);
-			setPrices(priceList);
+
 		} catch (error) {
 			console.error('Error fetching cards:', error);
 			throw error;
@@ -342,6 +361,32 @@ const Collection = () => {
 
 		loadUserCards();
 	}, [user]);
+
+	// Hanldes refresh for graphData
+	useEffect(() => {
+		// recalculate graph data based on the updated cards array
+		const totalPricesByDate = {};
+	
+		// Iterate through cards and aggregate total prices by date
+		cards.forEach((card) => {
+			const priceHistory = card.priceHistory || [];
+			priceHistory.forEach((entry) => {
+				const [date, price] = Object.entries(entry)[0];
+				const numericPrice = parseFloat(price);
+				if (!isNaN(numericPrice)) {
+					totalPricesByDate[date] = (totalPricesByDate[date] || 0) + numericPrice;
+				}
+			});
+		});
+	
+		// Convert totalsByDate into a sorted array of objects for the graph
+		const graphDataArray = Object.entries(totalPricesByDate)
+			.map(([date, total]) => ({ date, total }))
+			.sort((a, b) => new Date(a.date) - new Date(b.date));
+	
+		// Update the graphData state
+		setGraphData(graphDataArray);
+	}, [cards]);
 
 	// Handle filter change
 	const handleFilterChange = (e) => {
@@ -720,8 +765,8 @@ const Collection = () => {
 					</div>
 					{showGraph ? (
 						<div className={styles.graphPlaceholder}>
-							<h2>Collection Value Over Time</h2>
-							<p>The graph will be displayed here.</p>
+							{/* <h2>Collection Value Over Time</h2> */}
+							<PriceHistoryGraph data={graphData} />
 						</div>
 					) : (
 						<div className={styles.cardsGrid}>
