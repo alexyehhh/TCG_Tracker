@@ -1,63 +1,11 @@
-// const axios = require('axios');
-// const fs = require('fs');
-// const path = require('path');  // If you still need it for other purposes
-// const { processCard } = require('../util/processCard.js');  // Update the path accordingly
-// const pokemon = require('pokemontcgsdk');
-
-// async function testImageProcessing(imageUrl) {
-//     try {
-//         // Fetch the image from the URL
-//         const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-
-//         // Get the image buffer
-//         const imageBuffer = Buffer.from(response.data);
-
-//         // Run the image processing function
-//         const result = await processCard(imageBuffer);
-
-//         // Check the result
-//         if (result.error) {
-//             console.error("Error:", result.error);
-//         } else {
-//             // console.log("Matches:", result.matches);
-//             console.log("Search Query:", result.searchQuery);
-//         }
-//     } catch (error) {
-//         console.error("Error processing image:", error.message);
-//     }
-// }
-
-// // testImageProcessing('https://images.pokemontcg.io/xy0/9_hires.png');
-
-// async function run(){
-//     pokemon.card.where({ pageSize: 10, page: 3 })
-//         .then(result => {
-//             const cardDetails = result.data.slice(0, 10).map(card => ({
-//             name: card.name,
-//             id: card.id,
-//             imageUrl: card.images.large
-//             }));
-        
-//         for (let i = 0; i < cardDetails.length; i++) {
-//         const card = cardDetails[i];
-        
-//         // Call processCard with the imageUrl
-//         testImageProcessing(card.imageUrl);
-        
-//         // Output the card name
-//         // console.log(card.name);
-//       }
-    
-//     // console.log(cardDetails); // You can inspect the array of paired data
-//   });
-// }
-
 // run()
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path'); // If you still need it for other purposes
 const { processCard } = require('../util/processCard.js'); // Update the path accordingly
 const pokemon = require('pokemontcgsdk');
+
+let mismatchCount = 0;
 
 async function clearFile() {
     const filePath = path.join(__dirname, 'search_results.txt');
@@ -72,17 +20,42 @@ async function clearFile() {
 }
 
 // Function to append results to a file
-async function writeToFile(cardName, cardId, searchQuery, img) {
+async function writeToFile(cardName, cardId, searchQuery, img, name, fail) {
     const filePath = path.join(__dirname, 'search_results.txt'); // File path to write the data
-    const data = `Name: ${cardName}, ID: ${cardId}, Search Query: ${searchQuery}, Img: ${img}\n`;
-    
+
+    // Check if cardName and name are different (case-insensitive)
+    const mismatchPrefix = cardName.trim().toLowerCase() !== name.trim().toLowerCase() ? "MISMATCH: " : "";
+    const failure = fail == true ? "Image could not be processed! " : "";
+
+    // If there is a mismatch, increment the mismatch counter
+    if (mismatchPrefix) {
+        mismatchCount++;
+    }
+
+    // Construct the data string
+    const data = `${failure}${mismatchPrefix}Name: ${cardName}, ID: ${cardId}, Search Query: ${searchQuery}, Img: ${img}\n`;
+
     try {
-        // Append the data to the file
-        fs.appendFileSync(filePath, data);
+        // Use fs.promises.appendFile() to append data asynchronously
+        await fs.promises.appendFile(filePath, data);
     } catch (error) {
         console.error("Error writing to file:", error.message);
     }
 }
+
+async function appendMismatchCount(numCards) {
+    const filePath = path.join(__dirname, 'search_results.txt');
+    const mismatchData = `\nTotal Mismatches: ${mismatchCount}/${numCards} cards checked\n`;
+
+    try {
+        // Append the mismatch count at the end of the file
+        await fs.promises.appendFile(filePath, mismatchData);
+        console.log('Mismatch count appended to file.');
+    } catch (error) {
+        console.error("Error appending mismatch count to file:", error.message);
+    }
+}
+
 
 async function testImageProcessing(imageUrl, cardName, cardId) {
     try {
@@ -99,10 +72,10 @@ async function testImageProcessing(imageUrl, cardName, cardId) {
         if (result.error) {
             console.error("Error:", result.error);
         } else {
-            console.log("Search Query:", result.searchQuery);
+            // console.log("Search Query:", result.searchQuery);         
 
             // Write the result to a file
-            await writeToFile(cardName, cardId, result.searchQuery, imageUrl);
+            await writeToFile(cardName, cardId, result.searchQuery, imageUrl, result.foundName, result.fail);
         }
     } catch (error) {
         console.error("Error processing image:", error.message);
@@ -114,8 +87,9 @@ async function run() {
         await clearFile();
 
         const randomPageNumber = Math.floor(Math.random() * 100) + 1;
-        const result = await pokemon.card.where({ pageSize: 10, page: randomPageNumber });
-        const cardDetails = result.data.slice(0, 10).map(card => ({
+        const pSize = 40;
+        const result = await pokemon.card.where({ pageSize: pSize, page: randomPageNumber });
+        const cardDetails = result.data.slice(0, pSize).map(card => ({
             name: card.name,
             id: card.id,
             imageUrl: card.images.large
@@ -128,6 +102,7 @@ async function run() {
 
         // Wait for all image processing tasks to complete
         await Promise.all(processingPromises);
+        await appendMismatchCount(pSize);
 
         console.log("All images have been processed.");
     } catch (error) {

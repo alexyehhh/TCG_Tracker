@@ -55,12 +55,11 @@
 	height: auto;
 	position: relative;
 	z-index: 2;
-	border-radius: 0.5rem;
+	/* border-radius: 0.5rem; */
 	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 	background-color: white;
 }
 
-/* Logged out specific styles */
 .loggedOutContent {
 	flex: 1;
 	width: 100%;
@@ -73,7 +72,6 @@
 	justify-content: center;
 }
 
-/* FAQ Accordion Styles */
 .faqTitle {
 	font-size: 48px;
 	font-weight: 700;
@@ -82,7 +80,6 @@
 	text-align: center;
 }
 
-/* Updated FAQ Styles */
 .faqAccordion {
 	width: 100%;
 	max-width: 600px;
@@ -91,9 +88,9 @@
 
 .faqItem {
 	border: 1px solid #ccc;
-	border-radius: 8px;
+	/* border-radius: 8px; */
 	background-color: #f7f7f7;
-	margin-bottom: 0.75rem; /* Increased space for better visual separation */
+	margin-bottom: 0.75rem;
 }
 
 .faqQuestion {
@@ -101,66 +98,68 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 1rem;
-	font-size: 18px; /* Ensure uniform font size */
+	font-size: 18px;
 	font-weight: 600;
 	color: #191143;
 	cursor: pointer;
 	background-color: white;
-	border-radius: 8px;
+	/* border-top-left-radius: 8px;
+	border-top-right-radius: 8px; */
+	/* border-radius: 8px; */
+	transition: all 0.3s ease;
 }
 
 .faqQuestion:hover {
 	background-color: #e0e0e0;
+	/* border-radius: none; */
 }
 
 .arrow {
 	font-size: 1.25rem;
 	color: #8822c1;
+	margin: 0 10px;
 }
 
-/* FAQ Answer - Ensure Uniform Font Size */
 .faqAnswer {
-    padding: 1rem;
-    background-color: #f0f0f0;
-    color: #191143;
-    font-size: 1rem; /* Uniform font size */
-    line-height: 1.6; /* Improve readability */
-    border-top: 1px solid #ddd;
-    margin-bottom: 0; /* Remove unnecessary spacing */
+	padding: 1rem;
+	background-color: #f0f0f0;
+	color: #191143;
+	font-size: 1rem;
+	line-height: 1.6;
+	border-top: 1px solid #ddd;
+	margin-bottom: 0;
+	border-bottom-left-radius: 8px;
+	border-bottom-right-radius: 8px;
 }
 
-/* Unordered List Styling (Bullet Points) */
 .faqAnswer ul {
-    padding-left: 1.5rem; /* Align bullet points */
-    margin: 0; /* Prevent extra margin */
-    font-size: 1rem; /* Same font size as other text */
-    line-height: 1.6;
+	padding-left: 1.5rem;
+	margin: 0;
+	font-size: 1rem;
+	line-height: 1.6;
 }
 
 .faqAnswer ul li {
-    margin-bottom: 0.5rem; /* Space between bullet points */
+	margin-bottom: 0.5rem;
 }
 
-/* Ordered List Styling (Numbered Points) */
 .faqAnswer ol {
-    padding-left: 1.5rem; /* Align numbers */
-    margin: 0; /* Prevent extra margin */
-    font-size: 1rem; /* Same font size as other text */
-    line-height: 1.6;
+	padding-left: 1.5rem;
+	margin: 0;
+	font-size: 1rem;
+	line-height: 1.6;
 }
 
 .faqAnswer ol li {
-    margin-bottom: 0.5rem; /* Space between numbered points */
+	margin-bottom: 0.5rem;
 }
 
-/* Adjust Text Without Lists */
 .faqAnswer p {
-    font-size: 1rem; /* Match size with lists */
-    line-height: 1.6;
-    margin: 0; /* Remove unnecessary margin */
+	font-size: 1rem;
+	line-height: 1.6;
+	margin: 0;
 }
 
-/* Remove Extra Space at Bottom of Cards */
 .faqItem:last-child {
-    margin-bottom: 0; /* No extra space for the last item */
+	margin-bottom: 0;
 }

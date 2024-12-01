@@ -13,12 +13,17 @@ export default function Help() {
 
 	const questions = [
 		'What can I use this app for?',
-		'How do I upload my Pokemon card?',
+		'How do I use the search bar to look up my card?',
+		'How do I track the price of my collection?',
 		'How can I store cards to my collection?',
 		'How can I store how much I paid for a card?',
-		'How do I track the price of my collection?',
+		'How can I see how much bulk grading would cost and my profit from it?',
+		'How can I calculate the profit I would make if I had my card graded?',
+		'How do I upload my Pokemon card?',
+		'What are the pricing options for PSA?',
+		'What are the pricing options for GameStop?',
 	];
-
+	
 	const answers = [
 		(
 			<ul>
@@ -28,12 +33,20 @@ export default function Help() {
 			</ul>
 		),
 		(
-			<ol>
-				<li>Navigate to the <strong>Upload</strong> tab in the top navigation bar.</li>
-				<li>Drag and drop an image of your card, or click to browse and select an image from your device.</li>
-				<li>After the upload is complete, click the <strong>Search for Card</strong> button.</li>
-				<li>Once processing is finished, the card results will be displayed. Select your card to view additional information.</li>
-			</ol>
+			<div>
+				<p>
+					You can use the search bar to find your card by either entering the Pokémon's name to view all related results or by entering the Pokémon's name along with its card number to locate the exact card. For example, you can use the search bar to find your card in two ways:
+				</p>
+				<ul>
+					<li>Enter the Pokémon's name (e.g., <strong>"Pikachu"</strong>) to view all related results.</li>
+					<li>Enter the Pokémon's name and card number (e.g., <strong>"Pikachu 19/68"</strong>) to locate the exact card.</li>
+				</ul>
+			</div>
+		),
+		(
+			<p>
+				Navigate to the <strong>Collection</strong> tab. The total value of your collection, based on the latest data, will be displayed at the top of the page.
+			</p>
 		),
 		(
 			<ol>
@@ -50,11 +63,69 @@ export default function Help() {
 			</p>
 		),
 		(
-			<p>
-				Navigate to the <strong>Collection</strong> tab. The total value of your collection, based on the latest data, will be displayed at the top of the page.
-			</p>
+			<ol>
+				<li>Navigate to the <strong>Collection</strong> tab.</li>
+				<li>Click <strong>Show Bulk Eligible Cards</strong> (ungraded cards with a value of $500 or less).</li>
+				<li>Select a minimum of 20 cards.</li>
+				<li>Click the <strong>Send Bulk</strong> button.</li>
+				<li>Click the <strong>Calculate</strong> button to view the bulk grading cost and profit at the top of the page.</li>
+			</ol>
+		),
+		(
+			<ol>
+				<li>Search for the card and view its details.</li>
+				<li>Enter the purchase price of the card.</li>
+				<li>Select <strong>PSA Expedited Turnaround</strong> and/or <strong>GameStop Pro</strong> if applicable.</li>
+				<li>Click the <strong>Calculate Profit</strong> button to see profit calculations.</li>
+			</ol>
+		),
+		(
+			<ol>
+				<li>Navigate to the <strong>Upload</strong> tab in the top navigation bar.</li>
+				<li>Drag and drop an image of your card, or click to browse and select an image from your device.</li>
+				<li>After the upload is complete, click the <strong>Search for Card</strong> button.</li>
+				<li>Once processing is finished, the card results will be displayed. Select your card to view additional information.</li>
+			</ol>
+		),
+		(
+			<div>
+				<p>
+					If you are a member of the PSA Collectors Club, you can grade your cards in bulk under these options:
+				</p>
+				<ul>
+					<li><strong>$14.99/card</strong> with a maximum insured value of $200 per card.</li>
+					<li><strong>$18.99/card</strong> with a maximum insured value of $500 per card.</li>
+				</ul>
+				<p>If you are not a member of the PSA Collectors Club, the following pricing options are available:</p>
+				<ul>
+					<li><strong>Value</strong>: $24.99/card with a maximum insured value of $500.</li>
+					<li><strong>Value Plus</strong>: $39.99/card with a maximum insured value of $500 (expedited turnaround).</li>
+					<li><strong>Regular</strong>: $74.99/card with a maximum insured value of $1,500.</li>
+					<li><strong>Express</strong>: $129.00/card with a maximum insured value of $2,500.</li>
+					<li><strong>Super Express</strong>: $249.00/card with a maximum insured value of $5,000.</li>
+					<li><strong>Walk-Through</strong>: $499.00/card with a maximum insured value of $10,000.</li>
+				</ul>
+				<p>
+					For more details on PSA grading services, visit <a href="https://www.psacard.com/services/tradingcardgrading" target="_blank" rel="noopener noreferrer">PSA Trading Card Grading Services</a>.
+				</p>
+			</div>
+		),
+		(
+			<div>
+				<p>
+					If you are a <strong>GameStop Pro</strong> member, you are eligible for free shipping. Otherwise, there is a flat shipping fee of <strong>$4.99 per order</strong>. The following grading options are available:
+				</p>
+				<ul>
+					<li><strong>$15.99/card</strong> with a declared value of $200 per card.</li>
+					<li><strong>$19.99/card</strong> with a declared value of $500 per card.</li>
+				</ul>
+				<p>
+					For more information about GameStop grading services, visit <a href="https://www.gamestop.com/card-grading-service#card_grading_service_steps" target="_blank" rel="noopener noreferrer">GameStop Card Grading Service</a>.
+				</p>
+			</div>
 		),
 	];
+	
 	
 	
 
