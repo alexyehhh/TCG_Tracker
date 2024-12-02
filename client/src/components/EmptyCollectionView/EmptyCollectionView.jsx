@@ -20,6 +20,9 @@ const EmptyCollectionView = () => (
 				<li>
 					<Link to='/upload'>Upload</Link>
 				</li>
+				<li>
+					<Link to='/help'>Help</Link>
+				</li>
 			</ul>
 		</nav>
 		<div className={`${styles.mainContent} ${styles.emptyState}`}>
