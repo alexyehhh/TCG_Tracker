@@ -8,6 +8,16 @@ const client = new ImageAnnotatorClient({
     keyFilename: './config/vision-key.json'
 });
 
+function cleanSetNumber(setNumber) {
+    if (!setNumber) return null;
+
+    // remove leading MF or F from GG numbers
+    return setNumber
+        .replace(/^MF/i, '') 
+        .replace(/^F/i, '')
+        .toUpperCase();
+}
+
 // 2. Core logic function
 async function processCard(fileBuffer) {
     try {
@@ -26,7 +36,10 @@ async function processCard(fileBuffer) {
         // Parse and search Pokémon TCG API
         const name = await cleanName(ocrText.split('\n')); // Assuming the name is the first line
         const setNumberMatch = ocrText.match(/([A-Z]{0,3}\d{1,3}\/[A-Z]*\d{1,3})/i);
-        const setNumber = setNumberMatch ? setNumberMatch[0] : null;
+        let setNumber = setNumberMatch ? setNumberMatch[0] : null;
+
+        // Clean the set number
+        setNumber = cleanSetNumber(setNumber);
 
         // console.log("Parsed Name:", name);
         // console.log("Parsed Set Number:", setNumber);
@@ -51,7 +64,7 @@ async function processCard(fileBuffer) {
         if (cards.length === 0) {
             return {
                 matches: [],
-                searchQuery: '',
+                searchQuery: `${name} ${setNumber}`,
                 foundName: '',
                 fail: false
             };
@@ -59,7 +72,7 @@ async function processCard(fileBuffer) {
 
         // Return the first matched card
         return {
-            matches: cards, // You can return all matches for debugging
+            matches: cards,
             searchQuery: `${name} ${setNumber}`, // Pass the query for fallback
             foundName: name,
             fail: false
