@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useLocation, Link } from 'react-router-dom';
 import styles from './PokemonCards.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
+import cardSets from '../../util/cardSets';
 
 function PokemonCards() {
 	const [cards, setCards] = useState([]);
@@ -11,7 +12,7 @@ function PokemonCards() {
 	const [totalPages, setTotalPages] = useState(1);
 	const location = useLocation();
 	const [currentPage, setCurrentPage] = useState(1);
-	const cardsPerPage = 30;
+	const cardsPerPage = 32;
 
 	const query = new URLSearchParams(location.search);
 	const searchQuery = query.get('name') || 'Pikachu';
@@ -22,8 +23,8 @@ function PokemonCards() {
 		let number = '';
 
 		parts.forEach((part) => {
-			if (!number && /^tg\d+/.test(part)) {
-				number = part.match(/tg\d+(\/\d+)?/i)[0];
+			if (!number && /^(gg|tg)\d+/i.test(part)) {
+				number = part.match(/^(gg|tg)\d+/i)[0];
 			} else if (!number && /^\d+/.test(part)) {
 				number = part.match(/^\d+/)[0].replace(/^0+/, ''); // Remove leading zeros
 			} else {
@@ -46,30 +47,42 @@ function PokemonCards() {
 			const offset = (page - 1) * cardsPerPage; // calculates the offset
 			let query;
 
-			if (searchSet){
-				//query by set name
+			if (searchSet) {
+				// query by set name from the query string
 				query = `set.name:"${searchSet}"`;
 			} else if (pokemonName) {
-			// check if the pokemon name ends with EX upper case or not
-			if (pokemonName.toLowerCase().endsWith(' ex')) {
-				// query that matches both EX and -EX suffixes
-				const baseName = pokemonName.slice(0, -3).trim(); // remove EX from the end of the name
-				query = `(name:"${baseName} EX" OR name:"${baseName}-EX")`;
-			} else {
-				// default query for other search terms
-				query = `name:"${pokemonName}"`;
-			}
-
-			if (cardNumber) {
-				if (cardNumber.includes('TG')) {
-					query += ` (number:"${cardNumber}" OR number:"${
-						cardNumber.split('/')[0]
-					}")`;
+				// check if the Pokémon name matches a set name in the cardSets array
+				const isSetName = cardSets.some(
+					(set) => set.toLowerCase() === pokemonName.toLowerCase()
+				);
+	
+				if (isSetName) {
+					// if the name is a set then construct the query using set.name
+					query = `set.name:"${pokemonName}"`;
 				} else {
-					query += ` number:"${cardNumber}"`;
+					// if not search by card name
+					if (pokemonName.toLowerCase().endsWith(' ex')) {
+						// handle EX and -EX suffixes
+						const baseName = pokemonName.slice(0, -3).trim(); // remove  EX
+						query = `(name:"${baseName} EX" OR name:"${baseName}-EX")`;
+					} else {
+						query = `name:"${pokemonName}"`;
+					}
+	
+					// if a card number exists then add it to the query
+					if (cardNumber) {
+						if (cardNumber.includes('GG')) {
+							query += ` number:"${cardNumber}"`;
+						} else if (cardNumber.includes('TG')) {
+							query += ` (number:"${cardNumber}" OR number:"${
+								cardNumber.split('/')[0]
+							}")`;
+						} else {
+							query += ` number:"${cardNumber}"`;
+						}
+					}
 				}
 			}
-		}
 			const response = await axios.get(
 				`https://api.pokemontcg.io/v2/cards?q=${query}&pageSize=${cardsPerPage}&page=${page}`,
 				{

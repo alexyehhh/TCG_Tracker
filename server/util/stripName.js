@@ -23,13 +23,13 @@ async function wordExistsInFile(word) {
 async function cleanName(name) {
     try {
 
-        // Print the full OCR text for debugging
+        // print the full OCR text for debugging
         console.log("Full OCR Parsed Text:", name);
 
-        // Special case for any card starting with "ENERGY"
+        // special case for any card starting with ENERGY
         if (name[0].toLowerCase() === 'energy') {
             console.log("Energy card detected.");
-            return 'energy'; // Directly return "energy" for these cards
+            return 'energy'; // directly return energy for these cards
         }
 
         // set of words to exclude if they appear in the read line
@@ -41,12 +41,19 @@ async function cleanName(name) {
         for (let word of name) {
             const words = word.toLowerCase().split(/\s+/); // split the line into individual words
 
+            // detect and fix cases like FGG30/GG70
+            words.forEach((w, index) => {
+                if (/^Fgg\d+/i.test(w)) {
+                    words[index] = w.replace(/^F/i, '');
+                }
+            });
+
             // filter out excluded words but keep other words in the line
             let filteredWords = words.filter(word => !exclude.has(word));
 
-            // Special case for trainer cards: Detect if the current line contains the name
+            // special case for trainer card and detect if the current line contains the name
             if (word.toLowerCase().includes('trainer') || word.toLowerCase().includes('supporter')) {
-                continue; // Skip lines indicating card type (e.g., "Trainer" or "Supporter")
+                continue; // skip lines indicating card type
             }
 
             // join the remaining words back into a single string for the line
@@ -75,7 +82,7 @@ async function cleanName(name) {
             }
         }
 
-        // If no match was found but "Trainer" is in the OCR, use the longest non-excluded line as a fallback
+        // if no match was found but Trainer is in the OCR then use the longest non-excluded line as a fallback
         if (!cleaned && name.some(line => line.toLowerCase().includes('trainer'))) {
             const fallbackLine = name.find(line => !exclude.has(line.toLowerCase()));
             cleaned = fallbackLine ? fallbackLine.trim() : '';
