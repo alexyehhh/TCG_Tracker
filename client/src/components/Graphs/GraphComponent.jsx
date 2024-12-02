@@ -6,7 +6,10 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 
 const PriceHistoryGraph = ({ data }) => {
     const chartData = {
-        labels: data.map((entry) => entry.date),
+        labels: data.map((entry) => {
+            const date = new Date(entry.date);
+            return date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+        }),
         datasets: [
             {
                 label: 'Total Price Over Time',
@@ -38,6 +41,14 @@ const PriceHistoryGraph = ({ data }) => {
                     weight: 'bold',
                 },
             },
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+                        const value = context.raw;
+                        return `$${value.toFixed(2)}`; // Add a dollar sign before the value
+                    },
+                },
+            },
         },
         scales: {
             x: {
@@ -48,6 +59,9 @@ const PriceHistoryGraph = ({ data }) => {
             y: {
                 ticks: {
                     color: '#581c87', // y axis text color
+                    callback: function (value) {
+                        return `$${value}`; // add a dollar sign for the y-axis labels
+                    },
                 },
             },
         },
