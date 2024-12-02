@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from './Help.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
+import cardGuideImage from '../../assets/faq/cardinfoguide.png';
 import { useNavigate, Link } from 'react-router-dom';
 
 export default function Help() {
@@ -55,6 +56,7 @@ export default function Help() {
 				<li>Choose the card’s grade (default is ungraded).</li>
 				<li>Enter the price you paid for the card (optional; default is $0 if left blank).</li>
 				<li>Click the <strong>Add to Collection</strong> button located below the card image.</li>
+				<img src={cardGuideImage} alt="A helpful guide showing how to add a card to your collection" />
 			</ol>
 		),
 		(
