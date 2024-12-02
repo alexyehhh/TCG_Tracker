@@ -138,6 +138,7 @@ const cardSets = [
 	'Sun & Moon',
 	'Sun & Moon Black Star Promo',
 	'Supreme Victors',
+	'Surging Sparks',
 	'Sword & Shield',
 	'Sword & Shield Promo',
 	'Team Magma vs Team Aqua',
