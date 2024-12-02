@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styles from './Help.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 import cardGuideImage from '../../assets/faq/cardinfoguide.png';
+import bulkGradingImage from '../../assets/faq/bulkgradinginfo.png';
 import { useNavigate, Link } from 'react-router-dom';
 
 export default function Help() {
@@ -71,6 +72,7 @@ export default function Help() {
 				<li>Select a minimum of 20 cards.</li>
 				<li>Click the <strong>Send Bulk</strong> button.</li>
 				<li>Click the <strong>Calculate</strong> button to view the bulk grading cost and profit at the top of the page.</li>
+				<img src={bulkGradingImage} alt="A helpful guide showing how to add a card to your collection" />
 			</ol>
 		),
 		(
