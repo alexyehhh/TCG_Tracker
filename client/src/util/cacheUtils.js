@@ -15,7 +15,7 @@ export const setCachedPrice = (
 	cardId,
 	total,
 	prices,
-	cacheDuration = 1 * 24 * 60 * 60 * 1000 // 7 days
+	cacheDuration = 1 * 24 * 60 * 60 * 1000 // 1 days
 ) => {
 	const cacheKey = generateCacheKey(cardId, total);
 	const expiry = new Date().getTime() + cacheDuration;
