@@ -51,7 +51,7 @@ async function processCard(fileBuffer) {
         if (cards.length === 0) {
             return {
                 matches: [],
-                searchQuery: '',
+                searchQuery: `${name} ${setNumber}`,
                 foundName: '',
                 fail: false
             };
@@ -59,7 +59,7 @@ async function processCard(fileBuffer) {
 
         // Return the first matched card
         return {
-            matches: cards, // You can return all matches for debugging
+            matches: cards,
             searchQuery: `${name} ${setNumber}`, // Pass the query for fallback
             foundName: name,
             fail: false
