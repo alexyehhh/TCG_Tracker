@@ -581,17 +581,20 @@ const Collection = () => {
 
 	const LoggedInView = () => {
 		const displayedValue = useMemo(() => {
-			if (showBulkEligible) {
-				return Array.from(selectedCards)
-					.reduce((total, cardId) => {
-						const card = cards.find(
-							(c) => c.id === cardId && c.selectedPrice !== 'N/A'
-						);
-						return total + (card ? parseFloat(card.selectedPrice) : 0);
-					}, 0)
-					.toFixed(2);
-			}
-			return price; // Use total collection value when viewing all cards
+			const rawValue = showBulkEligible
+				? Array.from(selectedCards).reduce((total, cardId) => {
+					  const card = cards.find(
+						  (c) => c.id === cardId && c.selectedPrice !== 'N/A'
+					  );
+					  return total + (card ? parseFloat(card.selectedPrice) : 0);
+				  }, 0)
+				: price;
+	
+			// Format the price with commas
+			return parseFloat(rawValue).toLocaleString('en-US', {
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+			});
 		}, [selectedCards, cards, showBulkEligible, price]);
 	
 		return hasCards ? (
