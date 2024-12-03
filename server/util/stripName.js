@@ -69,6 +69,9 @@ async function cleanName(name) {
                 if (word.endsWith('ex') && word !== 'toxapex' && word !== 'calyrex') {
                     word = word.slice(0, -2); // remove the 'ex' at the end
                 }
+                if (word.endsWith('gx')) {
+                    word = word.slice(0, -2); // remove the 'gx' at the end
+                }
 
                 // add the word to cleaned if it exists in cardNames
                 if (await wordExistsInFile(word)) {
