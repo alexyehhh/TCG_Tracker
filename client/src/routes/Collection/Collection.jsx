@@ -21,7 +21,8 @@ import EmptyCollectionView from '../../components/EmptyCollectionView/EmptyColle
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import cardSets from '../../util/cardSets.js';
 import cardRarities from '../../util/cardRarities.js';
-import { getCachedPrice, setCachedPrice } from '../../util/cacheUtils.js';
+// import { getCachedPrice, setCachedPrice } from '../../util/cacheUtils.js'; // Should use getCachedPrice too
+import { setCachedPrice } from '../../util/cacheUtils.js';
 import PriceHistoryGraph from '../../components/Graphs/GraphComponent.jsx';
 
 const Collection = () => {
@@ -29,7 +30,6 @@ const Collection = () => {
 	const [user, setUser] = useState(null);
 	const [cards, setCards] = useState([]);
 	const [filteredCards, setFilteredCards] = useState([]);
-	const [prices, setPrices] = useState([]);
 	const auth = getAuth();
 	const [hasCards, setHasCards] = useState(false);
 	const [searchTerm, setSearchTerm] = useState('');
@@ -45,7 +45,6 @@ const Collection = () => {
 	const [selectedCardCount, setSelectedCardCount] = useState(0);
 	const [price, setPrice] = useState(0);
 	const [bulkSelectedCount, setBulkSelectedCount] = useState(0); // New state for counter
-	const [displayedValue, setDisplayedValue] = useState(price);
 	const [allSelected, setAllSelected] = useState(false); // New state to track "Select All"
 	const [showGraph, setShowGraph] = useState(false); // State for showing the graph, set to false
 	const [graphData, setGraphData] = useState([]);
@@ -54,6 +53,7 @@ const Collection = () => {
 		return b.addedAt.toDate() - a.addedAt.toDate();
 	});
 
+	// Function to handle card click
 	const handleCardClick = async (card) => {
 		try {
 			const userData = await getUserByEmail(user.email);
@@ -88,6 +88,7 @@ const Collection = () => {
 		}
 	};
 
+	// Function to toggle between showing the graph and the card collection
 	const toggleGraphView = () => {
 		setShowGraph((prev) => !prev);
 	};
@@ -122,16 +123,14 @@ const Collection = () => {
 						: total,
 				0
 			);
-
-			setDisplayedValue(bulkValue.toFixed(2));
 		} else {
 			// Reset to show all cards
 			setFilteredCards(cards);
 			setBulkSelectedCount(0);
-			setDisplayedValue(price);
 		}
 	};
 
+	// Function to send bulk grading
 	const sendBulk = () => {
 		if (showBulkEligible) {
 			navigate('/bulk-grading'); // Navigate to the bulk grading page if eligible
@@ -140,10 +139,6 @@ const Collection = () => {
 				'Send Bulk is disabled unless you are viewing eligible cards.'
 			);
 		}
-	};
-
-	const handleNext = () => {
-		navigate('/bulk-grading');
 	};
 
 	// Listen for user auth state changes
@@ -218,77 +213,7 @@ const Collection = () => {
 		}
 	}
 
-	const fetchPrices = async (card) => {
-		if (!card?.name) return;
-
-		// const cachedPrices = getCachedPrice(card.id, card.setPrintedTotal);
-		// if (cachedPrices) {
-		// 	setLoading(false);
-		// 	if (typeof cachedPrices === 'object') {
-		// 		return cachedPrices[card.selectedGrade];
-		// 	}
-		// 	return cachedPrices;
-		// }
-
-		async function updatePriceHistory(cardId, price) {
-			console.log('Updating price history for card', cardId);
-			try {
-				const currentDate = new Date().toISOString().slice(0, 10);
-
-				const userDoc = await getUserByEmail(user.email);
-
-				if (userDoc) {
-					const cardDocRef = doc(db, 'users', userDoc.id, 'cards', cardId);
-					const cardDoc = await getDoc(cardDocRef);
-
-					await updateDoc(cardDocRef, {
-						priceHistory: [
-							{ [currentDate]: price },
-							...(cardDoc.get('priceHistory') || []),
-						],
-					});
-				}
-			} catch (error) {
-				console.log('Error updating price history', error);
-			}
-		}
-
-		const fetchPriceForGrade = async (grade) => {
-			try {
-				const response = await axios.get(
-					`${import.meta.env.VITE_API_URL}/card-prices`,
-					{
-						params: {
-							name: card.name,
-							number: card.number,
-							total: card.setPrintedTotal,
-							grade: grade === 'ungraded' ? '' : grade,
-							set: card.setName,
-						},
-					}
-				);
-				setCachedPrice(
-					card.id,
-					card.setPrintedTotal,
-					response.data.averagePrice
-				);
-				updatePriceHistory(card.id, response.data.averagePrice);
-				return response.data.averagePrice;
-			} catch (error) {
-				console.error(`Error fetching ${grade} price:`, error);
-				return null;
-			}
-		};
-
-		try {
-			const pricing = await fetchPriceForGrade(card.selectedGrade);
-			return pricing;
-		} catch (error) {
-			console.error('Error fetching prices:', error);
-		}
-	};
-
-	// fetch user's cards from Firestore and set within state
+	// Fetch user's cards from Firestore and set within state
 	async function fetchUserCards(userId) {
 		try {
 			const cardsRef = collection(db, `users/${userId}/cards`);
@@ -317,7 +242,8 @@ const Collection = () => {
 						const [date, price] = Object.entries(entry)[0];
 						const numericPrice = parseFloat(price);
 						if (!isNaN(numericPrice)) {
-							totalPricesByDate[date] = (totalPricesByDate[date] || 0) + numericPrice;
+							totalPricesByDate[date] =
+								(totalPricesByDate[date] || 0) + numericPrice;
 						}
 					}
 
@@ -330,14 +256,13 @@ const Collection = () => {
 
 			// Convert totalsByDate into a sorted array of objects for the graph
 			const graphDataArray = Object.entries(totalPricesByDate)
-            .map(([date, total]) => ({ date, total }))
-            .sort((a, b) => new Date(a.date) - new Date(b.date));
+				.map(([date, total]) => ({ date, total }))
+				.sort((a, b) => new Date(a.date) - new Date(b.date));
 
 			setGraphData(graphDataArray); // Update state for graph data
 			setCards(cardsList);
 			setFilteredCards(cardsList);
 			setHasCards(cardsList.length > 0);
-
 		} catch (error) {
 			console.error('Error fetching cards:', error);
 			throw error;
@@ -345,6 +270,8 @@ const Collection = () => {
 			setLoading(false);
 		}
 	}
+
+	// Fetch prices for a card
 	useEffect(() => {
 		const loadUserCards = async () => {
 			try {
@@ -362,11 +289,11 @@ const Collection = () => {
 		loadUserCards();
 	}, [user]);
 
-	// Hanldes refresh for graphData
+	// Handles refresh for graphData
 	useEffect(() => {
 		// recalculate graph data based on the updated cards array
 		const totalPricesByDate = {};
-	
+
 		// Iterate through cards and aggregate total prices by date
 		cards.forEach((card) => {
 			const priceHistory = card.priceHistory || [];
@@ -374,16 +301,17 @@ const Collection = () => {
 				const [date, price] = Object.entries(entry)[0];
 				const numericPrice = parseFloat(price);
 				if (!isNaN(numericPrice)) {
-					totalPricesByDate[date] = (totalPricesByDate[date] || 0) + numericPrice;
+					totalPricesByDate[date] =
+						(totalPricesByDate[date] || 0) + numericPrice;
 				}
 			});
 		});
-	
+
 		// Convert totalsByDate into a sorted array of objects for the graph
 		const graphDataArray = Object.entries(totalPricesByDate)
 			.map(([date, total]) => ({ date, total }))
 			.sort((a, b) => new Date(a.date) - new Date(b.date));
-	
+
 		// Update the graphData state
 		setGraphData(graphDataArray);
 	}, [cards]);
@@ -397,6 +325,7 @@ const Collection = () => {
 		}));
 	};
 
+	// Function to remove a card from the collection
 	const removeCard = async (cardId) => {
 		console.log('cardId of card being removed: ', cardId);
 		try {
@@ -435,6 +364,7 @@ const Collection = () => {
 		}
 	};
 
+	// Function to handle bulk select/deselect
 	const handleSelectAll = async () => {
 		try {
 			const bulkEligibleCards = filteredCards.filter(
@@ -464,9 +394,6 @@ const Collection = () => {
 				});
 
 				await Promise.all(updatePromises);
-
-				// Update bulk-selected counter
-				// setBulkSelectedCount(newSelectedCards.size);
 			} else {
 				// Deselect all bulk-eligible cards
 				const remainingSelectedCards = new Set(
@@ -551,6 +478,7 @@ const Collection = () => {
 		setFilteredCards(filtered); // Update the list of displayed cards based on filters
 	}, [filters, cards]);
 
+	// If user is not logged in, show the logged out view
 	if (loading && user) {
 		return (
 			<div className={`${styles.container}`}>
@@ -579,6 +507,7 @@ const Collection = () => {
 		);
 	}
 
+	// If user is logged in, show the logged in view
 	const LoggedInView = () => {
 		const displayedValue = useMemo(() => {
 			if (showBulkEligible) {
@@ -591,7 +520,7 @@ const Collection = () => {
 					}, 0)
 					.toFixed(2);
 			}
-			return price; // Use total collection value when viewing all cards
+			return price;
 		}, [selectedCards, cards, showBulkEligible, price]);
 
 		return hasCards ? (
