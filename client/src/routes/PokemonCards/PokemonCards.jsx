@@ -13,10 +13,10 @@ function PokemonCards() {
 	const location = useLocation();
 	const [currentPage, setCurrentPage] = useState(1);
 	const cardsPerPage = 32;
-
 	const query = new URLSearchParams(location.search);
 	const searchQuery = query.get('name') || 'Pikachu';
 
+	// Function to parse the search query
 	const parseSearchQuery = (query) => {
 		const parts = query.trim().toLowerCase().split(' ');
 		const nameParts = [];
@@ -38,9 +38,10 @@ function PokemonCards() {
 
 	const { name: pokemonName, number: cardNumber } =
 		parseSearchQuery(searchQuery);
-	
+
 	const searchSet = query.get('set'); // get the set filter from the query string
 
+	// Function to fetch cards from the Pokémon TCG API
 	const fetchCards = async (page) => {
 		try {
 			setLoading(true);
@@ -55,7 +56,7 @@ function PokemonCards() {
 				const isSetName = cardSets.some(
 					(set) => set.toLowerCase() === pokemonName.toLowerCase()
 				);
-	
+
 				if (isSetName) {
 					// if the name is a set then construct the query using set.name
 					query = `set.name:"${pokemonName}"`;
@@ -68,7 +69,7 @@ function PokemonCards() {
 					} else {
 						query = `name:"${pokemonName}"`;
 					}
-	
+
 					// if a card number exists then add it to the query
 					if (cardNumber) {
 						if (cardNumber.includes('GG')) {
@@ -110,12 +111,14 @@ function PokemonCards() {
 		fetchCards(currentPage);
 	}, [pokemonName, cardNumber, currentPage]);
 
+	// Function to paginate through the cards
 	const paginate = async (pageNumber) => {
 		setError(null); // Reset error
 		setCurrentPage(pageNumber);
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 	};
 
+	// Function to render the content based on the loading state
 	const renderContent = () => {
 		if (loading) {
 			return (
