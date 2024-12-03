@@ -26,6 +26,7 @@ export default function Help() {
 		'How do I track the value of my collection?',
 		'How can I store cards to my collection?',
 		'How can I store how much I paid for a card?',
+		'What options are available for filtering or searching cards in my collection?',
 		'How can I see how much bulk grading would cost and my profit from it?',
 		'How do I upload my Pokemon card?',
 		'What are the pricing options for PSA?',
@@ -88,6 +89,7 @@ export default function Help() {
 				After locating your card through the search or upload feature, enter the purchase price in the field provided on the bottom right of the card details page. Click the <strong>Add to Collection</strong> button to save it.
 			</p>
 		),
+		<p>You can filter your collection by rarity, price, type, or set to narrow down your results. Additionally, you can search for a specific card by name. Please note that when using the search bar, you will need to enter one letter at a time and reselect the search bar after each entry.</p>,
 		(
 			<ol>
 				<li>Navigate to the <strong>Collection</strong> tab.</li>
