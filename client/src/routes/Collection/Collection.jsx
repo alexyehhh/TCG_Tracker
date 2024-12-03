@@ -593,7 +593,7 @@ const Collection = () => {
 			}
 			return price; // Use total collection value when viewing all cards
 		}, [selectedCards, cards, showBulkEligible, price]);
-
+	
 		return hasCards ? (
 			<div className={styles.container} style={{ backgroundColor: '#fff4fc' }}>
 				<PokemonBackground color='#2f213e' />
@@ -623,20 +623,25 @@ const Collection = () => {
 						{user?.displayName || 'Your'}'s Collection
 					</h1>
 					<div className={styles.topIndicators}>
+						{/* New Counter for Card Count */}
+						<div className={styles.priceValuation}>
+							Total Cards: {cards.length}
+						</div>
+	
 						<div className={styles.priceValuation}>
 							{showBulkEligible
 								? 'Total Value of Selected Cards: '
 								: 'Total Value: '}
 							${displayedValue}
 						</div>
-
+	
 						<button
 							onClick={toggleBulkEligible}
 							className={styles.bulkButtons}
 							disabled={showGraph}>
 							{showBulkEligible ? 'Show All Cards' : 'Show Bulk Eligible Cards'}
 						</button>
-
+	
 						{showBulkEligible && (
 							<>
 								<button
@@ -660,7 +665,7 @@ const Collection = () => {
 							}>
 							Send Bulk
 						</button>
-
+	
 						<button
 							onClick={toggleGraphView}
 							className={`${styles.bulkButtons} ${
@@ -670,8 +675,7 @@ const Collection = () => {
 							}`}>
 							{showGraph ? 'Back to Collection' : 'View Graph'}
 						</button>
-					</div>
-
+					</div>	
 					<div className={styles.searchContainer}>
 						<div className={styles.searchBar}>
 							<input
