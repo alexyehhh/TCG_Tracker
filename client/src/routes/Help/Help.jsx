@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './Help.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
-import cardGuideImage from '../../assets/faq/cardInfoGuide.png';
+import cardGuideImage from '../../assets/faq/cardinformation.png';
 import bulkEligible from '../../assets/faq/bulkEligible.png';
 import bulkCostProfit from '../../assets/faq/bulkCostProfit.png';
 import collectionImage from '../../assets/faq/collection.png';
