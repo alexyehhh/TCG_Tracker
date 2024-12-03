@@ -45,7 +45,7 @@ async function processCard(fileBuffer) {
         // console.log("Parsed Set Number:", setNumber);
 
         if (!name || !setNumber) {
-            console.log("Failed to parse card name or set number.");
+            // console.log("Failed to parse card name or set number.");
             return {
                 matches: [],
                 searchQuery: `${name} ${setNumber}`,

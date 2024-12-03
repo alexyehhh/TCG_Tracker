@@ -6,6 +6,7 @@ const { processCard } = require('../util/processCard.js'); // Update the path ac
 const pokemon = require('pokemontcgsdk');
 
 let mismatchCount = 0;
+let failureCount = 0;
 
 async function clearFile() {
     const filePath = path.join(__dirname, 'search_results.txt');
@@ -13,7 +14,7 @@ async function clearFile() {
     try {
         // Clear the file (overwrite with an empty string)
         fs.writeFileSync(filePath, '');
-        console.log('File cleared successfully.');
+        // console.log('File cleared successfully.');
     } catch (error) {
         console.error("Error clearing the file:", error.message);
     }
@@ -24,16 +25,20 @@ async function writeToFile(cardName, cardId, searchQuery, img, name, fail) {
     const filePath = path.join(__dirname, 'search_results.txt'); // File path to write the data
 
     // Check if cardName and name are different (case-insensitive)
-    const mismatchPrefix = cardName.trim().toLowerCase() !== name.trim().toLowerCase() ? "MISMATCH: " : "";
+    // const mismatchPrefix = cardName.trim().toLowerCase() !== name.trim().toLowerCase() ? "MISMATCH: " : "";
     const failure = fail == true ? "Image could not be processed! " : "";
 
     // If there is a mismatch, increment the mismatch counter
-    if (mismatchPrefix) {
-        mismatchCount++;
+    // if (mismatchPrefix) {
+    //     mismatchCount++;
+    // }
+
+    if (failure) {
+        failureCount++;
     }
 
     // Construct the data string
-    const data = `${failure}${mismatchPrefix}Name: ${cardName}, ID: ${cardId}, Search Query: ${searchQuery}, Img: ${img}\n`;
+    const data = `${failure}Name: ${cardName}, ID: ${cardId}, Search Query: ${searchQuery}, Img: ${img}\n`;
 
     try {
         // Use fs.promises.appendFile() to append data asynchronously
@@ -43,19 +48,31 @@ async function writeToFile(cardName, cardId, searchQuery, img, name, fail) {
     }
 }
 
-async function appendMismatchCount(numCards) {
+// async function appendMismatchCount(numCards) {
+//     const filePath = path.join(__dirname, 'search_results.txt');
+//     const mismatchData = `\nTotal Mismatches: ${mismatchCount}/${numCards} cards checked\n`;
+
+//     try {
+//         // Append the mismatch count at the end of the file
+//         await fs.promises.appendFile(filePath, mismatchData);
+//         console.log('Mismatch count appended to file.');
+//     } catch (error) {
+//         console.error("Error appending mismatch count to file:", error.message);
+//     }
+// }
+
+async function appendFailureCount(numCards) {
     const filePath = path.join(__dirname, 'search_results.txt');
-    const mismatchData = `\nTotal Mismatches: ${mismatchCount}/${numCards} cards checked\n`;
+    const mismatchData = `\nTotal Failures: ${failureCount}/${numCards} cards checked\n`;
 
     try {
         // Append the mismatch count at the end of the file
         await fs.promises.appendFile(filePath, mismatchData);
-        console.log('Mismatch count appended to file.');
+        console.log('Failure count appended to file.');
     } catch (error) {
-        console.error("Error appending mismatch count to file:", error.message);
+        console.error("Error appending failure count to file:", error.message);
     }
 }
-
 
 async function testImageProcessing(imageUrl, cardName, cardId) {
     try {
@@ -85,9 +102,10 @@ async function testImageProcessing(imageUrl, cardName, cardId) {
 async function run() {
     try {
         await clearFile();
+        console.log("Tests begin")
 
         const randomPageNumber = Math.floor(Math.random() * 100) + 1;
-        const pSize = 40;
+        const pSize = 100;
         const result = await pokemon.card.where({ pageSize: pSize, page: randomPageNumber });
         const cardDetails = result.data.slice(0, pSize).map(card => ({
             name: card.name,
@@ -102,7 +120,8 @@ async function run() {
 
         // Wait for all image processing tasks to complete
         await Promise.all(processingPromises);
-        await appendMismatchCount(pSize);
+        // await appendMismatchCount(pSize);
+        await appendFailureCount(pSize);
 
         console.log("All images have been processed.");
     } catch (error) {
