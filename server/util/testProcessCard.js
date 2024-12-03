@@ -14,7 +14,6 @@ async function clearFile() {
     try {
         // Clear the file (overwrite with an empty string)
         fs.writeFileSync(filePath, '');
-        // console.log('File cleared successfully.');
     } catch (error) {
         console.error("Error clearing the file:", error.message);
     }
@@ -89,8 +88,6 @@ async function testImageProcessing(imageUrl, cardName, cardId) {
         if (result.error) {
             console.error("Error:", result.error);
         } else {
-            // console.log("Search Query:", result.searchQuery);         
-
             // Write the result to a file
             await writeToFile(cardName, cardId, result.searchQuery, imageUrl, result.foundName, result.fail);
         }

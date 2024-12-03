@@ -22,10 +22,6 @@ async function wordExistsInFile(word) {
 // function to clean the card name from OCR text
 async function cleanName(name) {
     try {
-
-        // print the full OCR text for debugging
-        // console.log("Full OCR Parsed Text:", name);
-
         // special case for any card starting with ENERGY
         if (name[0].toLowerCase() === 'energy') {
             console.log("Energy card detected.");
@@ -96,4 +92,4 @@ async function cleanName(name) {
     }
 }
 
-module.exports = { cleanName }; // export the cleanName function
+module.exports = { cleanName };

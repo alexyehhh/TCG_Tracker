@@ -31,7 +31,6 @@ async function processCard(fileBuffer) {
         }
 
         const ocrText = detections[0].description;
-        // console.log("OCR Text:", ocrText);
 
         // Parse and search Pokémon TCG API
         const name = await cleanName(ocrText.split('\n')); // Assuming the name is the first line
@@ -41,24 +40,18 @@ async function processCard(fileBuffer) {
         // Clean the set number
         setNumber = cleanSetNumber(setNumber);
 
-        // console.log("Parsed Name:", name);
-        // console.log("Parsed Set Number:", setNumber);
 
         if (!name || !setNumber) {
-            // console.log("Failed to parse card name or set number.");
             return {
                 matches: [],
                 searchQuery: `${name} ${setNumber}`,
                 foundName: name,
                 fail: true
             };
-            //return { error: 'Could not parse card name or set number from image.', status: 400 };
         }
 
         const query = `name:"${name}" number:"${setNumber.split('/')[0]}"`; // Adjust query as needed
         const cards = await pokemon.card.all({ q: query });
-
-        // console.log("Cards found:", cards);
 
         // No matches, return empty array
         if (cards.length === 0) {
