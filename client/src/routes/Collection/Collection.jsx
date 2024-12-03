@@ -328,10 +328,16 @@ const Collection = () => {
 			}
 			setPrice(totalValue.toFixed(2));
 
-			// Convert totalsByDate into a sorted array of objects for the graph
-			const graphDataArray = Object.entries(totalPricesByDate)
-            .map(([date, total]) => ({ date, total }))
-            .sort((a, b) => new Date(a.date) - new Date(b.date));
+			// Convert totalsByDate into a sorted array of objects and calculate cumulative totals
+			const sortedEntries = Object.entries(totalPricesByDate).sort(
+				([dateA], [dateB]) => new Date(dateA) - new Date(dateB)
+			);
+
+			let cumulativeTotal = 0;
+			const graphDataArray = sortedEntries.map(([date, dailyTotal]) => {
+				cumulativeTotal += dailyTotal;
+				return { date, total: cumulativeTotal }; // uses cumulative total
+			});
 
 			setGraphData(graphDataArray); // Update state for graph data
 			setCards(cardsList);
@@ -379,11 +385,18 @@ const Collection = () => {
 			});
 		});
 	
-		// Convert totalsByDate into a sorted array of objects for the graph
-		const graphDataArray = Object.entries(totalPricesByDate)
-			.map(([date, total]) => ({ date, total }))
-			.sort((a, b) => new Date(a.date) - new Date(b.date));
-	
+		// Convert totalsByDate into a sorted array of objects and calculate cumulative totals
+		const sortedEntries = Object.entries(totalPricesByDate).sort(
+			([dateA], [dateB]) => new Date(dateA) - new Date(dateB)
+		);
+
+		let cumulativeTotal = 0;
+		const graphDataArray = sortedEntries.map(([date, dailyTotal]) => {
+			cumulativeTotal += dailyTotal;
+			return { date, total: cumulativeTotal };
+		});
+
+			
 		// Update the graphData state
 		setGraphData(graphDataArray);
 	}, [cards]);
