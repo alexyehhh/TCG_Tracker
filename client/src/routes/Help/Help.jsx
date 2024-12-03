@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import styles from './Help.module.css';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
-import cardGuideImage from '../../assets/faq/cardinfoguide.png';
-import bulkGradingImage from '../../assets/faq/bulkgradinginfo.png';
+import cardGuideImage from '../../assets/faq/cardInfoGuide.png';
+import bulkEligible from '../../assets/faq/bulkEligible.png';
+import bulkCostProfit from '../../assets/faq/bulkCostProfit.png';
+import collectionImage from '../../assets/faq/collection.png';
+import profitCalculation from '../../assets/faq/profitCalculation.png';
 import { useNavigate, Link } from 'react-router-dom';
 
 export default function Help() {
@@ -14,13 +17,15 @@ export default function Help() {
 	};
 
 	const questions = [
-		'What can I use this app for?',
+		'What can I use TCG Tracker for?',
+		'How does TCG Tracker determine the prices for Pokémon cards in each grade?',
+		'How often are card prices updated?',
 		'How do I use the search bar to look up my card?',
+		'How can I calculate the profit I would make if I had my card graded?',
 		'How do I track the price of my collection?',
 		'How can I store cards to my collection?',
 		'How can I store how much I paid for a card?',
 		'How can I see how much bulk grading would cost and my profit from it?',
-		'How can I calculate the profit I would make if I had my card graded?',
 		'How do I upload my Pokemon card?',
 		'What are the pricing options for PSA?',
 		'What are the pricing options for GameStop?',
@@ -34,6 +39,11 @@ export default function Help() {
 				<li>Add cards to a personal collection and track their value over time.</li>
 			</ul>
 		),
+		<p>
+			TCG Tracker retrieves pricing data using the eBay API by analyzing recent sales listings. The top 10 sales are selected, and outliers differing by more than 50% from the median are filtered out. The average of the remaining values is then calculated to provide the most accurate and reliable price estimate for each grade.
+		</p>,
+		<p> Card prices are refreshed every 24 hours to ensure the data reflects the most recent market trends and sales activity.
+		</p>,
 		(
 			<div>
 				<p>
@@ -46,8 +56,19 @@ export default function Help() {
 			</div>
 		),
 		(
+			<ol>
+				<li>Search for the card and view its details.</li>
+				<li>Enter the purchase price of the card.</li>
+				<li>Select <strong>PSA Expedited Turnaround</strong> and/or <strong>GameStop Pro</strong> if applicable (cards worth $500 or less).</li>
+				<li>Click the <strong>Calculate Profit</strong> button to see profit calculations.</li>
+				<img src={profitCalculation} alt="A helpful guide showing how to calculate the profit of grading your card" />
+			</ol>
+		),
+		(
 			<p>
-				Navigate to the <strong>Collection</strong> tab. The total value of your collection, based on the latest data, will be displayed at the top of the page.
+				Navigate to the <strong>Collection</strong> tab. The total value of your collection, updated every 24 hours with the latest market data, will be displayed at the top of the page. To view a historical overview of your collection's value, click the <strong>View Graph</strong> button.
+				<img src={collectionImage} alt="A helpful guide showing how to view the value of your collection" />
+				*Note: Not all cards in the collection are displayed in the image above
 			</p>
 		),
 		(
@@ -72,15 +93,9 @@ export default function Help() {
 				<li>Select a minimum of 20 cards.</li>
 				<li>Click the <strong>Send Bulk</strong> button.</li>
 				<li>Click the <strong>Calculate</strong> button to view the bulk grading cost and profit at the top of the page.</li>
-				<img src={bulkGradingImage} alt="A helpful guide showing how to add a card to your collection" />
-			</ol>
-		),
-		(
-			<ol>
-				<li>Search for the card and view its details.</li>
-				<li>Enter the purchase price of the card.</li>
-				<li>Select <strong>PSA Expedited Turnaround</strong> and/or <strong>GameStop Pro</strong> if applicable.</li>
-				<li>Click the <strong>Calculate Profit</strong> button to see profit calculations.</li>
+				<img src={bulkEligible} alt="A helpful guide showing how to view bulk eligible cards" />
+				<img src={bulkCostProfit} alt="A helpful guide showing how to calculate bulk grading cost and profit" />
+				*Note: Not all cards in the collection are displayed in the images above
 			</ol>
 		),
 		(
