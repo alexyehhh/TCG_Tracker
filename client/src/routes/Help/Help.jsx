@@ -5,6 +5,7 @@ import cardGuideImage from '../../assets/faq/cardInfoGuide.png';
 import bulkEligible from '../../assets/faq/bulkEligible.png';
 import bulkCostProfit from '../../assets/faq/bulkCostProfit.png';
 import collectionImage from '../../assets/faq/collection.png';
+import CollectionValueOverTime from '../../assets/faq/CollectionValueOverTime.png';
 import profitCalculation from '../../assets/faq/profitCalculation.png';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -22,7 +23,7 @@ export default function Help() {
 		'How often are card prices updated?',
 		'How do I use the search bar to look up my card?',
 		'How can I calculate the profit I would make if I had my card graded?',
-		'How do I track the price of my collection?',
+		'How do I track the value of my collection?',
 		'How can I store cards to my collection?',
 		'How can I store how much I paid for a card?',
 		'How can I see how much bulk grading would cost and my profit from it?',
@@ -69,6 +70,7 @@ export default function Help() {
 				Navigate to the <strong>Collection</strong> tab. The total value of your collection, updated every 24 hours with the latest market data, will be displayed at the top of the page. To view a historical overview of your collection's value, click the <strong>View Graph</strong> button.
 				<img src={collectionImage} alt="A helpful guide showing how to view the value of your collection" />
 				*Note: Not all cards in the collection are displayed in the image above
+				<img src={CollectionValueOverTime} alt="A helpful guide showing how to view the value of your collection over time" />
 			</p>
 		),
 		(
