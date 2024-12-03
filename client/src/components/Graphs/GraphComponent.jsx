@@ -45,10 +45,10 @@ const PriceHistoryGraph = ({ data }) => {
                 callbacks: {
                     label: function (context) {
                         const value = context.raw;
-                        return `$${value.toFixed(2)}`; // Add a dollar sign before the value
+                        return `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
                     },
                 },
-            },
+            },            
         },
         scales: {
             x: {
