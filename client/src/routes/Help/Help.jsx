@@ -7,6 +7,7 @@ import bulkCostProfit from '../../assets/faq/bulkCostProfit.png';
 import collectionImage from '../../assets/faq/collection.png';
 import CollectionValueOverTime from '../../assets/faq/CollectionValueOverTime.png';
 import profitCalculation from '../../assets/faq/profitCalculation.png';
+const demoVideo = '/assets/TCG-Tracker-Demo-Video.mp4';
 import { useNavigate, Link } from 'react-router-dom';
 
 export default function Help() {
@@ -145,15 +146,27 @@ export default function Help() {
 				<p>
 					For more information about GameStop grading services, visit <a href="https://www.gamestop.com/card-grading-service#card_grading_service_steps" target="_blank" rel="noopener noreferrer">GameStop Card Grading Service</a>.
 				</p>
+				
+
 			</div>
-		),
+		),		
 	];
+
+	<video 
+					width="100%" 
+					height="auto" 
+					controls 
+					style={{ marginTop: '20px', border: '1px solid #ccc', borderRadius: '8px' }}
+				>
+					<source src={demoVideo} type="video/mp4" />
+					Your browser does not support the video tag.
+				</video>
 	
 	
 	
 
 	return (
-		<div className={styles.container} style={{}}>
+		<div className={styles.container}>
 			<PokemonBackground color='#191143' />
 			<nav className={styles.navbar}>
 				<ul className={styles.navLinks}>
@@ -174,7 +187,7 @@ export default function Help() {
 					</li>
 				</ul>
 			</nav>
-
+	
 			<div className={styles.loggedOutContent}>
 				<h2 className={styles.faqTitle}>Frequently Asked Questions</h2>
 				<div className={styles.faqAccordion}>
@@ -193,8 +206,8 @@ export default function Help() {
 											fill='none'
 											xmlns='http://www.w3.org/2000/svg'>
 											<path
-												fill-rule='evenodd'
-												clip-rule='evenodd'
+												fillRule='evenodd'
+												clipRule='evenodd'
 												d='M0.477287 11.0329L10.8477 0.662456C11.4841 0.0260736 12.5159 0.0260736 13.1523 0.662456L23.5227 11.0329C24.1591 11.6693 24.1591 12.7011 23.5227 13.3374C22.8863 13.9738 21.8546 13.9738 21.2182 13.3374L12 4.11927L2.78183 13.3374C2.14545 13.9738 1.11367 13.9738 0.477287 13.3374C-0.159096 12.7011 -0.159096 11.6693 0.477287 11.0329Z'
 												fill='black'
 											/>
@@ -207,8 +220,8 @@ export default function Help() {
 											fill='none'
 											xmlns='http://www.w3.org/2000/svg'>
 											<path
-												fill-rule='evenodd'
-												clip-rule='evenodd'
+												fillRule='evenodd'
+												clipRule='evenodd'
 												d='M23.5227 2.96705L13.1523 13.3375C12.5159 13.9739 11.4841 13.9739 10.8477 13.3375L0.477287 2.96705C-0.159096 2.33067 -0.159096 1.29889 0.477287 0.662505C1.11367 0.0261222 2.14545 0.0261223 2.78183 0.662505L12 9.88068L21.2182 0.662505C21.8546 0.0261231 22.8863 0.0261232 23.5227 0.662506C24.1591 1.29889 24.1591 2.33067 23.5227 2.96705Z'
 												fill='black'
 											/>
@@ -222,7 +235,22 @@ export default function Help() {
 						</div>
 					))}
 				</div>
+	
+				{/* Add Video Here */}
+				<div className={styles.videoContainer}>
+					<h3>Watch the TCG Tracker Demo Video</h3>
+					<video 
+						width="100%" 
+						height="auto" 
+						controls 
+						style={{ marginTop: '20px', border: '1px solid #ccc', borderRadius: '8px' }}
+					>
+						<source src={demoVideo} type="video/mp4" />
+						Your browser does not support the video tag.
+					</video>
+				</div>
 			</div>
 		</div>
 	);
+	
 }
