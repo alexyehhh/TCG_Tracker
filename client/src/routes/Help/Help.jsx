@@ -7,6 +7,7 @@ import bulkCostProfit from '../../assets/faq/bulkCostProfit.png';
 import collectionImage from '../../assets/faq/collection.png';
 import CollectionValueOverTime from '../../assets/faq/CollectionValueOverTime.png';
 import profitCalculation from '../../assets/faq/profitCalculation.png';
+import noCardPicture from '../../assets/faq/noCardPicture.png';
 const demoVideo = '/assets/TCG-Tracker-Demo-Video.mp4';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -32,6 +33,7 @@ export default function Help() {
 		'How do I upload my Pokemon card?',
 		'What are the pricing options for PSA?',
 		'What are the pricing options for GameStop?',
+		'Why do some search results not include a picture?'
 	];
 	
 	const answers = [
@@ -149,7 +151,11 @@ export default function Help() {
 				
 
 			</div>
-		),		
+		),
+		<p>
+			Some search results may not include a picture because the Pokémon TCG API, which provides the images and other card details, does not have an image available for those specific cards.
+			<img src={noCardPicture} alt="A helpful guide showing some cards may not have a picture" />
+		</p>,		
 	];
 
 	<video 
