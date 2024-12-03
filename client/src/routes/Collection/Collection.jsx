@@ -665,20 +665,22 @@ const Collection = () => {
                         ${displayedValue}
                     </div>
 
-                    <button
-                        onClick={toggleBulkEligible}
-                        className={styles.bulkButtons}
-                        disabled={showGraph}
-                    >
-                        {showBulkEligible ? "Show All Cards" : "Show Bulk Eligible Cards"}
-                    </button>
+					{!showGraph && (
+						<button
+							onClick={toggleBulkEligible}
+							className={styles.bulkButtons}
+							// disabled={showGraph}
+						>
+							{showBulkEligible ? "Show All Cards" : "Show Bulk Eligible Cards"}
+						</button>
+					)}
 
-                    {showBulkEligible && (
+                    {showBulkEligible && !showGraph && (
                         <>
                             <button
                                 onClick={handleSelectAll}
                                 className={styles.bulkButtons}
-                                disabled={showGraph}
+                                // disabled={showGraph}
                             >
                                 {allSelected ? "Deselect All" : "Select All"}
                             </button>
@@ -687,30 +689,35 @@ const Collection = () => {
                             </div>
                         </>
                     )}
-                    <button
-                        onClick={
-                            showBulkEligible && selectedCardCount >= 20
-                                ? sendBulk
-                                : null
-                        }
-                        className={styles.bulkButtons}
-                        disabled={
-                            !showBulkEligible || selectedCardCount < 20 || showGraph
-                        }
-                    >
-                        Send Bulk
-                    </button>
+					{!showGraph && (
+						<button
+							onClick={
+								showBulkEligible && selectedCardCount >= 20
+									? sendBulk
+									: null
+							}
+							className={styles.bulkButtons}
+							disabled={
+								!showBulkEligible || selectedCardCount < 20 || showGraph
+							}
+						>
+							Send Bulk
+						</button>
+					)}
 
-                    <button
-                        onClick={toggleGraphView}
-                        className={`${styles.bulkButtons} ${
-                            showGraph
-                                ? styles.toggleButtonActive
-                                : styles.toggleButtonInactive
-                        }`}
-                    >
-                        {showGraph ? "Back to Collection" : "View Graph"}
-                    </button>
+					{!showBulkEligible && (
+						<button
+							onClick={toggleGraphView}
+							className={`${styles.bulkButtons} ${
+								showGraph
+									? styles.toggleButtonActive
+									: styles.toggleButtonInactive
+							}`}
+						>
+							{showGraph ? "Back to Collection" : "View Graph"}
+						</button>
+					)}
+					
                 </div>
                 <div className={styles.searchContainer}>
                     <div className={styles.searchBar}>
