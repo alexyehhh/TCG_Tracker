@@ -176,3 +176,14 @@
 .faqItem:last-child {
 	margin-bottom: 0;
 }
+
+.videoContainer {
+    width: 150%; /* Match the FAQ width */
+    max-width: 1200px; /* Optional: Keep a maximum width */
+    margin: 0 auto; /* Center horizontally */
+    position: relative; /* Position for centering */
+    left: 50%; /* Move to center */
+    transform: translateX(-50%); /* Offset by half its width */
+    text-align: center; /* Center the content inside */
+    padding: 20px; /* Add internal padding for spacing */
+}
