@@ -593,222 +593,247 @@ const Collection = () => {
 	}
 
 	const LoggedInView = () => {
-		const displayedValue = useMemo(() => {
-			const rawValue = showBulkEligible
-				? Array.from(selectedCards).reduce((total, cardId) => {
-					  const card = cards.find(
-						  (c) => c.id === cardId && c.selectedPrice !== 'N/A'
-					  );
-					  return total + (card ? parseFloat(card.selectedPrice) : 0);
-				  }, 0)
-				: price;
-	
-			// Format the price with commas
-			return parseFloat(rawValue).toLocaleString('en-US', {
-				minimumFractionDigits: 2,
-				maximumFractionDigits: 2,
-			});
-		}, [selectedCards, cards, showBulkEligible, price]);
-	
-		return hasCards ? (
-			<div className={styles.container} style={{ backgroundColor: '#fff4fc' }}>
-				<PokemonBackground color='#2f213e' />
-				<nav className={styles.navbar}>
-					<div className={styles.navbarLeft}></div>
-					<ul className={styles.navLinks}>
-						<li>
-							<Link to='/'>Search</Link>
-						</li>
-						<li>
-							<Link to='/collection'>Collection</Link>
-						</li>
-						<li>
-							<Link to='/bulk-grading'>Bulk Grading</Link>
-						</li>
-						<li>
-							<Link to='/upload'>Upload</Link>
-						</li>
-						<li>
-							<Link to='/help'>Help</Link>
-						</li>
-					</ul>
-					<div className={styles.navbarRight}></div>
-				</nav>
-				<div className={styles.mainContent}>
-					<h1 className={styles.title}>
-						{user?.displayName || 'Your'}'s Collection
-					</h1>
-					<div className={styles.topIndicators}>
-						{/* New Counter for Card Count */}
-						<div className={styles.priceValuation}>
-							Total Cards: {cards.length}
-						</div>
-	
-						<div className={styles.priceValuation}>
-							{showBulkEligible
-								? 'Total Value of Selected Cards: '
-								: 'Total Value: '}
-							${displayedValue}
-						</div>
-	
-						<button
-							onClick={toggleBulkEligible}
-							className={styles.bulkButtons}
-							disabled={showGraph}>
-							{showBulkEligible ? 'Show All Cards' : 'Show Bulk Eligible Cards'}
-						</button>
-	
-						{showBulkEligible && (
-							<>
-								<button
-									onClick={handleSelectAll}
-									className={styles.bulkButtons}
-									disabled={showGraph}>
-									{allSelected ? 'Deselect All' : 'Select All'}
-								</button>
-								<div className={styles.priceValuation}>
-									Selected for Bulk: {bulkSelectedCount}
-								</div>
-							</>
-						)}
-						<button
-							onClick={
-								showBulkEligible && selectedCardCount >= 20 ? sendBulk : null
-							}
-							className={styles.bulkButtons}
-							disabled={
-								!showBulkEligible || selectedCardCount < 20 || showGraph
-							}>
-							Send Bulk
-						</button>
-	
-						<button
-							onClick={toggleGraphView}
-							className={`${styles.bulkButtons} ${
-								showGraph
-									? styles.toggleButtonActive
-									: styles.toggleButtonInactive
-							}`}>
-							{showGraph ? 'Back to Collection' : 'View Graph'}
-						</button>
-					</div>	
-					<div className={styles.searchContainer}>
-						<div className={styles.searchBar}>
-							<input
-								type='text'
-								placeholder='Search your collection...'
-								value={searchTerm}
-								onChange={handleInputChange}
-								onKeyDown={handleKeyDown}
-								className={styles.searchInput}
-							/>
-							<button
-								onClick={handleSearchCollection}
-								className={styles.searchButton}>
-								<img
-									src={magnifyingGlass}
-									alt='Search'
-									className={styles.magnifyingGlass}
-								/>
-							</button>
-						</div>
+    // Calculate the total card count dynamically based on the `showBulkEligible` state
+    const totalCardCount = useMemo(() => {
+        return showBulkEligible
+            ? cards.filter(
+                  (card) =>
+                      card.selectedPrice !== 'N/A' &&
+                      Number(card.selectedPrice) > 0 &&
+                      Number(card.selectedPrice) < 500 &&
+                      card.selectedGrade === 'ungraded'
+              ).length
+            : cards.length;
+    }, [cards, showBulkEligible]);
 
-						<div className={styles.filterContainer}>
-							<select
-								name='rarity'
-								className={styles.filterSelect}
-								value={filters.rarity}
-								onChange={handleFilterChange}>
-								<option value=''>Rarity</option>
-								{cardRarities.map((rarity, index) => (
-									<option key={index} value={rarity}>
-										{rarity}
-									</option>
-								))}
-							</select>
+    const displayedValue = useMemo(() => {
+        const rawValue = showBulkEligible
+            ? Array.from(selectedCards).reduce((total, cardId) => {
+                  const card = cards.find(
+                      (c) => c.id === cardId && c.selectedPrice !== 'N/A'
+                  );
+                  return total + (card ? parseFloat(card.selectedPrice) : 0);
+              }, 0)
+            : price;
 
-							<select
-								name='price'
-								className={styles.filterSelect}
-								value={filters.price}
-								onChange={handleFilterChange}>
-								<option value=''>Price</option>
-								<option value='0-25'>$ 0 - $ 25</option>
-								<option value='25-50'>$ 25 - $ 50</option>
-								<option value='50-75'>$ 50 - $ 75</option>
-								<option value='75-100'>$ 75 - $ 100</option>
-								<option value='100-125'>$ 100 - $ 125</option>
-								<option value='125-150'>$ 125 - $ 150</option>
-								<option value='150-175'>$ 150 - $ 175</option>
-								<option value='175-200'>$ 175 - $ 200</option>
-								<option value='200-250'>$ 200 - $ 250</option>
-								<option value='250-300'>$ 250 - $ 300</option>
-								<option value='300-350'>$ 300 - $ 350</option>
-								<option value='350-400'>$ 350 - $ 400</option>
-								<option value='400-450'>$ 400 - $ 450</option>
-								<option value='450-500'>$ 450 - $ 500</option>
-								<option value='500+'>$ 500+</option>
-							</select>
+        // Format the price with commas
+        return parseFloat(rawValue).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+    }, [selectedCards, cards, showBulkEligible, price]);
 
-							<select
-								name='type'
-								className={styles.filterSelect}
-								value={filters.type}
-								onChange={handleFilterChange}>
-								<option value=''>Type</option>
-								<option value='Colorless'>Colorless</option>
-								<option value='Darkness'>Darkness</option>
-								<option value='Dragon'>Dragon</option>
-								<option value='Fairy'>Fairy</option>
-								<option value='Fighting'>Fighting</option>
-								<option value='Fire'>Fire</option>
-								<option value='Grass'>Grass</option>
-								<option value='Lightning'>Lightning</option>
-								<option value='Metal'>Metal</option>
-								<option value='Psychic'>Psychic</option>
-								<option value='Water'>Water</option>
-							</select>
+    return hasCards ? (
+        <div className={styles.container} style={{ backgroundColor: '#fff4fc' }}>
+            <PokemonBackground color="#2f213e" />
+            <nav className={styles.navbar}>
+                <div className={styles.navbarLeft}></div>
+                <ul className={styles.navLinks}>
+                    <li>
+                        <Link to="/">Search</Link>
+                    </li>
+                    <li>
+                        <Link to="/collection">Collection</Link>
+                    </li>
+                    <li>
+                        <Link to="/bulk-grading">Bulk Grading</Link>
+                    </li>
+                    <li>
+                        <Link to="/upload">Upload</Link>
+                    </li>
+                    <li>
+                        <Link to="/help">Help</Link>
+                    </li>
+                </ul>
+                <div className={styles.navbarRight}></div>
+            </nav>
+            <div className={styles.mainContent}>
+                <h1 className={styles.title}>
+                    {user?.displayName || "Your"}'s Collection
+                </h1>
+                <div className={styles.topIndicators}>
+                    {/* Updated Counter for Card Count */}
+                    <div className={styles.priceValuation}>
+                        {showBulkEligible ? "Total Cards Bulk Eligible: " : "Total Cards: "}
+                        {totalCardCount}
+                    </div>
 
-							<select
-								name='set'
-								className={styles.filterSelect}
-								value={filters.set}
-								onChange={handleFilterChange}>
-								<option value=''>Set</option>
-								{cardSets.map((set, index) => (
-									<option key={index} value={set}>
-										{set}
-									</option>
-								))}
-							</select>
-						</div>
-					</div>
-					{showGraph ? (
-						<div className={styles.graphPlaceholder}>
-							{/* <h2>Collection Value Over Time</h2> */}
-							<PriceHistoryGraph data={graphData} />
-						</div>
-					) : (
-						<div className={styles.cardsGrid}>
-							{filteredCards.map((card) => (
-								<CollectionCard
-									key={card.id}
-									card={card}
-									onClick={handleCardClick}
-									removeCard={removeCard}
-									isSelected={selectedCards.has(card.id)}
-									showCheckbox={showBulkEligible}
-									setBulkSelectedCount={setBulkSelectedCount}
-								/>
-							))}
-						</div>
-					)}
-				</div>
-			</div>
-		) : (
-			<EmptyCollectionView />
-		);
-	};
+                    <div className={styles.priceValuation}>
+                        {showBulkEligible
+                            ? "Total Value of Selected Cards: "
+                            : "Total Value: "}
+                        ${displayedValue}
+                    </div>
+
+                    <button
+                        onClick={toggleBulkEligible}
+                        className={styles.bulkButtons}
+                        disabled={showGraph}
+                    >
+                        {showBulkEligible ? "Show All Cards" : "Show Bulk Eligible Cards"}
+                    </button>
+
+                    {showBulkEligible && (
+                        <>
+                            <button
+                                onClick={handleSelectAll}
+                                className={styles.bulkButtons}
+                                disabled={showGraph}
+                            >
+                                {allSelected ? "Deselect All" : "Select All"}
+                            </button>
+                            <div className={styles.priceValuation}>
+                                Selected for Bulk: {bulkSelectedCount}
+                            </div>
+                        </>
+                    )}
+                    <button
+                        onClick={
+                            showBulkEligible && selectedCardCount >= 20
+                                ? sendBulk
+                                : null
+                        }
+                        className={styles.bulkButtons}
+                        disabled={
+                            !showBulkEligible || selectedCardCount < 20 || showGraph
+                        }
+                    >
+                        Send Bulk
+                    </button>
+
+                    <button
+                        onClick={toggleGraphView}
+                        className={`${styles.bulkButtons} ${
+                            showGraph
+                                ? styles.toggleButtonActive
+                                : styles.toggleButtonInactive
+                        }`}
+                    >
+                        {showGraph ? "Back to Collection" : "View Graph"}
+                    </button>
+                </div>
+                <div className={styles.searchContainer}>
+                    <div className={styles.searchBar}>
+                        <input
+                            type="text"
+                            placeholder="Search your collection..."
+                            value={searchTerm}
+                            onChange={handleInputChange}
+                            onKeyDown={handleKeyDown}
+                            className={styles.searchInput}
+                        />
+                        <button
+                            onClick={handleSearchCollection}
+                            className={styles.searchButton}
+                        >
+                            <img
+                                src={magnifyingGlass}
+                                alt="Search"
+                                className={styles.magnifyingGlass}
+                            />
+                        </button>
+                    </div>
+
+                    <div className={styles.filterContainer}>
+                        <select
+                            name="rarity"
+                            className={styles.filterSelect}
+                            value={filters.rarity}
+                            onChange={handleFilterChange}
+                        >
+                            <option value="">Rarity</option>
+                            {cardRarities.map((rarity, index) => (
+                                <option key={index} value={rarity}>
+                                    {rarity}
+                                </option>
+                            ))}
+                        </select>
+
+                        <select
+                            name="price"
+                            className={styles.filterSelect}
+                            value={filters.price}
+                            onChange={handleFilterChange}
+                        >
+                            <option value="">Price</option>
+                            <option value="0-25">$ 0 - $ 25</option>
+                            <option value="25-50">$ 25 - $ 50</option>
+                            <option value="50-75">$ 50 - $ 75</option>
+                            <option value="75-100">$ 75 - $ 100</option>
+                            <option value="100-125">$ 100 - $ 125</option>
+                            <option value="125-150">$ 125 - $ 150</option>
+                            <option value="150-175">$ 150 - $ 175</option>
+                            <option value="175-200">$ 175 - $ 200</option>
+                            <option value="200-250">$ 200 - $ 250</option>
+                            <option value="250-300">$ 250 - $ 300</option>
+                            <option value="300-350">$ 300 - $ 350</option>
+                            <option value="350-400">$ 350 - $ 400</option>
+                            <option value="400-450">$ 400 - $ 450</option>
+                            <option value="450-500">$ 450 - $ 500</option>
+                            <option value="500+">$ 500+</option>
+                        </select>
+
+                        <select
+                            name="type"
+                            className={styles.filterSelect}
+                            value={filters.type}
+                            onChange={handleFilterChange}
+                        >
+                            <option value="">Type</option>
+                            <option value="Colorless">Colorless</option>
+                            <option value="Darkness">Darkness</option>
+                            <option value="Dragon">Dragon</option>
+                            <option value="Fairy">Fairy</option>
+                            <option value="Fighting">Fighting</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Grass">Grass</option>
+                            <option value="Lightning">Lightning</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Psychic">Psychic</option>
+                            <option value="Water">Water</option>
+                        </select>
+
+                        <select
+                            name="set"
+                            className={styles.filterSelect}
+                            value={filters.set}
+                            onChange={handleFilterChange}
+                        >
+                            <option value="">Set</option>
+                            {cardSets.map((set, index) => (
+                                <option key={index} value={set}>
+                                    {set}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+                {showGraph ? (
+                    <div className={styles.graphPlaceholder}>
+                        <PriceHistoryGraph data={graphData} />
+                    </div>
+                ) : (
+                    <div className={styles.cardsGrid}>
+                        {filteredCards.map((card) => (
+                            <CollectionCard
+                                key={card.id}
+                                card={card}
+                                onClick={handleCardClick}
+                                removeCard={removeCard}
+                                isSelected={selectedCards.has(card.id)}
+                                showCheckbox={showBulkEligible}
+                                setBulkSelectedCount={setBulkSelectedCount}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    ) : (
+        <EmptyCollectionView />
+    );
+};
+
 
 	return user ? <LoggedInView /> : <LoggedOutView />;
 };
