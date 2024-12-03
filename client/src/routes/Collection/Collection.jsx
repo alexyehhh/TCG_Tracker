@@ -92,10 +92,10 @@ const Collection = () => {
 		setShowGraph((prev) => !prev);
 	};
 
-	// Function to toggle between showing all cards and only bulk eligible cards
+	// function to toggle between showing all cards and only bulk eligible cards
 	const toggleBulkEligible = () => {
 		setShowBulkEligible((prev) => !prev);
-
+	
 		if (!showBulkEligible) {
 			// Filter to show only bulk-eligible cards
 			const bulkEligibleCards = cards.filter(
@@ -105,36 +105,16 @@ const Collection = () => {
 					Number(card.selectedPrice) < 500 &&
 					card.selectedGrade === 'ungraded'
 			);
-
 			setFilteredCards(bulkEligibleCards);
-
-			// Update bulk-selected count
-			const bulkEligibleCount = bulkEligibleCards.filter((card) =>
-				selectedCards.has(card.id)
-			).length;
-			setBulkSelectedCount(bulkEligibleCount);
-
-			// Update displayed value
-			const bulkValue = bulkEligibleCards.reduce(
-				(total, card) =>
-					selectedCards.has(card.id)
-						? total + Number(card.selectedPrice)
-						: total,
-				0
-			);
-
-			setDisplayedValue(bulkValue.toFixed(2));
 		} else {
-			// Reset to show all cards
+			// reset to show all cards
 			setFilteredCards(cards);
-			setBulkSelectedCount(0);
-			setDisplayedValue(price);
 		}
 	};
 
 	const sendBulk = () => {
 		if (showBulkEligible) {
-			navigate('/bulk-grading'); // Navigate to the bulk grading page if eligible
+			navigate('/bulk-grading'); // navigate to the bulk grading page if eligible
 		} else {
 			console.warn(
 				'Send Bulk is disabled unless you are viewing eligible cards.'
@@ -146,7 +126,7 @@ const Collection = () => {
 		navigate('/bulk-grading');
 	};
 
-	// Listen for user auth state changes
+	// listen for user auth state changes
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			setUser(user);
@@ -154,48 +134,58 @@ const Collection = () => {
 		return () => unsubscribe();
 	}, []);
 
-	// Change input value of search as you type
+	// change input value of search as you type
 	const handleInputChange = (e) => {
 		const value = e.target.value;
 		setSearchTerm(value);
-
+	
+		const sourceCards = showBulkEligible
+			? cards.filter(
+				  (card) =>
+					  card.selectedPrice !== 'N/A' &&
+					  Number(card.selectedPrice) > 0 &&
+					  Number(card.selectedPrice) < 500 &&
+					  card.selectedGrade === 'ungraded'
+			  )
+			: cards;
+	
 		if (value.trim() !== '') {
-			const searchFiltered = cards.filter((card) =>
+			const searchFiltered = sourceCards.filter((card) =>
 				card.name.toLowerCase().includes(value.toLowerCase())
 			);
 			setFilteredCards(searchFiltered);
 		} else {
-			setFilteredCards(alphabeticalCards); // Reset to full list if search term is empty
+			setFilteredCards(sourceCards); // reset to the appropriate card list
 		}
 	};
 
-	// Handle search
+	// handle search
 	const handleSearchCollection = () => {
-		const searchFiltered = cards.filter((card) =>
+		const sourceCards = showBulkEligible
+			? cards.filter(
+				  (card) =>
+					  card.selectedPrice !== 'N/A' &&
+					  Number(card.selectedPrice) > 0 &&
+					  Number(card.selectedPrice) < 500 &&
+					  card.selectedGrade === 'ungraded'
+			  )
+			: cards;
+	
+		const searchFiltered = sourceCards.filter((card) =>
 			card.name.toLowerCase().includes(searchTerm.toLowerCase())
 		);
-
-		const finalFiltered = showBulkEligible
-			? searchFiltered.filter(
-					(card) =>
-						card.selectedPrice !== 'N/A' &&
-						Number(card.selectedPrice) > 0 &&
-						Number(card.selectedPrice) < 500 &&
-						card.selectedGrade === 'ungraded'
-			  )
-			: searchFiltered;
-
-		setFilteredCards(finalFiltered);
+	
+		setFilteredCards(searchFiltered);
 	};
 
-	// User presses Enter key to search
+	// user presses Enter key to search
 	const handleKeyDown = (event) => {
 		if (event.key === 'Enter') {
 			handleSearchCollection();
 		}
 	};
 
-	// Get user by email from Firestore
+	// get user by email from Firestore
 	async function getUserByEmail(email) {
 		try {
 			const usersRef = collection(db, 'users');
