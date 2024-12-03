@@ -31,9 +31,11 @@ export default function Help() {
 		'What options are available for filtering or searching cards in my collection?',
 		'How can I see how much bulk grading would cost and my profit from it?',
 		'How do I upload my Pokemon card?',
+		'Why isn’t my card found when I upload a picture of it?',
 		'What are the pricing options for PSA?',
 		'What are the pricing options for GameStop?',
-		'Why do some search results not include a picture?'
+		'Why do some search results not include a picture?',
+		'Why do some card prices display as N/A?',
 	];
 	
 	const answers = [
@@ -113,6 +115,7 @@ export default function Help() {
 				<li>Once processing is finished, the card results will be displayed. Select your card to view additional information.</li>
 			</ol>
 		),
+		<p>If your card is not found, it may be because the algorithm was unable to recognize it. In this case, you can manually search for the card using its name and number.</p>,
 		(
 			<div>
 				<p>
@@ -155,7 +158,8 @@ export default function Help() {
 		<p>
 			Some search results may not include a picture because the Pokémon TCG API, which provides the images and other card details, does not have an image available for those specific cards.
 			<img src={noCardPicture} alt="A helpful guide showing some cards may not have a picture" />
-		</p>,		
+		</p>,
+		<p>Prices may display as "N/A" if the eBay API does not have any listings available for the specified grade of the card.</p>,		
 	];
 
 	<video 
