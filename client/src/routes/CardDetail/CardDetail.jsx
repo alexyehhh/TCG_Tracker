@@ -26,7 +26,6 @@ const CardDetail = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
 	const auth = getAuth();
-
 	const [card, setCard] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
@@ -91,6 +90,7 @@ const CardDetail = () => {
 		fetchCardDetail();
 	}, [id]);
 
+	// Grade fetching effect
 	useEffect(() => {
 		const updateGrade = async () => {
 			if (user && card) {
@@ -198,7 +198,7 @@ const CardDetail = () => {
 		}
 	}, [userEmail, card]);
 
-	// Helper functions
+	// Get the user ID by email
 	const getUserByEmail = async (email) => {
 		try {
 			const usersRef = collection(db, 'users');
@@ -217,6 +217,7 @@ const CardDetail = () => {
 		}
 	};
 
+	// Update price history
 	async function updatePriceHistory(cardId, price) {
 		console.log('Updating price history for card', cardId);
 		try {
@@ -241,6 +242,7 @@ const CardDetail = () => {
 		}
 	}
 
+	// Calculate profit for the cards
 	const calculateProfit = async () => {
 		if (!pricePaid || !cardPrices[selectedGrade]) {
 			return;
@@ -281,7 +283,7 @@ const CardDetail = () => {
 		}
 
 		setIsCalculating(true);
-		setError(null); // Clear any previous error
+		setError(null);
 		try {
 			const response = await axios.get(
 				`${import.meta.env.VITE_API_URL}/card-profit`,
@@ -305,6 +307,7 @@ const CardDetail = () => {
 		}
 	};
 
+	// Add card to collection
 	const addToCollection = async (userEmail, cardData) => {
 		try {
 			const userId = await getUserByEmail(userEmail);
@@ -341,6 +344,7 @@ const CardDetail = () => {
 		}
 	};
 
+	// Remove card from collection
 	const removeFromCollection = async (userEmail, cardData) => {
 		try {
 			const userId = await getUserByEmail(userEmail);
@@ -360,6 +364,7 @@ const CardDetail = () => {
 		navigate('/login');
 	};
 
+	// Render grade buttons
 	const renderGradeButtons = () => (
 		<div className={styles.gradeButtons}>
 			{['ungraded', 'psa8', 'psa9', 'psa10'].map((grade) => (
@@ -393,6 +398,7 @@ const CardDetail = () => {
 		</div>
 	);
 
+	// Loading state
 	if (loading) {
 		return (
 			<PageLayout>
@@ -401,6 +407,7 @@ const CardDetail = () => {
 		);
 	}
 
+	// Error state
 	if (error) {
 		return (
 			<PageLayout>
@@ -411,6 +418,7 @@ const CardDetail = () => {
 		);
 	}
 
+	// Card not found state
 	if (!card) {
 		return (
 			<PageLayout>
