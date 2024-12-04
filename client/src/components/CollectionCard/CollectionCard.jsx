@@ -13,34 +13,45 @@ const CollectionCard = ({
 	showCheckbox,
 	setBulkSelectedCount,
 }) => {
+	// State to toggle confirmation for removing a card
 	const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
 
+	// Determines if the card is eligible for bulk grading: 
+	// If the price is 'N/A' (not available), the card is not eligible.
+	// Converts the price (card.selectedPrice) to a number and checks if it is greater than 0
+	// For < 500: cards with a price of 500 or more are not eligible for bulk grading.
 	const isEligibleForBulk =
 		card.selectedPrice !== 'N/A' &&
 		Number(card.selectedPrice) > 0 &&
 		Number(card.selectedPrice) < 500 &&
 		card.selectedGrade === 'ungraded';
 
+    //  Handles click on the remove button.
+    //  If confirmation is shown, remove the card; otherwise, show confirmation.
+
 	const handleRemoveClick = (e) => {
 		e.preventDefault(); // Prevent link navigation
 		if (showRemoveConfirm) {
-			removeCard(card.id);
+			removeCard(card.id); // Removes card from the collection
 			if (isSelected) {
-				setBulkSelectedCount((x) => x - 1);
+				setBulkSelectedCount((x) => x - 1); // Decrements the bulk selection count
 			}
 		} else {
-			setShowRemoveConfirm(true);
+			setShowRemoveConfirm(true); // Shows the "red x" confirmation
 		}
 	};
 
+	// Hides the remove confirmation when the mouse leaves the card
 	const handleMouseLeave = () => {
 		setShowRemoveConfirm(false);
 	};
 
+	// Set the CSS class for the card container to a variable "cardStyles"
 	const cardStyles = `${styles.cardContainer}`;
 
 	return (
 		<div className={cardStyles} onMouseLeave={handleMouseLeave}>
+			{/* Checkbox functionality in bulk selection */}
 			{showCheckbox && (
 				<input
 					type='checkbox'
@@ -58,6 +69,7 @@ const CollectionCard = ({
 				/>
 			)}
 
+			{/* Remove button when checkbox is not shown */}
 			{!showCheckbox && (
 				<button
 					onClick={handleRemoveClick}
@@ -69,6 +81,10 @@ const CollectionCard = ({
 				</button>
 			)}
 
+			{
+			/* Links to card detail page, its wrapped around the card alongside 
+			the details of the Grade and Value of the card underneath */
+			}
 			<Link
 				to={`/card-detail/${card.id}`}
 				className={styles.cardLink}
