@@ -250,10 +250,6 @@ const Collection = () => {
 								(totalPricesByDate[date] || 0) + numericPrice;
 						}
 					}
-
-					// Wait for the result of fetchPrices
-					// const res = await fetchPrices(card);
-					// priceList.push(res);
 				}
 			}
 			setPrice(totalValue.toFixed(2));
