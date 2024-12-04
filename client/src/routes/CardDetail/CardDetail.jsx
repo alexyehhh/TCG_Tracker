@@ -247,41 +247,16 @@ const CardDetail = () => {
 		if (!pricePaid || !cardPrices[selectedGrade]) {
 			return;
 		}
-
-		const isGameStopProSelected =
-			document.getElementById('gamestop-pro').checked;
-		const isExpeditedTurnaroundSelected =
-			document.getElementById('psa-sub').checked;
-		const salePrice =
-			cardPrices[selectedGrade] !== 'N/A' ? cardPrices[selectedGrade] : 0;
-
-		// Validate conditions
-		if (salePrice >= 500) {
-			if (isGameStopProSelected && isExpeditedTurnaroundSelected) {
-				const confirmClear = window.confirm(
-					'PSA Expedited Turnaround and GameStop Pro are not available for cards valued at $500 or more.'
-				);
-				if (!confirmClear) {
-					return;
-				}
-			} else if (isGameStopProSelected) {
-				const confirmClear = window.confirm(
-					'GameStop Pro is not available for cards valued at $500 or more.'
-				);
-				if (!confirmClear) {
-					return;
-				}
-			} else if (isExpeditedTurnaroundSelected) {
-				const confirmClear = window.confirm(
-					'PSA Expedited Turnaround is not available for cards valued at $500 or more.'
-				);
-				if (!confirmClear) {
-					return;
-				}
-			}
+	
+		const isGameStopProSelected = document.getElementById('gamestop-pro').checked;
+		const isExpeditedTurnaroundSelected = document.getElementById('psa-sub').checked;
+		const salePrice = cardPrices[selectedGrade] !== 'N/A' ? cardPrices[selectedGrade] : 0;
+	
+		if (salePrice > 500) {
+			setProfit('GameStop cannot grade cards valued over $500');
 			return;
 		}
-
+	
 		setIsCalculating(true);
 		setError(null);
 		try {
@@ -296,7 +271,7 @@ const CardDetail = () => {
 					},
 				}
 			);
-
+	
 			setProfit(response.data.gmeProfit);
 			setPSA(response.data.psaProfit);
 		} catch (error) {
@@ -306,6 +281,7 @@ const CardDetail = () => {
 			setIsCalculating(false);
 		}
 	};
+	
 
 	// Add card to collection
 	const addToCollection = async (userEmail, cardData) => {
@@ -621,16 +597,23 @@ const CardDetail = () => {
 							{profit !== null && (
 								<div
 									className={styles.profitResult}
-									style={{ textAlign: 'right', marginTop: '10px' }}>
-									<p
-										style={{
-											color: profit >= 0 ? '#22c55e' : '#ef4444',
-											fontWeight: 'bold',
-										}}>
-										GameStop Grading Profit: ${profit.toFixed(2)}
-									</p>
+									style={{ textAlign: 'right', marginTop: '10px' }}
+								>
+									{typeof profit === 'string' ? (
+										<p style={{ color: '#ef4444', fontWeight: 'bold' }}>{profit}</p>
+									) : (
+										<p
+											style={{
+												color: profit >= 0 ? '#22c55e' : '#ef4444',
+												fontWeight: 'bold',
+											}}
+										>
+											GameStop Grading Profit: ${profit.toFixed(2)}
+										</p>
+									)}
 								</div>
 							)}
+
 							{PSA !== null && (
 								<div
 									className={styles.PSAResult}
