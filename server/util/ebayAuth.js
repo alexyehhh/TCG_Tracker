@@ -1,3 +1,6 @@
+// Description: This file contains the code to get the eBay access token.
+// The token is required to access the eBay API.
+// The getValidToken function checks if the token is still valid and returns it if it is.
 async function getEbayAccessToken() {
 	const clientId = process.env.EBAY_CLIENT_ID;
 	const clientSecret = process.env.EBAY_CLIENT_SECRET;
@@ -49,6 +52,8 @@ async function getEbayAccessToken() {
 
 let tokenCache = null;
 
+// Get a valid eBay access token
+// If the token is still valid, return it
 async function getValidToken() {
 	if (tokenCache && Date.now() < tokenCache.expiresAt - 60000) {
 		return tokenCache.token;
