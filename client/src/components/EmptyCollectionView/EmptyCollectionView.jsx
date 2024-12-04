@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import styles from './EmptyCollectionView.module.css';
 import PokemonBackground from '../PokemonBackground/PokemonBackground';
 
-// This coomponent displays when the user's collection is empty.
+// This component displays when the user's collection is empty.
 // This provides options to search for or upload cards.
 
 const EmptyCollectionView = () => (
