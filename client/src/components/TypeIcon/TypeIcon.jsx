@@ -12,7 +12,10 @@ import Water from '../../assets/images/waterEnergy.png';
 
 import styles from './TypeIcon.module.css';
 
+// This component displays an energy type icon based on the type provided
+
 const TypeIcon = ({ type }) => {
+	// Maps energy types to the respective images
 	const typeToImage = {
 		Colorless: Colorless,
 		Darkness: Darkness,
@@ -27,9 +30,11 @@ const TypeIcon = ({ type }) => {
 		Water: Water,
 	};
 
+	// Gets the image path for the given type OR use a default image
 	const imagePath = typeToImage[type] || '/images/colorlessEnergy.png';
 
 	return (
+		// Render the image for the energy type
 		<img src={imagePath} alt={`${type} energy`} className={styles.typeIcon} />
 	);
 };

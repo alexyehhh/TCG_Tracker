@@ -5,6 +5,7 @@ import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import charizard from '../../assets/images/charizard.png';
 import styles from './HomePage.module.css';
 
+// Right Arrow Icon
 const RightArrow = () => {
 	return (
 		<svg
@@ -24,24 +25,23 @@ export default function HomePage() {
 	const cardRef = useRef(null);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
-	const [user, setUser] = useState(null);
 	const navigate = useNavigate();
 	const auth = getAuth();
 
+	// Check if user is logged in
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			if (user) {
 				setIsLoggedIn(true);
-				setUser(user);
 			} else {
 				setIsLoggedIn(false);
-				setUser(null);
 			}
 		});
 
 		return () => unsubscribe();
 	}, [auth]);
 
+	// Card hover effect
 	useEffect(() => {
 		const card = cardRef.current;
 
@@ -66,23 +66,27 @@ export default function HomePage() {
 		};
 	}, []);
 
+	// Search for card
 	const handleSearch = () => {
 		if (searchTerm.trim() !== '') {
 			navigate(`/pokemon-cards?name=${encodeURIComponent(searchTerm)}`);
 		}
 	};
 
+	// Search for card on Enter key press
 	const handleKeyDown = (event) => {
 		if (event.key === 'Enter') {
 			handleSearch();
 		}
 	};
 
+	// Handle user logout
 	const handleLogout = () => {
 		signOut(auth);
-		navigate('/'); // Redirect to home page after logout
+		navigate('/');
 	};
 
+	// Handle user login
 	const handleAuthClick = () => {
 		if (isLoggedIn) {
 			handleLogout();

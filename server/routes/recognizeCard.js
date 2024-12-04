@@ -14,8 +14,6 @@ const upload = multer({ storage: multer.memoryStorage() });
 // 1. Express request handler
 router.post('/api/recognizeCard', upload.single('file'), async (req, res) => {
     try {
-        // console.log("Received file:", req.file);
-        
         // Call core logic for processing the card recognition
         const result = await processCard(req.file.buffer);
 
