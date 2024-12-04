@@ -6,20 +6,20 @@ import PokemonBackground from '../../components/PokemonBackground/PokemonBackgro
 import cardSets from '../../util/cardSets';
 
 function PokemonCards() {
-	const [cards, setCards] = useState([]); // array to store pokemon card data
-	const [loading, setLoading] = useState(true); // loading state for API requests
-	const [error, setError] = useState(null); // error state for user feedback
-	const [totalPages, setTotalPages] = useState(1); // total number of pages for pagination
-	const location = useLocation(); // hook to access the current URL and query parameters
-	const [currentPage, setCurrentPage] = useState(1); // current page for pagination
-	const cardsPerPage = 32; // number of cards displayed per page
-	const query = new URLSearchParams(location.search); // parse the query parameters from the URL
-	const searchQuery = query.get('name') || 'Pikachu'; // default to Pikachu if no search query is provided
+	const [cards, setCards] = useState([]); 
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
+	const [totalPages, setTotalPages] = useState(1); 
+	const location = useLocation();
+	const [currentPage, setCurrentPage] = useState(1); 
+	const cardsPerPage = 32;
+	const query = new URLSearchParams(location.search); 
+	const searchQuery = query.get('name') || 'Pikachu'; 
 
 	// function to parse the search query for pokemon name and card number
 	const parseSearchQuery = (query) => {
 		const parts = query.trim().toLowerCase().split(' '); // split the query into parts
-		const nameParts = []; // array to collect the name parts
+		const nameParts = []; 
 		let number = ''; // variable to store the card number
 
 		// go over each part of the query
