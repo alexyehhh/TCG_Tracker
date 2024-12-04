@@ -1,7 +1,9 @@
 import React from 'react';
-
 import styles from './PokemonBackground.module.css';
 
+// This is a background component that displays Pokeball images in the four corners
+
+// Renders the SVG for a Pokeball w/ the given color
 const PokemonBackground = ({ color = 'black' }) => {
 	const renderPokeball = () => (
 		<svg
@@ -10,6 +12,7 @@ const PokemonBackground = ({ color = 'black' }) => {
 			xmlns='http://www.w3.org/2000/svg'
 			viewBox='0 0 859 858.94'
 			fill={color}>
+			{/* Pokeball shapes and paths */}
 			<path
 				d='M1125,728.09c-22.82-11.92-47.94-14-72.71-16.74-84.93-9.42-170.26-11.81-255.62-13.15-5.36-.09-8-1.35-9.92-6.9-14.29-41-48.95-66-90.57-65.85-41.33.15-75.93,25.16-89.91,65.51-1.82,5.25-4,7.22-9.67,7.26q-96.89.76-193.54,7.64c-38,2.71-76.09,5.51-113.39,14.27a84.58,84.58,0,0,0-23.29,9.3c2-148.63,58.91-268.51,177.75-356.3C587,267.59,779.53,265.46,923.93,356.06,1077.85,452.62,1130.47,613.81,1125,728.09Z'
 				transform='translate(-266.42 -290.87)'
