@@ -24,7 +24,6 @@ async function cleanName(name) {
     try {
         // special case for any card starting with ENERGY
         if (name[0].toLowerCase() === 'energy') {
-            console.log("Energy card detected.");
             return 'energy'; // directly return energy for these cards
         }
 

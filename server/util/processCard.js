@@ -51,7 +51,7 @@ async function processCard(fileBuffer) {
         }
 
         const query = `name:"${name}" number:"${setNumber.split('/')[0]}"`; // Adjust query as needed
-        const cards = await pokemon.card.all({ q: query });
+        const cards = await pokemon.card.all({ q: query }) || [];
 
         // No matches, return empty array
         if (cards.length === 0) {
