@@ -6,123 +6,134 @@ import PokemonBackground from '../../components/PokemonBackground/PokemonBackgro
 import cardSets from '../../util/cardSets';
 
 function PokemonCards() {
-	const [cards, setCards] = useState([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
-	const [totalPages, setTotalPages] = useState(1);
-	const location = useLocation();
-	const [currentPage, setCurrentPage] = useState(1);
-	const cardsPerPage = 32;
-	const query = new URLSearchParams(location.search);
-	const searchQuery = query.get('name') || 'Pikachu';
+	const [cards, setCards] = useState([]); // array to store pokemon card data
+	const [loading, setLoading] = useState(true); // loading state for API requests
+	const [error, setError] = useState(null); // error state for user feedback
+	const [totalPages, setTotalPages] = useState(1); // total number of pages for pagination
+	const location = useLocation(); // hook to access the current URL and query parameters
+	const [currentPage, setCurrentPage] = useState(1); // current page for pagination
+	const cardsPerPage = 32; // number of cards displayed per page
+	const query = new URLSearchParams(location.search); // parse the query parameters from the URL
+	const searchQuery = query.get('name') || 'Pikachu'; // default to Pikachu if no search query is provided
 
-	// Function to parse the search query
+	// function to parse the search query for pokemon name and card number
 	const parseSearchQuery = (query) => {
-		const parts = query.trim().toLowerCase().split(' ');
-		const nameParts = [];
-		let number = '';
+		const parts = query.trim().toLowerCase().split(' '); // split the query into parts
+		const nameParts = []; // array to collect the name parts
+		let number = ''; // variable to store the card number
 
+		// go over each part of the query
 		parts.forEach((part) => {
-			if (!number && /^(gg|tg)\d+/i.test(part)) {
-				number = part.match(/^(gg|tg)\d+/i)[0];
-			} else if (!number && /^\d+/.test(part)) {
-				number = part.match(/^\d+/)[0].replace(/^0+/, ''); // Remove leading zeros
-			} else {
-				nameParts.push(part);
-			}
+		if (!number && /^(gg|tg)\d+/i.test(part)) {
+			// match for special cases like GG (galarian gallery) or TG (trainer gallery) numbers
+			number = part.match(/^(gg|tg)\d+/i)[0];
+		} else if (!number && /^\d+/.test(part)) {
+			// match for regular numbers and remove leading zeros
+			number = part.match(/^\d+/)[0].replace(/^0+/, '');
+		} else {
+			// if not treat the part as part of the pokemon name
+			nameParts.push(part);
+		}
 		});
 
-		const name = nameParts.join(' ');
-		return { name, number };
+		const name = nameParts.join(' '); // join the name parts into a single string
+		return { name, number }; // return the parsed name and number
 	};
 
-	const { name: pokemonName, number: cardNumber } =
-		parseSearchQuery(searchQuery);
+	// parse the search query into pokemon name and card number
+	const { name: pokemonName, number: cardNumber } = parseSearchQuery(searchQuery);
 
 	const searchSet = query.get('set'); // get the set filter from the query string
 
-	// Function to fetch cards from the Pokémon TCG API
-	const fetchCards = async (page) => {
-		try {
-			setLoading(true);
-			const offset = (page - 1) * cardsPerPage; // calculates the offset
-			let query;
+		// fucntion to fetch Pokemon cards from the Pokemon TCG API
+		const fetchCards = async (page) => {
+			try {
+			setLoading(true); // start loading state
+			const offset = (page - 1) * cardsPerPage; // calculate the offset for pagination
+			let query; // the query variable
 
 			if (searchSet) {
-				// query by set name from the query string
+				// get cards by set name if the set filter is provided
 				query = `set.name:"${searchSet}"`;
 			} else if (pokemonName) {
-				// check if the Pokémon name matches a set name in the cardSets array
+				// check if the pokemon name matches a set name in the cardSets array
 				const isSetName = cardSets.some(
-					(set) => set.toLowerCase() === pokemonName.toLowerCase()
+				(set) => set.toLowerCase() === pokemonName.toLowerCase()
 				);
 
 				if (isSetName) {
-					// if the name is a set then construct the query using set.name
-					query = `set.name:"${pokemonName}"`;
+				// if the pokemon name is a set name then search by set
+				query = `set.name:"${pokemonName}"`;
 				} else {
-					//search by card name
-					if (pokemonName.toLowerCase().endsWith(' ex')) {
-						// handle GX cards
-						const baseName = pokemonName.slice(0, -3).trim(); // remove GX
-						query = `name:"${baseName} EX" OR name:"${baseName}-EX"`;
-					} else if (pokemonName.toLowerCase().endsWith(' gx')) {
-						// handle EX cards
-						const baseName = pokemonName.slice(0, -3).trim(); // remove EX
-						query = `name:"${baseName} GX" OR name:"${baseName}-GX"`;
-					} else {
-						query = `name:"${pokemonName}"`;
-					}
+				// in other cases query by pokemon card name
+				if (pokemonName.toLowerCase().endsWith(' ex')) {
+					// handle EX and ex cards
+					const baseName = pokemonName.slice(0, -3).trim(); // remove EX suffix
+					query = `name:"${baseName} EX" OR name:"${baseName}-EX"`;
+				} else if (pokemonName.toLowerCase().endsWith(' gx')) {
+					// handle GX and gx cards
+					const baseName = pokemonName.slice(0, -3).trim(); // remove GX suffix
+					query = `name:"${baseName} GX" OR name:"${baseName}-GX"`;
+				} else {
+					// general case for searching by pokemon name
+					query = `name:"${pokemonName}"`;
+				}
 
-					// if a card number exists then add it to the query
-					if (cardNumber) {
-						if (cardNumber.includes('GG')) {
-							query += ` number:"${cardNumber}"`;
-						} else if (cardNumber.includes('TG')) {
-							query += ` (number:"${cardNumber}" OR number:"${
-								cardNumber.split('/')[0]
-							}")`;
-						} else {
-							query += ` number:"${cardNumber}"`;
-						}
+				// add card number to the query if provided
+				if (cardNumber) {
+					// hangle cases like GG numbers
+					if (cardNumber.includes('GG')) {
+					query += ` number:"${cardNumber}"`;
+					} else if (cardNumber.includes('TG')) {
+					// hangle cases like TG numbers
+					query += ` (number:"${cardNumber}" OR number:"${
+						cardNumber.split('/')[0]
+					}")`;
+					} else {
+					query += ` number:"${cardNumber}"`;
 					}
 				}
+				}
 			}
+
+			// make the API request to fetch cards based on the query
 			const response = await axios.get(
 				`https://api.pokemontcg.io/v2/cards?q=${query}&pageSize=${cardsPerPage}&page=${page}`,
 				{
-					headers: { 'X-Api-Key': import.meta.env.VITE_POKEMON_KEY },
+				headers: { 'X-Api-Key': import.meta.env.VITE_POKEMON_KEY }, // use API key from environment variables
 				}
 			);
 
-			// Sort cards by their set number
+			// sort the fetched cards by their set number in ascending order
 			const sortedCards = response.data.data.sort((a, b) => {
-				const numA = parseInt(a.number, 10);
+				const numA = parseInt(a.number, 10); // parse card numbers as integers
 				const numB = parseInt(b.number, 10);
-				return numA - numB; // Sort in ascending order
+				return numA - numB; // sort in ascending order
 			});
-			setCards(response.data.data);
-			setTotalPages(Math.ceil(response.data.totalCount / cardsPerPage)); // Dynamically calculate total pages
-		} catch (err) {
+
+			setCards(sortedCards); // update the cards state
+			setTotalPages(Math.ceil(response.data.totalCount / cardsPerPage)); // calculate the total number of pages
+			} catch (err) {
+			// handle errors from the API request
 			setError(`Failed to fetch cards. Error: ${err}`);
-		} finally {
-			setLoading(false);
-		}
-	};
+			} finally {
+			setLoading(false); // end loading state
+			}
+		};
 
-	// fetch only when pokemonName, cardNumber, currentPage are changed
-	useEffect(() => {
-		fetchCards(currentPage);
-	}, [pokemonName, cardNumber, currentPage]);
+		// fetch cards whenever the pokemon name, card number, or current page changes
+		useEffect(() => {
+			fetchCards(currentPage); // fetch cards for the current page
+		}, [pokemonName, cardNumber, currentPage]); // dependencies that trigger the effect
 
-	// Function to paginate through the cards
-	const paginate = async (pageNumber) => {
-		setError(null); // Reset error
-		setCurrentPage(pageNumber);
-		window.scrollTo({ top: 0, behavior: 'smooth' });
-	};
+		// fucntion to handle pagination
+		const paginate = async (pageNumber) => {
+			setError(null); // reset any existing error
+			setCurrentPage(pageNumber); // update the current page
+			window.scrollTo({ top: 0, behavior: 'smooth' }); // scroll to the top of the page
+		};
 
-	// Function to render the content based on the loading state
+	// fucntion to render the content based on the loading state
 	const renderContent = () => {
 		if (loading) {
 			return (
@@ -197,7 +208,7 @@ function PokemonCards() {
 				{searchSet ? (
 					<h1>Cards for {searchSet}</h1> // dynamically render the set name
 				) : (
-					<h1>Cards for {searchQuery}</h1> // Fallback to Pokémon name
+					<h1>Cards for {searchQuery}</h1> // Fallback to pokemon name
 				)}
 				{renderContent()}
 				<div className={styles.pagination}>

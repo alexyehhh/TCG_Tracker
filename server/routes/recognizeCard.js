@@ -3,31 +3,33 @@ const pokemon = require('pokemontcgsdk');
 const multer = require('multer');
 const express = require('express');
 const router = express.Router();
-const { processCard } = require('../util/processCard');
+const { processCard } = require('../util/processCard'); // import the card processing function
 
-// Configure Pokémon TCG API
+// configure pokemonn TCG API with the API key from environment variables
 pokemon.configure({ apiKey: process.env.POKEMON_KEY });
 
-// Set up multer for handling file uploads
-const upload = multer({ storage: multer.memoryStorage() });
+// file storage 
+const upload = multer({ storage: multer.memoryStorage() }); // store files in memory as buffer
 
-// 1. Express request handler
+// define an API endpoint to recognize Pokémon cards
 router.post('/api/recognizeCard', upload.single('file'), async (req, res) => {
     try {
-        // Call core logic for processing the card recognition
+        // call the core logic function to process the uploaded card image
         const result = await processCard(req.file.buffer);
 
-        // Return result to the client
+        // check for errors in the processing result
         if (result.error) {
-            return res.status(result.status).json({ error: result.error });
+            return res.status(result.status).json({ error: result.error }); // respond with error and status code
         }
 
+        // return successful results to the client
         res.json({
-            matches: result.matches,
-            searchQuery: result.searchQuery
+            matches: result.matches,        // array of matched cards used for testing
+            searchQuery: result.searchQuery // the query used for matching was done in testing
         });
 
     } catch (error) {
+        // handle server errors
         console.error("Error in request handler:", error);
         res.status(500).json({ error: 'Failed to process request.' });
     }
