@@ -39,35 +39,6 @@ const BulkGrading = () => {
 	const [selectedCards, setSelectedCards] = useState(new Set()); // for tracking selected cards
 	const [showRemoveConfirm, setShowRemoveConfirm] = useState(null); // Track which card is showing remove confirmation
 
-	// Handle removing a single card
-	const handleRemoveCard = async (cardId) => {
-		try {
-			if (!user || !user.email) {
-				console.error('No user logged in');
-				return;
-			}
-
-			const userData = await getUserByEmail(user.email);
-			if (!userData) {
-				console.error('User data not found');
-				return;
-			}
-
-			const cardRef = doc(db, `users/${userData.id}/cards/${cardId}`);
-			await deleteDoc(cardRef);
-
-			// Update local state
-			const updatedCards = cards.map((card) =>
-				card.id === cardId ? { ...card, sendBulk: false } : card
-			);
-			setCards(updatedCards);
-			setFilteredCards(updatedCards);
-			setShowRemoveConfirm(null);
-		} catch (error) {
-			console.error('Error removing card:', error);
-		}
-	};
-
 	const handleMouseLeave = () => {
 		setShowRemoveConfirm(null);
 	};
