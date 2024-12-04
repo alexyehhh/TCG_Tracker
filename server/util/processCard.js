@@ -70,17 +70,17 @@ async function processCard(fileBuffer) {
 
         // Step 3 is to return the matched cards and additional details which the details are sent to the search 
         return {
-            matches: cards, // list of matched cards used for testing
-            searchQuery: `${name} ${setNumber}`, // the constructed query that is used in our search page 
-            foundName: name, // detected card name
+            matches: cards,
+            searchQuery: `${name} ${setNumber}`,
+            foundName: name,
             fail: false 
         };
 
     } catch (error) {
         // catch and log any errors during processing
         console.error("Error processing card:", error);
-        return { error: 'Failed to recognize card.', status: 500 }; // return generic error response
+        return { error: 'Failed to recognize card.', status: 500 };
     }
 }
 
-module.exports = { processCard }; // export the function for external use
+module.exports = { processCard }; // export the function
