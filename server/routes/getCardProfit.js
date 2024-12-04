@@ -8,10 +8,12 @@ router.get('/card-profit', async (req, res) => {
 	const gmeMembership = req.query.gmeMembership === 'true';
 	const expeditedTurnaround = req.query.expeditedTurnaround === 'true';
 
+	// if salePrice or pricePaid is not a number, return an error
 	if (pricePaid === undefined || isNaN(pricePaid)) {
 		return res.status(400).json({ error: 'Price Paid is required' });
 	}
 
+	// if a user selects expedited turnaround, the sale price must be less than or equal to $500
 	if (expeditedTurnaround && salePrice > 500) {
 		return res
 			.status(400)
@@ -31,7 +33,7 @@ router.get('/card-profit', async (req, res) => {
 		// Determine PSA grading cost based on sale price
 		let psaGradingCost;
 		if (salePrice <= 500) {
-			psaGradingCost = expeditedTurnaround ? 39.99 : 24.99;
+			psaGradingCost = expeditedTurnaround ? 39.99 : 24.99; // If expedited turnaround is selected, grading cost is $39.99, else $24.99
 		} else if (salePrice <= 1500) {
 			psaGradingCost = 74.99;
 		} else if (salePrice <= 2500) {
