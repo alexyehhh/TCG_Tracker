@@ -7,98 +7,115 @@ import { Link } from 'react-router-dom';
 import PokemonBackground from '../../components/PokemonBackground/PokemonBackground';
 import axios from 'axios';
 
+// component definition for the upload page
 const UploadPage = () => {
-	const [dragActive, setDragActive] = useState(false);
-	const [file, setFile] = useState(null); // Only allow one file
-	const [matches, setMatches] = useState([]);
-	const [error, setError] = useState('');
-	const navigate = useNavigate();
-
+	const [dragActive, setDragActive] = useState(false); // indicates if a file is being dragged over the drop area
+	const [file, setFile] = useState(null); // stores the selected file but only one is allowed
+	const [matches, setMatches] = useState([]); // stores the matched results from the server
+	const [error, setError] = useState(''); // stores error messages for user feedback
+	const navigate = useNavigate(); // navigation instance for programmatic route changes
+  
+	// handle drag events
 	const handleDrag = (e) => {
-		e.preventDefault();
-		e.stopPropagation();
-		if (e.type === 'dragenter' || e.type === 'dragover') {
-			setDragActive(true);
-		} else if (e.type === 'dragleave') {
-			setDragActive(false);
-		}
+	  e.preventDefault(); // prevent default behavior
+	  e.stopPropagation(); // stop event propagation
+	  if (e.type === 'dragenter' || e.type === 'dragover') {
+		setDragActive(true); // set dragActive to true if a file is dragged over
+	  } else if (e.type === 'dragleave') {
+		setDragActive(false); // set dragActive to false if the drag leaves the area
+	  }
 	};
-
+  
+	// handle file drop event
 	const handleDrop = (e) => {
-		e.preventDefault();
-		e.stopPropagation();
-		setDragActive(false);
-
-		const droppedFile = e.dataTransfer.files[0]; // Only take the first file
-		const previewFile = {
-			file: droppedFile,
-			preview: URL.createObjectURL(droppedFile),
-		};
-		// Replace existing file with new file
-		if (file) {
-			URL.revokeObjectURL(file.preview); // Revoke URL of the old preview
-		}
-		setFile(previewFile);
+	  e.preventDefault(); // prevent default behavior
+	  e.stopPropagation();
+	  setDragActive(false); // reset dragActive state
+  
+	  // get the first file from the dropped files
+	  const droppedFile = e.dataTransfer.files[0];
+	  const previewFile = {
+		file: droppedFile, // actual file object
+		preview: URL.createObjectURL(droppedFile), // url for previewing the image
+	  };
+  
+	  // replace the current file if one already exists
+	  if (file) {
+		URL.revokeObjectURL(file.preview); // remove the URL of the previous preview to free memory
+	  }
+	  setFile(previewFile); // update state with the new file
 	};
-
+  
+	// handle file input change
 	const handleChange = (e) => {
-		const uploadedFile = e.target.files[0]; // Only take the first file
-		const previewFile = {
-			file: uploadedFile,
-			preview: URL.createObjectURL(uploadedFile),
-		};
-		// Replace existing file with new file
-		if (file) {
-			URL.revokeObjectURL(file.preview); // Revoke URL of the old preview
-		}
-		setFile(previewFile);
+	  // get the first file from the input
+	  const uploadedFile = e.target.files[0];
+	  const previewFile = {
+		file: uploadedFile,
+		preview: URL.createObjectURL(uploadedFile), // create a preview URL
+	  };
+  
+	  // replace the current file if one already exists
+	  if (file) {
+		URL.revokeObjectURL(file.preview); // remove the URL of the previous preview
+	  }
+	  setFile(previewFile); // update state with the new file
 	};
-
+  
+	// remove the current file from the state
 	const removeFile = () => {
-		if (file) {
-			URL.revokeObjectURL(file.preview); // Revoke URL to release memory
-			setFile(null); // Reset the file state
-		}
+	  if (file) {
+		URL.revokeObjectURL(file.preview); // remove the URL of the current file preview
+		setFile(null); // clear the file state
+	  }
 	};
-
+  
+	// handle file upload to the server
 	const handleUpload = async () => {
-		if (!file) {
-			setError('Please select an image first.');
-			return;
-		}
-
-		const formData = new FormData();
-		formData.append('file', file.file);
-
-		try {
-			console.log('Starting upload...');
-			const response = await axios.post(
-				`${import.meta.env.VITE_API_URL}/api/recognizeCard`,
-				formData,
-				{
-					headers: {
-						'Content-Type': 'multipart/form-data',
-					},
-				}
-			);
-			console.log('Server response:', response.data);
-			const { matches, searchQuery } = response.data;
-			setError('');
-			setMatches(matches || []);
-
-			// Redirect to PokemonCards page with search query
-			navigate(`/pokemon-cards?name=${encodeURIComponent(searchQuery)}`);
-		} catch (err) {
-			console.error(
-				'Error uploading image:',
-				err.response ? err.response.data : err.message
-			);
-			setError(
-				err.response && err.response.data.error
-					? err.response.data.error
-					: 'Failed to recognize card. Please try again.'
-			);
-		}
+	  // check if a file is selected
+	  if (!file) {
+		setError('Please select an image first.'); // show error if no file is selected
+		return;
+	  }
+  
+	  // prepare the file data for upload
+	  const formData = new FormData();
+	  formData.append('file', file.file); // append the file to the form data
+  
+	  try {
+		console.log('Starting upload...');
+		// send the file to the server using an API request
+		const response = await axios.post(
+		  `${import.meta.env.VITE_API_URL}/api/recognizeCard`, // endpoint for card recognition
+		  formData,
+		  {
+			headers: {
+			  'Content-Type': 'multipart/form-data', // specify the content type
+			},
+		  }
+		);
+  
+		console.log('Server response:', response.data);
+		const { matches, searchQuery } = response.data; // get response data
+		setError(''); // clear any previous errors
+		setMatches(matches || []); // update matches state with the response
+  
+		// go to the PokemonCards page with the search query as a parameter
+		navigate(`/pokemon-cards?name=${encodeURIComponent(searchQuery)}`);
+	  } catch (err) {
+		// handle errors from the upload process
+		console.error(
+		  'Error uploading image:',
+		  err.response ? err.response.data : err.message // log detailed error information
+		);
+  
+		// display error message to the user
+		setError(
+		  err.response && err.response.data.error
+			? err.response.data.error //  server-provided error message if available
+			: 'Failed to recognize card. Please try again.' // fallback error message
+		);
+	  }
 	};
 
 	return (

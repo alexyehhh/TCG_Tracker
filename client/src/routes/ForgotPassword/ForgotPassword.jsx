@@ -9,6 +9,7 @@ const ForgotPassword = () => {
 	const [isEmailSent, setIsEmailSent] = useState(false);
 	const navigate = useNavigate();
 
+	// Send password reset email
 	const handleResetPassword = async (e) => {
 		e.preventDefault();
 		try {
@@ -19,6 +20,7 @@ const ForgotPassword = () => {
 		}
 	};
 
+	// Navigates back to the previous page
 	const handleBack = () => {
 		navigate(-1);
 	};

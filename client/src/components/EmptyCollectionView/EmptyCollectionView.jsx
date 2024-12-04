@@ -3,9 +3,14 @@ import { Link } from 'react-router-dom';
 import styles from './EmptyCollectionView.module.css';
 import PokemonBackground from '../PokemonBackground/PokemonBackground';
 
+// This coomponent displays when the user's collection is empty.
+// This provides options to search for or upload cards.
+
 const EmptyCollectionView = () => (
 	<div className={styles.container} style={{ backgroundColor: '#fff4fc' }}>
+		{/* Pokeball Background color */}
 		<PokemonBackground color='#2f213e' />
+		{/* Navigation bar */}
 		<nav className={styles.navbar}>
 			<ul className={styles.navLinks}>
 				<li>
@@ -20,8 +25,13 @@ const EmptyCollectionView = () => (
 				<li>
 					<Link to='/upload'>Upload</Link>
 				</li>
+				<li>
+					<Link to='/help'>Help</Link>
+				</li>
 			</ul>
 		</nav>
+
+		{/* Main content for Empty Collection */}
 		<div className={`${styles.mainContent} ${styles.emptyState}`}>
 			<h1 className={styles.title}>Your Collection is Empty!</h1>
 			<p className={styles.emptyMessage}>

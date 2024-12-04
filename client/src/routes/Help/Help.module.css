@@ -81,9 +81,13 @@
 }
 
 .faqAccordion {
-	width: 100%;
-	max-width: 600px;
-	margin: 0 auto;
+    width: 150%; /* Keep the large width */
+    max-width: 1200px; /* Optional: Limit the maximum width */
+    margin: 0 auto; /* Center horizontally */
+    position: relative; /* Position it relative for transform adjustments */
+    left: 50%; /* Move it to the center of the viewport */
+    transform: translateX(-50%); /* Center the element by offsetting half its width */
+    padding: 20px; /* Add padding for internal spacing */
 }
 
 .faqItem {
@@ -104,8 +108,8 @@
 	cursor: pointer;
 	background-color: white;
 	/* border-top-left-radius: 8px;
-	border-top-right-radius: 8px; */
-	/* border-radius: 8px; */
+	border-top-right-radius: 8px;
+	border-radius: 8px; */
 	transition: all 0.3s ease;
 }
 
@@ -122,7 +126,7 @@
 
 .faqAnswer {
 	padding: 1rem;
-	background-color: #f0f0f0;
+	background-color: #f8f7f7;
 	color: #191143;
 	font-size: 1rem;
 	line-height: 1.6;
@@ -160,6 +164,26 @@
 	margin: 0;
 }
 
+.faqAnswer img {
+    width: 97%;
+    max-width: 100%;
+    height: auto;
+    margin-top: 1rem;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
 .faqItem:last-child {
 	margin-bottom: 0;
+}
+
+.videoContainer {
+    width: 150%; /* Match the FAQ width */
+    max-width: 1200px; /* Optional: Keep a maximum width */
+    margin: 0 auto; /* Center horizontally */
+    position: relative; /* Position for centering */
+    left: 50%; /* Move to center */
+    transform: translateX(-50%); /* Offset by half its width */
+    text-align: center; /* Center the content inside */
+    padding: 20px; /* Add internal padding for spacing */
 }
