@@ -175,6 +175,12 @@ const CardDetail = () => {
 		fetchPrices();
 	}, [card?.name, card?.number, card?.set?.printedTotal]);
 
+	// Reset profits when the selected grade changes
+	useEffect(() => {
+		setProfit(null); // Reset GameStop profit
+		setPSA(null);    // Reset PSA profit
+	}, [selectedGrade]);
+
 	// Collection check effect
 	useEffect(() => {
 		if (userEmail && card) {
@@ -247,66 +253,53 @@ const CardDetail = () => {
 		if (!pricePaid || !cardPrices[selectedGrade]) {
 			return;
 		}
-
-		const isGameStopProSelected =
-			document.getElementById('gamestop-pro').checked;
-		const isExpeditedTurnaroundSelected =
-			document.getElementById('psa-sub').checked;
-		const salePrice =
-			cardPrices[selectedGrade] !== 'N/A' ? cardPrices[selectedGrade] : 0;
-
-		// Validate conditions
-		if (salePrice >= 500) {
-			if (isGameStopProSelected && isExpeditedTurnaroundSelected) {
-				const confirmClear = window.confirm(
-					'PSA Expedited Turnaround and GameStop Pro are not available for cards valued at $500 or more.'
-				);
-				if (!confirmClear) {
-					return;
-				}
-			} else if (isGameStopProSelected) {
-				const confirmClear = window.confirm(
-					'GameStop Pro is not available for cards valued at $500 or more.'
-				);
-				if (!confirmClear) {
-					return;
-				}
-			} else if (isExpeditedTurnaroundSelected) {
-				const confirmClear = window.confirm(
-					'PSA Expedited Turnaround is not available for cards valued at $500 or more.'
-				);
-				if (!confirmClear) {
-					return;
-				}
-			}
-			return;
-		}
-
+	
+		const isGameStopProSelected = document.getElementById('gamestop-pro').checked;
+		const isExpeditedTurnaroundSelected = document.getElementById('psa-sub').checked;
+		const salePrice = cardPrices[selectedGrade] !== 'N/A' ? cardPrices[selectedGrade] : 0;
+	
 		setIsCalculating(true);
 		setError(null);
+	
 		try {
-			const response = await axios.get(
+			// Handle GameStop grading restriction
+			if (salePrice > 500) {
+				setProfit('GameStop cannot grade cards valued over $500');
+			} else {
+				const gmeResponse = await axios.get(
+					`${import.meta.env.VITE_API_URL}/card-profit`,
+					{
+						params: {
+							salePrice: salePrice,
+							pricePaid: parseFloat(pricePaid),
+							gmeMembership: isGameStopProSelected,
+							expeditedTurnaround: isExpeditedTurnaroundSelected,
+						},
+					}
+				);
+				setProfit(gmeResponse.data.gmeProfit);
+			}
+	
+			// Always calculate PSA profit
+			const psaResponse = await axios.get(
 				`${import.meta.env.VITE_API_URL}/card-profit`,
 				{
 					params: {
 						salePrice: salePrice,
 						pricePaid: parseFloat(pricePaid),
-						gmeMembership: isGameStopProSelected,
 						expeditedTurnaround: isExpeditedTurnaroundSelected,
 					},
 				}
 			);
-
-			setProfit(response.data.gmeProfit);
-			setPSA(response.data.psaProfit);
+			setPSA(psaResponse.data.psaProfit);
 		} catch (error) {
 			console.error('Error calculating profit:', error);
 			setError('Failed to calculate profit');
 		} finally {
 			setIsCalculating(false);
 		}
-	};
-
+	};	
+	
 	// Add card to collection
 	const addToCollection = async (userEmail, cardData) => {
 		try {
@@ -621,16 +614,23 @@ const CardDetail = () => {
 							{profit !== null && (
 								<div
 									className={styles.profitResult}
-									style={{ textAlign: 'right', marginTop: '10px' }}>
-									<p
-										style={{
-											color: profit >= 0 ? '#22c55e' : '#ef4444',
-											fontWeight: 'bold',
-										}}>
-										GameStop Grading Profit: ${profit.toFixed(2)}
-									</p>
+									style={{ textAlign: 'right', marginTop: '10px' }}
+								>
+									{typeof profit === 'string' ? (
+										<p style={{ color: '#ef4444', fontWeight: 'bold' }}>{profit}</p>
+									) : (
+										<p
+											style={{
+												color: profit >= 0 ? '#22c55e' : '#ef4444',
+												fontWeight: 'bold',
+											}}
+										>
+											GameStop Grading Profit: ${profit.toFixed(2)}
+										</p>
+									)}
 								</div>
 							)}
+
 							{PSA !== null && (
 								<div
 									className={styles.PSAResult}

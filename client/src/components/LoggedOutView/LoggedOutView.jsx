@@ -8,9 +8,13 @@ import moonbreon from '../../assets/images/moonbreon.jpg';
 import venuEX151 from '../../assets/images/venuEX151.png';
 import { useNavigate, Link } from 'react-router-dom';
 
+// A Component for the logged-out view of the application
+// Displays a preview grid of cards and options to log in or sign up
+
 export default function LoggedOutView() {
 	const navigate = useNavigate();
 
+	// Handles the "Log in" button to navigate to the login page
 	const handleLogin = () => {
 		navigate('/login');
 	};
@@ -22,6 +26,7 @@ export default function LoggedOutView() {
 				backgroundColor: '#8874b4',
 			}}>
 			<PokemonBackground color='#2f213e' />
+			{/* Navigation bar */}
 			<nav className={styles.navbar}>
 				<ul className={styles.navLinks}>
 					<li>
@@ -41,7 +46,8 @@ export default function LoggedOutView() {
 					</li>
 				</ul>
 			</nav>
-
+			
+			{/* Main content */}
 			<div className={styles.loggedOutContent}>
 				<div className={styles.previewGrid}>
 					<img
