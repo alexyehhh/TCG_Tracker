@@ -19,6 +19,7 @@ export default function Help() {
 		setOpenIndex(openIndex === index ? null : index);
 	};
 
+	// Questions for faq accordion
 	const questions = [
 		'What can I use TCG Tracker for?',
 		'How does TCG Tracker determine the prices for Pokémon cards in each grade?',
@@ -38,6 +39,7 @@ export default function Help() {
 		'Why do some card prices display as N/A?',
 	];
 
+	// Answers for faq accordion that correspond to the questions above
 	const answers = [
 		<ul>
 			<li>Search for Pokémon cards and view their current market value.</li>
@@ -368,7 +370,7 @@ export default function Help() {
 					))}
 				</div>
 
-				{/* Add Video Here */}
+				{/* Demo Video */}
 				<div className={styles.videoContainer}>
 					<h3>Watch the TCG Tracker Demo Video</h3>
 					<video
