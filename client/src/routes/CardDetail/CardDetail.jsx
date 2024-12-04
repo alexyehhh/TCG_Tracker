@@ -263,8 +263,8 @@ const CardDetail = () => {
 	
 		try {
 			// Handle GameStop grading restriction
-			if (salePrice > 500) {
-				setProfit('GameStop cannot grade cards valued over $500');
+			if (salePrice > 200) {
+				setProfit('GameStop cannot grade cards valued over $200');
 			} else {
 				const gmeResponse = await axios.get(
 					`${import.meta.env.VITE_API_URL}/card-profit`,
@@ -567,13 +567,21 @@ const CardDetail = () => {
 					</p>
 					<div className={styles.priceProfit}>
 						<div className={styles.sectionSpecial}>
-							<input
-								type='number'
-								placeholder='Price paid for card'
-								value={pricePaid}
-								onChange={(e) => setPricePaid(e.target.value)}
-								className={styles.priceInput}
-							/>
+						<input
+							type='number'
+							placeholder='Price paid for card'
+							value={pricePaid}
+							onChange={(e) => {
+								const value = e.target.value;
+								if (Number(value) < 0) {
+									window.confirm('Please enter a positive number for price paid');
+									return;
+								}
+								setPricePaid(value);
+							}}
+							className={styles.priceInput}
+						/>
+
 							<div className={styles.checkboxGroup}>
 								<div className={styles.checkboxContainer}>
 									<input
