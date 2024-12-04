@@ -175,6 +175,12 @@ const CardDetail = () => {
 		fetchPrices();
 	}, [card?.name, card?.number, card?.set?.printedTotal]);
 
+	// Reset profits when the selected grade changes
+	useEffect(() => {
+		setProfit(null); // Reset GameStop profit
+		setPSA(null);    // Reset PSA profit
+	}, [selectedGrade]);
+
 	// Collection check effect
 	useEffect(() => {
 		if (userEmail && card) {
@@ -252,37 +258,48 @@ const CardDetail = () => {
 		const isExpeditedTurnaroundSelected = document.getElementById('psa-sub').checked;
 		const salePrice = cardPrices[selectedGrade] !== 'N/A' ? cardPrices[selectedGrade] : 0;
 	
-		if (salePrice > 500) {
-			setProfit('GameStop cannot grade cards valued over $500');
-			return;
-		}
-	
 		setIsCalculating(true);
 		setError(null);
+	
 		try {
-			const response = await axios.get(
+			// Handle GameStop grading restriction
+			if (salePrice > 500) {
+				setProfit('GameStop cannot grade cards valued over $500');
+			} else {
+				const gmeResponse = await axios.get(
+					`${import.meta.env.VITE_API_URL}/card-profit`,
+					{
+						params: {
+							salePrice: salePrice,
+							pricePaid: parseFloat(pricePaid),
+							gmeMembership: isGameStopProSelected,
+							expeditedTurnaround: isExpeditedTurnaroundSelected,
+						},
+					}
+				);
+				setProfit(gmeResponse.data.gmeProfit);
+			}
+	
+			// Always calculate PSA profit
+			const psaResponse = await axios.get(
 				`${import.meta.env.VITE_API_URL}/card-profit`,
 				{
 					params: {
 						salePrice: salePrice,
 						pricePaid: parseFloat(pricePaid),
-						gmeMembership: isGameStopProSelected,
 						expeditedTurnaround: isExpeditedTurnaroundSelected,
 					},
 				}
 			);
-	
-			setProfit(response.data.gmeProfit);
-			setPSA(response.data.psaProfit);
+			setPSA(psaResponse.data.psaProfit);
 		} catch (error) {
 			console.error('Error calculating profit:', error);
 			setError('Failed to calculate profit');
 		} finally {
 			setIsCalculating(false);
 		}
-	};
+	};	
 	
-
 	// Add card to collection
 	const addToCollection = async (userEmail, cardData) => {
 		try {
