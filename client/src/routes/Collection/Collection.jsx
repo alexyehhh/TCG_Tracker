@@ -19,7 +19,7 @@ import CollectionCard from '../../components/CollectionCard/CollectionCard';
 import LoggedOutView from '../../components/LoggedOutView/LoggedOutView';
 import EmptyCollectionView from '../../components/EmptyCollectionView/EmptyCollectionView';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
-import cardSets from '../../util/cardSets.js';
+import cardSets from '../../util/cardSets.js'; // list of card sets for filtering
 import cardRarities from '../../util/cardRarities.js';
 // import { getCachedPrice, setCachedPrice } from '../../util/cacheUtils.js'; // Should use getCachedPrice too
 import { setCachedPrice } from '../../util/cacheUtils.js';
@@ -29,10 +29,10 @@ const Collection = () => {
 	const navigate = useNavigate();
 	const [user, setUser] = useState(null);
 	const [cards, setCards] = useState([]);
-	const [filteredCards, setFilteredCards] = useState([]);
+	const [filteredCards, setFilteredCards] = useState([]); // Cards filtered by search or filters
 	const auth = getAuth();
 	const [hasCards, setHasCards] = useState(false);
-	const [searchTerm, setSearchTerm] = useState('');
+	const [searchTerm, setSearchTerm] = useState(''); // Search term for filtering cards
 	const [loading, setLoading] = useState(true);
 	const [selectedCards, setSelectedCards] = useState(new Set());
 	const [filters, setFilters] = useState({
@@ -49,6 +49,7 @@ const Collection = () => {
 	const [showGraph, setShowGraph] = useState(false); // State for showing the graph, set to false
 	const [graphData, setGraphData] = useState([]);
 
+	// sort cards by date added so newest first
 	const alphabeticalCards = cards.sort((a, b) => {
 		return b.addedAt.toDate() - a.addedAt.toDate();
 	});
@@ -98,7 +99,7 @@ const Collection = () => {
 		setShowBulkEligible((prev) => !prev);
 
 		if (!showBulkEligible) {
-			// Filter to show only bulk-eligible cards
+			// filter to show only bulk-eligible cards
 			const bulkEligibleCards = cards.filter(
 				(card) =>
 					card.selectedPrice !== 'N/A' &&
@@ -136,10 +137,10 @@ const Collection = () => {
 		return () => unsubscribe();
 	}, []);
 
-	// change input value of search as you type
+	// handle search input change and update filtered cards in real-time
 	const handleInputChange = (e) => {
 		const value = e.target.value;
-		setSearchTerm(value);
+		setSearchTerm(value); // update the search term state
 
 		const sourceCards = showBulkEligible
 			? cards.filter(
@@ -152,35 +153,41 @@ const Collection = () => {
 			: cards;
 
 		if (value.trim() !== '') {
+			 // filter cards matching the search term
 			const searchFiltered = sourceCards.filter((card) =>
 				card.name.toLowerCase().includes(value.toLowerCase())
 			);
 			setFilteredCards(searchFiltered);
 		} else {
-			setFilteredCards(sourceCards); // reset to the appropriate card list
+			setFilteredCards(sourceCards);  // reset to all cards
 		}
 	};
 
-	// handle search
+	// handle search functionality
 	const handleSearchCollection = () => {
-		const sourceCards = showBulkEligible
-			? cards.filter(
-					(card) =>
-						card.selectedPrice !== 'N/A' &&
-						Number(card.selectedPrice) > 0 &&
-						Number(card.selectedPrice) < 500 &&
-						card.selectedGrade === 'ungraded'
-			  )
-			: cards;
+	// If "showBulkEligible" is true, filter cards to include only those that meet bulk-eligibility criteria:
+	const sourceCards = showBulkEligible
+		? cards.filter(
+			(card) =>
+			card.selectedPrice !== 'N/A' && // exclude cards with no price
+			Number(card.selectedPrice) > 0 && // include cards with a price greater than 0
+			Number(card.selectedPrice) < 500 && // include cards with a price less than 500
+			card.selectedGrade === 'ungraded' // include only ungraded cards
+		)
+		: cards; // if not showing bulk-eligible cards then use the entire card collection
 
-		const searchFiltered = sourceCards.filter((card) =>
-			card.name.toLowerCase().includes(searchTerm.toLowerCase())
-		);
+	// filter the cards from the selected source based on the search term
+	const searchFiltered = sourceCards.filter((card) =>
+		// check if the card name includes the search term
+		card.name.toLowerCase().includes(searchTerm.toLowerCase())
+	);
 
-		setFilteredCards(searchFiltered);
+	// update the state with the filtered list of cards
+	// this will make the UI to display only the cards that match the search criteria
+	setFilteredCards(searchFiltered);
 	};
 
-	// user presses Enter key to search
+	// trigger search when the user presses Enter in the search input
 	const handleKeyDown = (event) => {
 		if (event.key === 'Enter') {
 			handleSearchCollection();
@@ -243,10 +250,6 @@ const Collection = () => {
 								(totalPricesByDate[date] || 0) + numericPrice;
 						}
 					}
-
-					// Wait for the result of fetchPrices
-					// const res = await fetchPrices(card);
-					// priceList.push(res);
 				}
 			}
 			setPrice(totalValue.toFixed(2));
@@ -325,12 +328,12 @@ const Collection = () => {
 		setGraphData(graphDataArray);
 	}, [cards]);
 
-	// Handle filter change
+	// handle changes to filter inputs and applies filters to cards
 	const handleFilterChange = (e) => {
-		const { name, value } = e.target;
+		const { name, value } = e.target; // get filter name and value
 		setFilters((prevFilters) => ({
-			...prevFilters,
-			[name]: value, // Update the specific filter with the new value
+		...prevFilters,
+		[name]: value, // update the relevant filter value
 		}));
 	};
 
@@ -435,57 +438,58 @@ const Collection = () => {
 		}
 	};
 
-	// Apply filters whenever filters change
+	// filter cards based on the selected filters whenever filters or the card list change
 	useEffect(() => {
-		let filtered = [...alphabeticalCards];
-
-		// Filter by rarity
+		// start with a copy of the sorted cards in alphabetical order
+		let filtered = [...alphabeticalCards]; 
+	
+		// apply the rarity filter if a rarity is selected
 		if (filters.rarity) {
-			filtered = filtered.filter(
-				(card) =>
-					card.rarity &&
-					card.rarity.toLowerCase() === filters.rarity.toLowerCase()
-			);
+		filtered = filtered.filter(
+			(card) =>
+			card.rarity && //make surethe card has a rarity field
+			card.rarity.toLowerCase() === filters.rarity.toLowerCase() // check if the card's rarity matches the selected rarity
+		);
 		}
-
-		// Filter by price range
+	
+		// apply the price range filter if a price range is selected
 		if (filters.price) {
-			if (filters.price === '500+') {
-				// Handle case for prices above 500
-				filtered = filtered.filter((card) => Number(card.selectedPrice) > 500);
-			} else {
-				// Handle price ranges
-				const [minPrice, maxPrice] = filters.price.split('-').map(Number);
-				filtered = filtered.filter((card) => {
-					const cardPrice = Number(card.selectedPrice || 0);
-					return cardPrice >= minPrice && cardPrice <= maxPrice;
-				});
-			}
+		if (filters.price === '500+') {
+			// special case for prices above 500
+			filtered = filtered.filter((card) => Number(card.selectedPrice) > 500); // include only cards with prices greater than 500
+		} else {
+			// handle cases for specific price ranges
+			const [minPrice, maxPrice] = filters.price.split('-').map(Number); // split the price range into minimum and maximum values
+			filtered = filtered.filter((card) => {
+			const cardPrice = Number(card.selectedPrice || 0); // parse the card's price
+			return cardPrice >= minPrice && cardPrice <= maxPrice; // include cards within the selected price range
+			});
 		}
-
-		// Filter by type
+		}
+	
+		// apply the type filter if a type is selected
 		if (filters.type) {
-			filtered = filtered.filter(
-				(card) =>
-					card.types &&
-					card.types
-						.map((type) => type.toLowerCase())
-						.includes(filters.type.toLowerCase())
-			);
+		filtered = filtered.filter(
+			(card) =>
+			card.types && // ensure the card has a types field
+			card.types
+				.map((type) => type.toLowerCase()) // convert all types to lowercase for comparison
+				.includes(filters.type.toLowerCase()) // check if the card's types include the selected type
+		);
 		}
-
-		// Filter by set name
+	
+		// apply the set filter if a set name is selected
 		if (filters.set) {
-			// Make sure the card setName matches the selected set exactly
-			filtered = filtered.filter(
-				(card) =>
-					card.setName &&
-					card.setName.toLowerCase() === filters.set.toLowerCase()
-			);
+		filtered = filtered.filter(
+			(card) =>
+			card.setName && //ensure the card has a setName field
+			card.setName.toLowerCase() === filters.set.toLowerCase() // check if the card's set name matches the selected set name
+		);
 		}
-
-		setFilteredCards(filtered); // Update the list of displayed cards based on filters
-	}, [filters, cards]);
+	
+		// update the filtered cards state which will be used to render the card list in the UI
+		setFilteredCards(filtered); 
+	}, [filters, cards]); // run this effect whenever the filters or the cards array changes
 
 	// If user is not logged in, show the logged out view
 	if (loading && user) {

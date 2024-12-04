@@ -27,11 +27,6 @@ async function writeToFile(cardName, cardId, searchQuery, img, name, fail) {
     // const mismatchPrefix = cardName.trim().toLowerCase() !== name.trim().toLowerCase() ? "MISMATCH: " : "";
     const failure = fail == true ? "Image could not be processed! " : "";
 
-    // If there is a mismatch, increment the mismatch counter
-    // if (mismatchPrefix) {
-    //     mismatchCount++;
-    // }
-
     if (failure) {
         failureCount++;
     }
@@ -46,19 +41,6 @@ async function writeToFile(cardName, cardId, searchQuery, img, name, fail) {
         console.error("Error writing to file:", error.message);
     }
 }
-
-// async function appendMismatchCount(numCards) {
-//     const filePath = path.join(__dirname, 'search_results.txt');
-//     const mismatchData = `\nTotal Mismatches: ${mismatchCount}/${numCards} cards checked\n`;
-
-//     try {
-//         // Append the mismatch count at the end of the file
-//         await fs.promises.appendFile(filePath, mismatchData);
-//         console.log('Mismatch count appended to file.');
-//     } catch (error) {
-//         console.error("Error appending mismatch count to file:", error.message);
-//     }
-// }
 
 async function appendFailureCount(numCards) {
     const filePath = path.join(__dirname, 'search_results.txt');

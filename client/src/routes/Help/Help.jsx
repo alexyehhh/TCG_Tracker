@@ -19,6 +19,7 @@ export default function Help() {
 		setOpenIndex(openIndex === index ? null : index);
 	};
 
+	// Questions for faq accordion
 	const questions = [
 		'What can I use TCG Tracker for?',
 		'How does TCG Tracker determine the prices for Pokémon cards in each grade?',
@@ -38,6 +39,7 @@ export default function Help() {
 		'Why do some card prices display as N/A?',
 	];
 
+	// Answers for faq accordion that correspond to the questions above
 	const answers = [
 		<ul>
 			<li>Search for Pokémon cards and view their current market value.</li>
@@ -247,18 +249,7 @@ export default function Help() {
 			<p>
 				If you are a <strong>GameStop Pro</strong> member, you are eligible for
 				free shipping. Otherwise, there is a flat shipping fee of{' '}
-				<strong>$4.99 per order</strong>. The following grading options are
-				available:
-			</p>
-			<ul>
-				<li>
-					<strong>$15.99/card</strong> with a declared value of $200 per card.
-				</li>
-				<li>
-					<strong>$19.99/card</strong> with a declared value of $500 per card.
-				</li>
-			</ul>
-			<p>
+				<strong>$4.99 per order</strong>. The only grading option for Pokemon cards is : <strong>$15.99/card</strong> with a declared value of $200 per card. 
 				For more information about GameStop grading services, visit{' '}
 				<a
 					href='https://www.gamestop.com/card-grading-service#card_grading_service_steps'
@@ -368,7 +359,7 @@ export default function Help() {
 					))}
 				</div>
 
-				{/* Add Video Here */}
+				{/* Demo Video */}
 				<div className={styles.videoContainer}>
 					<h3>Watch the TCG Tracker Demo Video</h3>
 					<video

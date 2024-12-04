@@ -282,34 +282,6 @@
 	opacity: 0.5; /* Optional: Grays out the button */
 }
 
-/* .backButton {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	background: none;
-	border: none;
-	cursor: pointer;
-	font-size: 16px;
-	color: white;
-	padding: 0;
-}
-
-.backButton:hover {
-	color: #d8b4fe;
-}
-.backButton:hover .backIcon {
-	transform: translateX(5px);
-}
-
-.backIcon {
-	width: 20px;
-	height: 20px;
-	vertical-align: middle;
-	fill: currentColor;
-	overflow: hidden;
-	transition: transform 0.5s ease;
-} */
-
 .graphPlaceholder {
 	text-align: center;
 	padding: 2rem;
