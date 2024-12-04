@@ -249,18 +249,7 @@ export default function Help() {
 			<p>
 				If you are a <strong>GameStop Pro</strong> member, you are eligible for
 				free shipping. Otherwise, there is a flat shipping fee of{' '}
-				<strong>$4.99 per order</strong>. The following grading options are
-				available:
-			</p>
-			<ul>
-				<li>
-					<strong>$15.99/card</strong> with a declared value of $200 per card.
-				</li>
-				<li>
-					<strong>$19.99/card</strong> with a declared value of $500 per card.
-				</li>
-			</ul>
-			<p>
+				<strong>$4.99 per order</strong>. The only grading option for Pokemon cards is : <strong>$15.99/card</strong> with a declared value of $200 per card. 
 				For more information about GameStop grading services, visit{' '}
 				<a
 					href='https://www.gamestop.com/card-grading-service#card_grading_service_steps'
