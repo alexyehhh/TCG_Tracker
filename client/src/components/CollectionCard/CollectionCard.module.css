@@ -76,7 +76,6 @@
 	position: absolute;
 	top: 4px;
 	left: 230px;
-	/* left: 10px; */
 	z-index: 5;
 	cursor: pointer;
 	opacity: 0;
