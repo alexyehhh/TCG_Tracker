@@ -61,11 +61,15 @@ function PokemonCards() {
 					// if the name is a set then construct the query using set.name
 					query = `set.name:"${pokemonName}"`;
 				} else {
-					// if not search by card name
+					//search by card name
 					if (pokemonName.toLowerCase().endsWith(' ex')) {
-						// handle EX and -EX suffixes
-						const baseName = pokemonName.slice(0, -3).trim(); // remove  EX
-						query = `(name:"${baseName} EX" OR name:"${baseName}-EX")`;
+						// handle GX cards
+						const baseName = pokemonName.slice(0, -3).trim(); // remove GX
+						query = `name:"${baseName} EX" OR name:"${baseName}-EX"`;
+					} else if (pokemonName.toLowerCase().endsWith(' gx')) {
+						// handle EX cards
+						const baseName = pokemonName.slice(0, -3).trim(); // remove EX
+						query = `name:"${baseName} GX" OR name:"${baseName}-GX"`;
 					} else {
 						query = `name:"${pokemonName}"`;
 					}
