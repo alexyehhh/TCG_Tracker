@@ -14,6 +14,7 @@ const SignIn = () => {
 	const [error, setError] = useState('');
 	const navigate = useNavigate();
 
+	// Sign in with Google
 	const handleGoogleSignIn = async () => {
 		try {
 			const result = await signInWithPopup(auth, googleProvider);
@@ -26,6 +27,7 @@ const SignIn = () => {
 		}
 	};
 
+	// Sign in with email and password
 	const handleLogin = async (e) => {
 		e.preventDefault();
 		try {
@@ -44,10 +46,12 @@ const SignIn = () => {
 		}
 	};
 
+	// Navigate back to previous page
 	const handleBack = () => {
 		navigate(-1);
 	};
 
+	// Toggle password visibility
 	const togglePasswordVisibility = () => {
 		setShowPassword(!showPassword);
 	};

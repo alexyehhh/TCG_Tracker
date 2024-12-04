@@ -18,16 +18,13 @@ import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import NoBulkCardsView from '../../components/NoBulkCardsView/NoBulkCardsView';
 import EmptyCollectionView from '../../components/EmptyCollectionView/EmptyCollectionView';
 import axios from 'axios';
-import { X } from 'lucide-react';
 
 const BulkGrading = () => {
-	// const [gradingCost, setGradingCost] = useState(0);
 	const [gradingProfit, setGradingProfit] = useState(0);
 	const [gradingCost, setGradingCost] = useState(0);
 	const [user, setUser] = useState(null);
 	const [cards, setCards] = useState([]);
 	const [filteredCards, setFilteredCards] = useState([]);
-	const auth = getAuth();
 	const [hasCards, setHasCards] = useState(false);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [loading, setLoading] = useState(true);
@@ -37,7 +34,7 @@ const BulkGrading = () => {
 		type: '', // type filter value
 		set: '', // set filter value
 	});
-	const [price, setPrice] = useState(0);
+	const auth = getAuth();
 	const navigate = useNavigate();
 	const [selectedCards, setSelectedCards] = useState(new Set()); // for tracking selected cards
 	const [showRemoveConfirm, setShowRemoveConfirm] = useState(null); // Track which card is showing remove confirmation
@@ -71,27 +68,15 @@ const BulkGrading = () => {
 		}
 	};
 
-	const handleRemoveClick = (e, cardId) => {
-		e.preventDefault(); // Prevent navigation
-		if (showRemoveConfirm === cardId) {
-			handleRemoveCard(cardId);
-		} else {
-			setShowRemoveConfirm(cardId);
-		}
-	};
-
 	const handleMouseLeave = () => {
 		setShowRemoveConfirm(null);
-	};
-
-	const handleBack = () => {
-		navigate(-1);
 	};
 
 	const alphabeticalCards = cards.sort((a, b) => {
 		return b.addedAt.toDate() - a.addedAt.toDate();
 	});
 
+	// Calculate grading costs and profits
 	const calculateCosts = async () => {
 		const selectedCards = filteredCards.filter((card) => card.sendBulk); // get selected cards
 		if (selectedCards.length < 20) {
@@ -140,7 +125,7 @@ const BulkGrading = () => {
 		return () => unsubscribe();
 	}, []);
 
-	// change input value of search as you type
+	// Change input value of search as you type
 	const handleInputChange = (e) => {
 		const value = e.target.value;
 		setSearchTerm(value);
@@ -155,7 +140,7 @@ const BulkGrading = () => {
 		}
 	};
 
-	// handle search
+	// Handle search
 	const handleSearchCollection = () => {
 		if (searchTerm.trim() !== '') {
 			const searchFiltered = cards.filter((card) =>
@@ -167,14 +152,14 @@ const BulkGrading = () => {
 		}
 	};
 
-	// user presses Enter key to search
+	// User presses Enter key to search
 	const handleKeyDown = (event) => {
 		if (event.key === 'Enter') {
 			handleSearchCollection();
 		}
 	};
 
-	// get user by email from Firestore
+	// Get user by email from Firestore
 	async function getUserByEmail(email) {
 		try {
 			const usersRef = collection(db, 'users');
@@ -197,7 +182,7 @@ const BulkGrading = () => {
 		}
 	}
 
-	// fetch user's cards from Firestore and set within state
+	// Fetch user's cards from Firestore and set within state
 	async function fetchUserCards(userId) {
 		try {
 			const cardsRef = collection(db, `users/${userId}/cards`);
@@ -215,7 +200,6 @@ const BulkGrading = () => {
 					totalValue += parseFloat(cardData.selectedPrice);
 				}
 			});
-			setPrice(totalValue.toFixed(2));
 			setCards(cardsList);
 			setCards(cardsList);
 			setHasCards(cardsList.length > 0);
@@ -228,6 +212,7 @@ const BulkGrading = () => {
 		}
 	}
 
+	// Fetch user's cards from Firestore and set within state
 	useEffect(() => {
 		const loadUserCards = async () => {
 			try {
@@ -245,13 +230,14 @@ const BulkGrading = () => {
 		loadUserCards();
 	}, [user]);
 
-	// apply filters whenever filters change
+	// Apply filters whenever filters change
 	useEffect(() => {
 		let filtered = [...alphabeticalCards];
 
 		setFilteredCards(filtered); // update the list of displayed cards based on filters
 	}, [filters, cards]);
 
+	// Clear all bulk selections
 	const clearAll = async () => {
 		try {
 			const confirmClear = window.confirm(
@@ -296,7 +282,7 @@ const BulkGrading = () => {
 		}
 	};
 
-	// handles checkbox change -> keeps track of state of checkbox
+	// Handles checkbox change -> keeps track of state of checkbox
 	const handleCheckboxChange = (cardId) => {
 		setSelectedCards((prevSelected) => {
 			const updatedSelected = new Set(prevSelected);
@@ -342,6 +328,7 @@ const BulkGrading = () => {
 		}
 	};
 
+	// If user is logged in and cards are still loading
 	if (loading && user) {
 		return (
 			<div className={`${styles.container}`}>
@@ -372,6 +359,7 @@ const BulkGrading = () => {
 		);
 	}
 
+	// Logged in view for user with cards
 	const LoggedInView = () =>
 		hasCards ? (
 			<div className={styles.container} style={{ backgroundColor: '#fff4fc' }}>
@@ -399,7 +387,6 @@ const BulkGrading = () => {
 				</nav>
 				<div className={styles.mainContent}>
 					<h1 className={styles.title}>To Grade Collection</h1>
-
 					<div className={styles.searchContainer}>
 						<div className={styles.searchBar}>
 							<input
@@ -436,7 +423,6 @@ const BulkGrading = () => {
 								onClick={calculateCosts}>
 								Calculate
 							</button>
-							{/* <div className={styles.grading}>Grading cost: {gradingCost}</div> */}
 							<div className={styles.grading}>
 								Bulk Grading Cost: ${gradingCost}
 							</div>
@@ -461,16 +447,6 @@ const BulkGrading = () => {
 										checked={selectedCards.has(card.id)}
 										onChange={() => handleCheckboxChange(card.id)}
 									/>
-									{/* <button
-										onClick={(e) => handleRemoveClick(e, card.id)}
-										className={`${styles.removeButton} ${
-											showRemoveConfirm === card.id
-												? styles.removeButtonConfirm
-												: ''
-										}`}
-										aria-label='Remove card'>
-										<X size={16} />
-									</button> */}
 									<Link
 										key={card.id}
 										to={`/card-detail/${card.id}`}
