@@ -91,28 +91,17 @@ router.get('/card-prices', async (req, res) => {
 					: sortedPrices[Math.floor(sortedPrices.length / 2)];
 
 			// Filter out outliers and collect filtered listings
-			// console.log('\nAnalyzing listings:');
 			data.itemSummaries.forEach((item, index) => {
 				const price = parseFloat(item.price.value);
 				const percentDiff = Math.abs(((price - median) / median) * 100);
-
-				// console.log(`\nListing ${index + 1}:`);
-				// console.log(`- Title: ${item.title}`);
-				// console.log(`- Price: $${price}`);
-				// console.log(`- Deviation from median: ${percentDiff.toFixed(2)}%`);
-				// console.log(`- URL: ${item.itemWebUrl}`);
-
 				if (percentDiff <= 50) {
-					// console.log('- Status: Included in calculation');
 					filteredListings.push({
 						title: item.title,
 						price: price,
 						url: item.itemWebUrl,
 					});
 				} else {
-					// console.log('- Status: Excluded as outlier');
 				}
-				// console.log('-------------------');
 			});
 
 			// Calculate average from filtered prices
@@ -142,7 +131,6 @@ router.get('/card-prices', async (req, res) => {
 			});
 		} else {
 			// Handle case where no items were found
-			// console.log('No listings found for the search query');
 			res.json({
 				cardName: cardName,
 				grade: cardGrade || 'ungraded',
