@@ -14,6 +14,7 @@ const UploadPage = () => {
 	const [error, setError] = useState('');
 	const navigate = useNavigate();
 
+	// Prevent default behavior for drag events
 	const handleDrag = (e) => {
 		e.preventDefault();
 		e.stopPropagation();
@@ -24,6 +25,7 @@ const UploadPage = () => {
 		}
 	};
 
+	// Prevent default behavior for drop event
 	const handleDrop = (e) => {
 		e.preventDefault();
 		e.stopPropagation();
@@ -41,6 +43,7 @@ const UploadPage = () => {
 		setFile(previewFile);
 	};
 
+	// Handle file input change
 	const handleChange = (e) => {
 		const uploadedFile = e.target.files[0]; // Only take the first file
 		const previewFile = {
@@ -54,6 +57,7 @@ const UploadPage = () => {
 		setFile(previewFile);
 	};
 
+	// Remove the file from the state
 	const removeFile = () => {
 		if (file) {
 			URL.revokeObjectURL(file.preview); // Revoke URL to release memory
@@ -61,6 +65,7 @@ const UploadPage = () => {
 		}
 	};
 
+	// Handle file upload
 	const handleUpload = async () => {
 		if (!file) {
 			setError('Please select an image first.');

@@ -13,6 +13,7 @@ const SignIn = () => {
 	const [showPassword, setShowPassword] = useState(false);
 	const navigate = useNavigate();
 
+	// Sign up with Google
 	const handleGoogleSignUp = async () => {
 		try {
 			const result = await signInWithPopup(auth, googleProvider);
@@ -24,6 +25,7 @@ const SignIn = () => {
 		}
 	};
 
+	// Sign up with email and password
 	const handleSignup = async (e) => {
 		e.preventDefault();
 		try {
@@ -40,10 +42,12 @@ const SignIn = () => {
 		}
 	};
 
+	// Navigate back
 	const handleBack = () => {
 		navigate(-1);
 	};
 
+	// Toggle password visibility
 	const togglePasswordVisibility = () => {
 		setShowPassword(!showPassword);
 	};

@@ -1,5 +1,9 @@
 # TCG_Tracker
 
+## Tutorial
+
+[![Youtube Demo](client/src/assets/images/HomePage.png)](https://www.youtube.com/watch?v=MsXO6uxJbBY)
+
 - Our TCG Tracker will allow users to determine whether a card is worth getting graded based on:
   - Cost
   - Grading cost
@@ -21,7 +25,3 @@
 - Run `cd server`
 - Run `npm install`
 - Run `npm run dev`
-
-### To run tests
-
-- Run `npm test`

@@ -22,13 +22,8 @@ async function wordExistsInFile(word) {
 // function to clean the card name from OCR text
 async function cleanName(name) {
     try {
-
-        // print the full OCR text for debugging
-        // console.log("Full OCR Parsed Text:", name);
-
         // special case for any card starting with ENERGY
         if (name[0].toLowerCase() === 'energy') {
-            console.log("Energy card detected.");
             return 'energy'; // directly return energy for these cards
         }
 
@@ -73,6 +68,9 @@ async function cleanName(name) {
                 if (word.endsWith('ex') && word !== 'toxapex' && word !== 'calyrex') {
                     word = word.slice(0, -2); // remove the 'ex' at the end
                 }
+                if (word.endsWith('gx')) {
+                    word = word.slice(0, -2); // remove the 'gx' at the end
+                }
 
                 // add the word to cleaned if it exists in cardNames
                 if (await wordExistsInFile(word)) {
@@ -96,4 +94,4 @@ async function cleanName(name) {
     }
 }
 
-module.exports = { cleanName }; // export the cleanName function
+module.exports = { cleanName };
