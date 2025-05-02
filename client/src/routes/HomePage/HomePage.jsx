@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import { useSelector, useDispatch } from 'react-redux';
+import { login, logout, selectIsLoggedIn } from '../../features/auth/authSlice';
 import magnifyingGlass from '../../assets/images/magnifyingGlass.png';
 import charizard from '../../assets/images/charizard.png';
 import styles from './HomePage.module.css';
@@ -24,22 +26,25 @@ const RightArrow = () => {
 export default function HomePage() {
 	const cardRef = useRef(null);
 	const [searchTerm, setSearchTerm] = useState('');
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const navigate = useNavigate();
 	const auth = getAuth();
+	const dispatch = useDispatch();
+
+	const isLoggedIn = useSelector(selectIsLoggedIn);
 
 	// Check if user is logged in
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			if (user) {
-				setIsLoggedIn(true);
+				const userData = { uid: user.uid, email: user.email };
+				dispatch(login(userData));
 			} else {
-				setIsLoggedIn(false);
+				dispatch(logout());
 			}
 		});
 
 		return () => unsubscribe();
-	}, [auth]);
+	}, [auth, dispatch]);
 
 	// Card hover effect
 	useEffect(() => {
@@ -80,16 +85,11 @@ export default function HomePage() {
 		}
 	};
 
-	// Handle user logout
-	const handleLogout = () => {
-		signOut(auth);
-		navigate('/');
-	};
-
 	// Handle user login
 	const handleAuthClick = () => {
 		if (isLoggedIn) {
-			handleLogout();
+			signOut(auth);
+			navigate('/');
 		} else {
 			navigate('/login');
 		}
@@ -120,7 +120,9 @@ export default function HomePage() {
 							</li>
 						</ul>
 						<div className={styles.navbarRight}>
-							<button onClick={handleAuthClick} className={styles.signInBtn}>
+							<button
+								onClick={handleAuthClick}
+								className={styles.signInBtn}>
 								{isLoggedIn ? (
 									<h4>
 										Sign out <RightArrow />
@@ -141,8 +143,8 @@ export default function HomePage() {
 							Find your <br /> Pokémon <br /> Collection's Worth
 						</h1>
 						<p className={styles.leftContentSubtitle}>
-							This will change the way you track the prices of your Pokemon
-							cards. Search your card below.
+							This will change the way you track the prices of
+							your Pokemon cards. Search your card below.
 						</p>
 						<div className={styles.searchBar}>
 							<input
@@ -153,7 +155,11 @@ export default function HomePage() {
 								onKeyDown={handleKeyDown}
 							/>
 							<button onClick={handleSearch}>
-								<img src={magnifyingGlass} alt='Search' width='15px' />
+								<img
+									src={magnifyingGlass}
+									alt='Search'
+									width='15px'
+								/>
 							</button>
 						</div>
 					</div>
