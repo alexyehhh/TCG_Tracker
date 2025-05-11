@@ -11,47 +11,65 @@ const CollectionCard = ({
 	removeCard,
 	isSelected,
 	showCheckbox,
+	setBulkSelectedCount,
 }) => {
+	// State to toggle confirmation for removing a card
 	const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
 
-	const isEligibleForBulkDisplay =
+	// Determines if the card is eligible for bulk grading: 
+	// If the price is 'N/A' (not available), the card is not eligible.
+	// Converts the price (card.selectedPrice) to a number and checks if it is greater than 0
+	// For < 500: cards with a price of 500 or more are not eligible for bulk grading.
+	const isEligibleForBulk =
 		card.selectedPrice !== 'N/A' &&
 		Number(card.selectedPrice) > 0 &&
 		Number(card.selectedPrice) < 500 &&
 		card.selectedGrade === 'ungraded';
 
+    //  Handles click on the remove button.
+    //  If confirmation is shown, remove the card; otherwise, show confirmation.
+
 	const handleRemoveClick = (e) => {
-		e.preventDefault();
+		e.preventDefault(); // Prevent link navigation
 		if (showRemoveConfirm) {
-			removeCard(card.id);
+			removeCard(card.id); // Removes card from the collection
+			if (isSelected) {
+				setBulkSelectedCount((x) => x - 1); // Decrements the bulk selection count
+			}
 		} else {
-			setShowRemoveConfirm(true);
+			setShowRemoveConfirm(true); // Shows the "red x" confirmation
 		}
 	};
 
+	// Hides the remove confirmation when the mouse leaves the card
 	const handleMouseLeave = () => {
 		setShowRemoveConfirm(false);
 	};
 
-	const handleCheckboxChange = () => {
-		if (isEligibleForBulkDisplay && onClick) {
-			onClick(card);
-		}
-	};
+	// Set the CSS class for the card container to a variable "cardStyles"
+	const cardStyles = `${styles.cardContainer}`;
 
 	return (
-		<div className={styles.cardContainer} onMouseLeave={handleMouseLeave}>
+		<div className={cardStyles} onMouseLeave={handleMouseLeave}>
+			{/* Checkbox functionality in bulk selection */}
 			{showCheckbox && (
 				<input
 					type='checkbox'
 					className={styles.cardCheckbox}
 					id={`checkbox-${card.id}`}
 					checked={isSelected}
-					onChange={handleCheckboxChange}
-					disabled={!isEligibleForBulkDisplay}
+					onChange={(e) =>
+						isEligibleForBulk &&
+						onClick &&
+						onClick(card) &&
+						setBulkSelectedCount((prevCount) =>
+							e.target.checked ? prevCount + 1 : prevCount - 1
+						)
+					}
 				/>
 			)}
 
+			{/* Remove button when checkbox is not shown */}
 			{!showCheckbox && (
 				<button
 					onClick={handleRemoveClick}
@@ -63,6 +81,10 @@ const CollectionCard = ({
 				</button>
 			)}
 
+			{
+			/* Links to card detail page, its wrapped around the card alongside 
+			the details of the Grade and Value of the card underneath */
+			}
 			<Link
 				to={`/card-detail/${card.id}`}
 				className={styles.cardLink}
@@ -79,11 +101,10 @@ const CollectionCard = ({
 					</div>
 					<p className={styles.priceText}>
 						Value:
-						{card.selectedPrice !== 'N/A' &&
-						Number(card.selectedPrice) > 0
-							? ` $${formatter.format(
-									Number(card.selectedPrice)
-							  )}`
+						{card.selectedPrice !== 'N/A'
+							? Number(card.selectedPrice) > 0
+								? ` $${formatter.format(Number(card.selectedPrice))}`
+								: ' N/A'
 							: ' N/A'}
 					</p>
 				</div>
